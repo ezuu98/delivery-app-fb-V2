@@ -26,6 +26,37 @@ export default function Login() {
     otp: 'Sign in with OTP'
   })[mode], [mode]);
 
+  const validators = {
+    fullName: (v) => !v || v.trim().length < 2 ? 'Enter your full name' : undefined,
+    address: (v) => !v || v.trim().length < 5 ? 'Enter a valid address' : undefined,
+    email: (v) => /.+@.+\..+/.test(v) ? undefined : 'Enter a valid email',
+    password: (v) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(v) ? undefined : 'Min 8 chars with letters and numbers',
+    phone: (v) => /^\+?[0-9]{7,15}$/.test((v||'').replace(/\s+/g,'')) ? undefined : 'Enter a valid phone (E.164)',
+    otp: (v) => /^\d{6}$/.test(v) ? undefined : 'Enter the 6-digit code',
+  };
+
+  function validateFor(modeToValidate) {
+    const errs = {};
+    if (modeToValidate === 'signup') {
+      errs.fullName = validators.fullName(fullName);
+      errs.phone = validators.phone(phone);
+      errs.address = validators.address(address);
+      errs.email = validators.email(email);
+      errs.password = validators.password(password);
+    } else if (modeToValidate === 'login') {
+      errs.email = validators.email(email);
+      errs.password = password ? undefined : 'Password required';
+    } else if (modeToValidate === 'reset') {
+      errs.email = validators.email(email);
+    } else if (modeToValidate === 'otp') {
+      errs.phone = validators.phone(phone);
+      if (confirmation) errs.otp = validators.otp(otp);
+    }
+    Object.keys(errs).forEach(k => errs[k] === undefined && delete errs[k]);
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
   async function startOtpFlow({ linkToUser = false, user = null, phoneNumber }) {
     setMode('otp');
     setConfirmation(null);
