@@ -17,6 +17,7 @@ export default function Login() {
   const [confirmation, setConfirmation] = useState(null);
   const [verifyNotice, setVerifyNotice] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const title = useMemo(() => ({
     login: 'Welcome back',
