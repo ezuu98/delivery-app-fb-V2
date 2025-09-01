@@ -119,12 +119,19 @@ export default function Login() {
           setMessage('Code sent');
         } else {
           await confirmation.confirm(otp);
-          setMessage('Phone verified. Verify your email, then sign in.');
-          setVerifyNotice(true);
-          await auth.signOut();
-          setMode('login');
+          if (otpRedirectTo === 'login') {
+            setMessage('Phone verified. Continue to sign in.');
+            setVerifyNotice(false);
+            setMode('login');
+          } else {
+            setMessage('Phone verified. Verify your email, then sign in.');
+            setVerifyNotice(true);
+            await auth.signOut();
+            setMode('login');
+          }
           setConfirmation(null);
           setOtp('');
+          setOtpRedirectTo(null);
           return;
         }
       }
