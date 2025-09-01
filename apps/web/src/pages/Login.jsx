@@ -85,8 +85,8 @@ export default function Login() {
           </div>
 
           <div className="auth-tabs" role="tablist" aria-label="Sign in method">
-            <button className={mode==='login' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('login'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='login'}>Email</button>
             <button className={mode==='signup' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('signup'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='signup'}>Sign up</button>
+            <button className={mode==='login' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('login'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='login'}>Sign in</button>
             <button className={mode==='otp' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('otp'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='otp'}>OTP</button>
           </div>
 
@@ -96,6 +96,22 @@ export default function Login() {
           <form className="auth-form" onSubmit={handleSubmit}>
             {(mode === 'login' || mode === 'signup' || mode === 'reset') && (
               <>
+                {mode === 'signup' && (
+                  <>
+                    <div className="form-row">
+                      <label className="field-label" htmlFor="fullName">Full name</label>
+                      <input id="fullName" className="input-field" placeholder="Your name" value={fullName} onChange={(e)=>setFullName(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                      <label className="field-label" htmlFor="signupPhone">Phone</label>
+                      <input id="signupPhone" type="tel" className="input-field" placeholder="+1 555 123 4567" value={phone} onChange={(e)=>setPhone(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                      <label className="field-label" htmlFor="address">Address</label>
+                      <input id="address" className="input-field" placeholder="123 Main St, City" value={address} onChange={(e)=>setAddress(e.target.value)} required />
+                    </div>
+                  </>
+                )}
                 <div className="form-row">
                   <label className="field-label" htmlFor="email">Email</label>
                   <input id="email" type="email" className="input-field" placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
