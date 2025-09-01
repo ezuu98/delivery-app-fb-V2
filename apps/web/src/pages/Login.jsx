@@ -162,9 +162,8 @@ export default function Login() {
           </div>
 
           <div className="auth-tabs" role="tablist" aria-label="Sign in method">
-            <button className={mode==='signup' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('signup'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='signup'}>Sign up</button>
             <button className={mode==='login' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('login'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='login'}>Sign in</button>
-            <button className={mode==='otp' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('otp'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='otp'}>OTP</button>
+            <button className={mode==='otp' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('otp'); setMessage(''); setError(''); setOtpRedirectTo(null);}} role="tab" aria-selected={mode==='otp'}>OTP</button>
           </div>
 
           {verifyNotice && (
