@@ -52,9 +52,19 @@ export default function Orders() {
     try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch { return ''; }
   }
 
+  async function authHeaders() {
+    try {
+      const { auth } = await import('../lib/firebase.js');
+      const u = auth.currentUser;
+      if (!u) return { 'Content-Type': 'application/json' };
+      const t = await u.getIdToken();
+      return { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` };
+    } catch { return { 'Content-Type': 'application/json' }; }
+  }
+
   async function createOrder() {
     const body = { customer, address };
-    const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const res = await fetch('/api/orders', { method: 'POST', headers: await authHeaders(), body: JSON.stringify(body) });
     if (!res.ok) throw new Error('Create failed');
     const created = await res.json();
     setOrders((cur) => [created, ...cur]);
@@ -66,7 +76,7 @@ export default function Orders() {
   async function assignOrder() {
     if (!selectedOrder) return;
     const res = await fetch(`/api/orders/${encodeURIComponent(selectedOrder.id)}/assign`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ riderId: Number(selectedRiderId) })
+      method: 'PATCH', headers: await authHeaders(), body: JSON.stringify({ riderId: Number(selectedRiderId) })
     });
     if (!res.ok) throw new Error('Assign failed');
     const updated = await res.json();
@@ -76,7 +86,7 @@ export default function Orders() {
   }
 
   async function updateStatus(id, status) {
-    const res = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
+    const res = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', headers: await authHeaders(), body: JSON.stringify({ status }) });
     if (!res.ok) return;
     const updated = await res.json();
     setOrders((cur) => cur.map(o => o.id === updated.id ? updated : o));
