@@ -25,6 +25,23 @@ export default function Login() {
     otp: 'Sign in with OTP'
   })[mode], [mode]);
 
+  async function startOtpFlow({ linkToUser = false, user = null, phoneNumber }) {
+    setMode('otp');
+    setConfirmation(null);
+    setTimeout(async () => {
+      try {
+        if (!window._recaptchaVerifier) {
+          window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+        }
+        const conf = linkToUser && user
+          ? await linkWithPhoneNumber(user, phoneNumber, window._recaptchaVerifier)
+          : await signInWithPhoneNumber(auth, phoneNumber, window._recaptchaVerifier);
+        setConfirmation(conf);
+        setMessage('Code sent');
+      } catch (e) { setError(e.message); }
+    }, 0);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
@@ -50,8 +67,8 @@ export default function Login() {
         await sendEmailVerification(cred.user);
         try { localStorage.setItem('profileDraft', JSON.stringify({ fullName, address, phone })); } catch {}
         setVerifyNotice(true);
-        setMessage('We sent a verification link to your email. Verify, then sign in.');
-        await auth.signOut();
+        setMessage('Check your email for verification. We also sent an SMS code.');
+        await startOtpFlow({ linkToUser: true, user: cred.user, phoneNumber: phone });
         return;
       } else if (mode === 'reset') {
         await sendPasswordResetEmail(auth, email);
@@ -66,7 +83,13 @@ export default function Login() {
           setMessage('Code sent');
         } else {
           await confirmation.confirm(otp);
-          window.location.assign('/orders');
+          setMessage('Phone verified. Verify your email, then sign in.');
+          setVerifyNotice(true);
+          await auth.signOut();
+          setMode('login');
+          setConfirmation(null);
+          setOtp('');
+          return;
         }
       }
     } catch (err) {
