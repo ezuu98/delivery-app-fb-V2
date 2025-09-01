@@ -7,8 +7,8 @@
 .hero-copy { margin: 0 0 10px; color: #475569; }
 .hero-list { margin: 0; padding: 0 0 0 18px; color: #334155; }
 .auth-card { width: 100%; max-width: 520px; background: #ffffff; box-shadow: 0 16px 40px rgba(2, 6, 23, 0.08); border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; }
-.auth-panel { justify-self: end; }
-@media (min-width: 900px) { .auth-grid { grid-template-columns: 1fr 520px; } }
+.auth-panel { justify-self: center; }
+@media (min-width: 900px) { .auth-grid { grid-template-columns: 1fr; } }
 
 /* Brand */
 .brand-header { text-align: center; margin-bottom: 16px; }
