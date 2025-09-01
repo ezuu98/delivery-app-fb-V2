@@ -21,6 +21,7 @@ export default function Layout() {
           <div className="search-chip" aria-label="Search"><span aria-hidden>🔍</span><span className="chip-text">Search</span></div>
           <button className="icon-button" aria-label="Notifications">🔔</button>
           <div className="avatar">SC</div>
+          <button className="ghost-btn" onClick={() => import('../auth/AuthProvider.jsx').then(m => m).then(({ useAuth }) => useAuth()).catch(()=>{})}>Sign out</button>
         </div>
       </header>
 
