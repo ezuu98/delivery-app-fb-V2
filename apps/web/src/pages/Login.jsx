@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase.js';
 import '../styles/auth.css';
 
 export default function Login() {
+  const [fullName, setFullName] = useState('');
+  const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
@@ -11,7 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [mode, setMode] = useState('login'); // login | signup | reset | otp
+  const [mode, setMode] = useState('signup'); // login | signup | reset | otp
   const [confirmation, setConfirmation] = useState(null);
 
   const title = useMemo(() => ({
@@ -31,7 +33,11 @@ export default function Login() {
         await signInWithEmailAndPassword(auth, email, password);
         window.location.assign('/orders');
       } else if (mode === 'signup') {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        if (cred?.user && fullName) {
+          await updateProfile(cred.user, { displayName: fullName });
+        }
+        try { localStorage.setItem('profileDraft', JSON.stringify({ fullName, address, phone })); } catch {}
         setMessage('Account created');
         window.location.assign('/orders');
       } else if (mode === 'reset') {
@@ -39,7 +45,6 @@ export default function Login() {
         setMessage('Password reset email sent');
       } else if (mode === 'otp') {
         if (!confirmation) {
-          // Create (or reuse) invisible reCAPTCHA, then send code
           if (!window._recaptchaVerifier) {
             window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
           }
