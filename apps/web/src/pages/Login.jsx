@@ -218,6 +218,13 @@ export default function Login() {
               </>
             )}
 
+            {mode === 'login' && (
+              <div className="form-actions">
+                <label className="form-checkbox"><input type="checkbox" checked={remember} onChange={(e)=>setRemember(e.target.checked)} /> Remember me</label>
+                <a className="muted-link" href="#" onClick={(e)=>{e.preventDefault(); setMode('reset');}}>Forgot password?</a>
+              </div>
+            )}
+
             {mode === 'otp' && (
               <>
                 <div className="form-row">
