@@ -47,7 +47,7 @@ export default function RiderCommissions() {
                 <td className="muted-text">{r.km} km</td>
                 <td>
                   <div className="progress-row">
-                    <div className="progress-bar"><span style={{width: r.perf + '%'}} className="progress-fill" /></div>
+                    <progress className="progress-meter" value={r.perf} max="100" />
                     <span className="progress-value">{r.perf}</span>
                   </div>
                 </td>
