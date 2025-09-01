@@ -23,16 +23,17 @@ export default function Orders() {
 
   return (
     <section className="page-wrap">
-      <h1 className="page-title">Order Management</h1>
-
-      <div className="search-bar">
-        <span className="search-icon" aria-hidden>🔎</span>
-        <input
-          className="search-input"
-          placeholder="Search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+      <div className="page-header">
+        <h1 className="page-title">Order Management</h1>
+        <div className="search-bar" role="search">
+          <span className="search-icon" aria-hidden>🔎</span>
+          <input
+            className="search-input"
+            placeholder="Search orders"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="tab-strip" role="tablist" aria-label="Order status">
