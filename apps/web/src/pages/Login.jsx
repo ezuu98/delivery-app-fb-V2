@@ -20,6 +20,7 @@ export default function Login() {
   const [verifyNotice, setVerifyNotice] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [otpRedirectTo, setOtpRedirectTo] = useState(null);
 
   const title = useMemo(() => ({
     login: 'Welcome back',
