@@ -3,6 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import authRoutes from './src/routes/authRoutes.js';
+import orderRoutes from './src/routes/orderRoutes.js';
+import riderRoutes from './src/routes/riderRoutes.js';
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/riders', riderRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
