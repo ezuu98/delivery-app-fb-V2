@@ -153,17 +153,6 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-grid">
-        <aside className="auth-hero">
-          <div className="hero-badge">SwiftShip</div>
-          <h2 className="hero-title">Fast, reliable delivery ops</h2>
-          <p className="hero-copy">Manage orders, track riders, and analyze performance in one dashboard.</p>
-          <ul className="hero-list">
-            <li>Secure account access</li>
-            <li>Real-time order updates</li>
-            <li>Actionable analytics</li>
-          </ul>
-        </aside>
-
         <div className="auth-card auth-panel">
           <div className="brand-header">
             <div className="brand-logo" aria-hidden="true">🔒</div>
