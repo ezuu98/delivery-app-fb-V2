@@ -18,7 +18,7 @@ export default function Layout() {
           <NavLink to="/reports" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Reports</NavLink>
         </nav>
         <div className="topbar-actions">
-          <div className="search-chip" aria-label="Search">🔍<span className="chip-text">Search</span></div>
+          <div className="search-chip" aria-label="Search"><span aria-hidden>🔍</span><span className="chip-text">Search</span></div>
           <button className="icon-button" aria-label="Notifications">🔔</button>
           <div className="avatar">SC</div>
         </div>
