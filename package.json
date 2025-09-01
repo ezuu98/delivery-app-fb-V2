@@ -1,0 +1,10 @@
+{
+  "name": "monorepo-mvc",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "npm run -ws dev",
+    "build": "npm run -ws build",
+    "start": "npm run -ws start"
+  }
+}
