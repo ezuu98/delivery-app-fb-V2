@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../lib/firebase.js';
 import '../styles/auth.css';
 
 export default function Login() {
@@ -7,25 +9,21 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [mode, setMode] = useState('login');
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
-
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.message || 'Login failed');
+      if (mode === 'login') {
+        await signInWithEmailAndPassword(auth, email, password);
+        setMessage('Logged in');
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        setMessage('Account created');
       }
-      localStorage.setItem('token', data.token);
-      setMessage('Logged in successfully');
       window.location.assign('/orders');
     } catch (err) {
       setError(err.message);
@@ -39,8 +37,8 @@ export default function Login() {
       <div className="auth-card">
         <div className="brand-header">
           <div className="brand-logo" aria-hidden="true">🔒</div>
-          <h1 className="brand-title">Welcome back</h1>
-          <p className="brand-subtitle">Sign in to continue</p>
+          <h1 className="brand-title">{mode === 'login' ? 'Welcome back' : 'Create account'}</h1>
+          <p className="brand-subtitle">{mode === 'login' ? 'Sign in to continue' : 'Sign up to get started'}</p>
         </div>
 
         {error && <div className="error-banner" role="alert">{error}</div>}
@@ -49,41 +47,19 @@ export default function Login() {
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <label className="field-label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="input-field"
-              placeholder="you@example.com"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <input id="email" type="email" className="input-field" placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-
           <div className="form-row">
             <label className="field-label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="input-field"
-              placeholder="••••••••"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <input id="password" type="password" className="input-field" placeholder="••••••••" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-
           <button className="submit-button" type="submit" disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? (mode==='login'?'Signing in…':'Creating…') : (mode==='login'?'Sign in':'Create account')}
           </button>
         </form>
 
         <div className="aux-links">
-          <a className="muted-link" href="#" onClick={(e) => e.preventDefault()}>Forgot password?</a>
-          <span className="separator" aria-hidden>•</span>
-          <a className="muted-link" href="#" onClick={(e) => e.preventDefault()}>Create account</a>
+          <a className="muted-link" href="#" onClick={(e) => { e.preventDefault(); setMode(mode==='login'?'signup':'login'); }}>{mode==='login'?'Create account':'Have an account? Sign in'}</a>
         </div>
       </div>
     </div>
