@@ -242,6 +242,12 @@ export default function Login() {
                 (mode==='login'?'Sign in': mode==='signup'?'Create account': mode==='reset'?'Send reset link': confirmation?'Verify code':'Send code')
               }
             </button>
+
+            {mode === 'login' && (
+              <div className="aux-links" style={{marginTop: '8px'}}>
+                <a className="muted-link" href="#" onClick={(e)=>{e.preventDefault(); setOtpRedirectTo('login'); setMode('otp'); setMessage('Verify your phone to continue');}}>Create account</a>
+              </div>
+            )}
           </form>
 
           <div className="aux-links">
