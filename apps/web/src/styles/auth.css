@@ -1,0 +1,37 @@
+/* Layout */
+.auth-page { display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+.auth-card { width: 100%; max-width: 420px; background: #ffffff; box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08); border-radius: 16px; padding: 28px; }
+
+/* Brand */
+.brand-header { text-align: center; margin-bottom: 20px; }
+.brand-logo { width: 56px; height: 56px; display: inline-grid; place-items: center; margin: 0 auto 8px; border-radius: 50%; background: #e0f2fe; color: #0369a1; font-size: 24px; }
+.brand-title { margin: 0; font-size: 22px; font-weight: 700; color: #0f172a; }
+.brand-subtitle { margin: 4px 0 0; font-size: 14px; color: #64748b; }
+
+/* Form */
+.auth-form { display: grid; gap: 14px; margin-top: 10px; }
+.form-row { display: grid; gap: 6px; }
+.field-label { font-size: 13px; font-weight: 600; color: #334155; }
+.input-field { appearance: none; width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; font-size: 14px; color: #0f172a; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.input-field:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); }
+
+.submit-button { width: 100%; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 15px; color: #ffffff; background: linear-gradient(135deg, #0ea5e9, #0284c7); cursor: pointer; transition: transform .06s ease, filter .2s ease; }
+.submit-button:hover { filter: brightness(1.05); }
+.submit-button:active { transform: translateY(1px); }
+.submit-button:disabled { cursor: not-allowed; opacity: .7; }
+
+/* Messages */
+.error-banner, .success-banner { border-radius: 10px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+.error-banner { background: #fee2e2; color: #b91c1c; }
+.success-banner { background: #dcfce7; color: #166534; }
+
+/* Aux */
+.aux-links { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 16px; }
+.muted-link { color: #64748b; font-size: 13px; text-decoration: none; }
+.muted-link:hover { color: #0ea5e9; }
+.separator { color: #94a3b8; }
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+  .auth-card { padding: 22px; border-radius: 14px; }
+}
