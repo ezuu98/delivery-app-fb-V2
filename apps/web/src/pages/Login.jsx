@@ -15,7 +15,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [mode, setMode] = useState('signup'); // login | signup | reset | otp
+  const [mode, setMode] = useState('login'); // login | signup | reset | otp
   const [confirmation, setConfirmation] = useState(null);
   const [verifyNotice, setVerifyNotice] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
