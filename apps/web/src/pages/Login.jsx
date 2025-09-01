@@ -188,26 +188,31 @@ export default function Login() {
                   <>
                     <div className="form-row">
                       <label className="field-label" htmlFor="fullName">Full name</label>
-                      <input id="fullName" className="input-field" placeholder="Your name" value={fullName} onChange={(e)=>setFullName(e.target.value)} required />
+                      <input id="fullName" className={fieldErrors.fullName? 'input-field input-invalid':'input-field'} placeholder="Your name" value={fullName} onChange={(e)=>setFullName(e.target.value)} />
+                      {fieldErrors.fullName && <div className="field-error">{fieldErrors.fullName}</div>}
                     </div>
                     <div className="form-row">
                       <label className="field-label" htmlFor="signupPhone">Phone</label>
-                      <input id="signupPhone" type="tel" className="input-field" placeholder="+1 555 123 4567" value={phone} onChange={(e)=>setPhone(e.target.value)} required />
+                      <input id="signupPhone" type="tel" className={fieldErrors.phone? 'input-field input-invalid':'input-field'} placeholder="+1 555 123 4567" value={phone} onChange={(e)=>setPhone(e.target.value)} />
+                      {fieldErrors.phone && <div className="field-error">{fieldErrors.phone}</div>}
                     </div>
                     <div className="form-row">
                       <label className="field-label" htmlFor="address">Address</label>
-                      <input id="address" className="input-field" placeholder="123 Main St, City" value={address} onChange={(e)=>setAddress(e.target.value)} required />
+                      <input id="address" className={fieldErrors.address? 'input-field input-invalid':'input-field'} placeholder="123 Main St, City" value={address} onChange={(e)=>setAddress(e.target.value)} />
+                      {fieldErrors.address && <div className="field-error">{fieldErrors.address}</div>}
                     </div>
                   </>
                 )}
                 <div className="form-row">
                   <label className="field-label" htmlFor="email">Email</label>
-                  <input id="email" type="email" className="input-field" placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <input id="email" type="email" className={fieldErrors.email? 'input-field input-invalid':'input-field'} placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  {fieldErrors.email && <div className="field-error">{fieldErrors.email}</div>}
                 </div>
                 {mode !== 'reset' && (
                   <div className="form-row">
                     <label className="field-label" htmlFor="password">Password</label>
-                    <input id="password" type="password" className="input-field" placeholder="••••••••" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} required />
+                    <input id="password" type="password" className={fieldErrors.password? 'input-field input-invalid':'input-field'} placeholder="••••••••" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+                    {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
                   </div>
                 )}
               </>
@@ -217,12 +222,14 @@ export default function Login() {
               <>
                 <div className="form-row">
                   <label className="field-label" htmlFor="phone">Phone number</label>
-                  <input id="phone" type="tel" className="input-field" placeholder="+1 555 123 4567" value={phone} onChange={(e)=>setPhone(e.target.value)} required />
+                  <input id="phone" type="tel" className={fieldErrors.phone? 'input-field input-invalid':'input-field'} placeholder="+1 555 123 4567" value={phone} onChange={(e)=>setPhone(e.target.value)} />
+                  {fieldErrors.phone && <div className="field-error">{fieldErrors.phone}</div>}
                 </div>
                 {confirmation && (
                   <div className="form-row">
                     <label className="field-label" htmlFor="otp">Enter code</label>
-                    <input id="otp" type="text" inputMode="numeric" pattern="[0-9]*" className="input-field" placeholder="123456" value={otp} onChange={(e)=>setOtp(e.target.value)} required />
+                    <input id="otp" type="text" inputMode="numeric" pattern="[0-9]*" className={fieldErrors.otp? 'input-field input-invalid':'input-field'} placeholder="123456" value={otp} onChange={(e)=>setOtp(e.target.value)} />
+                    {fieldErrors.otp && <div className="field-error">{fieldErrors.otp}</div>}
                   </div>
                 )}
                 <div id="recaptcha-container" />
