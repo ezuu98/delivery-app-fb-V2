@@ -211,9 +211,10 @@ export default function Login() {
                   {fieldErrors.email && <div className="field-error">{fieldErrors.email}</div>}
                 </div>
                 {mode !== 'reset' && (
-                  <div className="form-row">
+                  <div className="form-row password-row">
                     <label className="field-label" htmlFor="password">Password</label>
-                    <input id="password" type="password" className={fieldErrors.password? 'input-field input-invalid':'input-field'} placeholder="••••••••" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <input id="password" type={showPassword? 'text':'password'} className={fieldErrors.password? 'input-field input-invalid':'input-field'} placeholder="••••••••" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <button className="visibility-toggle" aria-label={showPassword? 'Hide password':'Show password'} type="button" onClick={()=>setShowPassword(v=>!v)}>{showPassword? '🙈':'👁️'}</button>
                     {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
                   </div>
                 )}
