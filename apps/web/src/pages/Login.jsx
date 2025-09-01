@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../lib/firebase.js';
 import '../styles/auth.css';
 
@@ -15,6 +15,8 @@ export default function Login() {
   const [message, setMessage] = useState('');
   const [mode, setMode] = useState('signup'); // login | signup | reset | otp
   const [confirmation, setConfirmation] = useState(null);
+  const [verifyNotice, setVerifyNotice] = useState(false);
+  const [resendBusy, setResendBusy] = useState(false);
 
   const title = useMemo(() => ({
     login: 'Welcome back',
@@ -30,16 +32,27 @@ export default function Login() {
     setMessage('');
     try {
       if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, email, password);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        if (!cred.user.emailVerified) {
+          await sendEmailVerification(cred.user);
+          setVerifyNotice(true);
+          setMessage('Verification email sent. Please verify to continue.');
+          setError('');
+          await auth.signOut();
+          return;
+        }
         window.location.assign('/orders');
       } else if (mode === 'signup') {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         if (cred?.user && fullName) {
           await updateProfile(cred.user, { displayName: fullName });
         }
+        await sendEmailVerification(cred.user);
         try { localStorage.setItem('profileDraft', JSON.stringify({ fullName, address, phone })); } catch {}
-        setMessage('Account created');
-        window.location.assign('/orders');
+        setVerifyNotice(true);
+        setMessage('We sent a verification link to your email. Verify, then sign in.');
+        await auth.signOut();
+        return;
       } else if (mode === 'reset') {
         await sendPasswordResetEmail(auth, email);
         setMessage('Password reset email sent');
@@ -61,6 +74,22 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function resendVerification() {
+    if (!email) return;
+    setResendBusy(true);
+    setError('');
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password).catch(()=>null);
+      if (cred?.user) {
+        await sendEmailVerification(cred.user);
+        await auth.signOut();
+        setMessage('Verification email resent.');
+      } else {
+        setError('Enter the same email and password, then press Resend.');
+      }
+    } catch (e) { setError(e.message); } finally { setResendBusy(false); }
   }
 
   return (
@@ -90,6 +119,9 @@ export default function Login() {
             <button className={mode==='otp' ? 'auth-tab active' : 'auth-tab'} onClick={()=>{setMode('otp'); setMessage(''); setError('');}} role="tab" aria-selected={mode==='otp'}>OTP</button>
           </div>
 
+          {verifyNotice && (
+            <div className="success-banner" role="status">Please verify your email. Didn't get it? <a className="link" href="#" onClick={(e)=>{e.preventDefault(); resendVerification();}}>{resendBusy ? 'Resending…' : 'Resend'}</a></div>
+          )}
           {error && <div className="error-banner" role="alert">{error}</div>}
           {message && <div className="success-banner" role="status">{message}</div>}
 
