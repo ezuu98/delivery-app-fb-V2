@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile, sendEmailVerification, linkWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../lib/firebase.js';
 import '../styles/auth.css';
 
