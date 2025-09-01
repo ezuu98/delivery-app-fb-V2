@@ -80,6 +80,7 @@ export default function Login() {
     setError('');
     setMessage('');
     try {
+      if (!validateFor(mode)) { setLoading(false); setError('Please fix the highlighted fields'); return; }
       if (mode === 'login') {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         if (!cred.user.emailVerified) {
