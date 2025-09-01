@@ -26,6 +26,7 @@ export default function Login() {
       }
       localStorage.setItem('token', data.token);
       setMessage('Logged in successfully');
+      window.location.assign('/orders');
     } catch (err) {
       setError(err.message);
     } finally {
