@@ -256,7 +256,7 @@ export default function Login() {
           </form>
 
           <div className="aux-links">
-            {mode !== 'reset' && <a className="muted-link" href="#" onClick={(e) => { e.preventDefault(); setMode('reset'); setMessage(''); setError(''); }}>Forgot password?</a>}
+            {mode !== 'login' && <a className="muted-link" href="#" onClick={(e) => { e.preventDefault(); setMode('login'); setMessage(''); setError(''); }}>Back to sign in</a>}
           </div>
         </div>
       </div>
