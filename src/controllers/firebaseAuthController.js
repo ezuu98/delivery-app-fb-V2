@@ -14,10 +14,10 @@ function getClientConfig() {
 
 module.exports = {
   showLogin: (req, res) => {
-    res.render('auth/login', { title: 'Login', error: null, email: '', firebaseConfig: getClientConfig() });
+    res.render('auth/login', { title: 'Login', error: null, email: '', firebaseConfig: getClientConfig(), hideHeader: true });
   },
   showRegister: (req, res) => {
-    res.render('auth/register', { title: 'Register', error: null, email: '', firebaseConfig: getClientConfig() });
+    res.render('auth/register', { title: 'Register', error: null, email: '', firebaseConfig: getClientConfig(), hideHeader: true });
   },
   sessionLogin: async (req, res) => {
     try {
