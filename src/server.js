@@ -32,6 +32,7 @@ app.use(currentUserMiddleware());
 app.use((req, res, next) => {
   res.locals.isAuthenticated = !!req.user;
   res.locals.currentUser = req.user;
+  res.locals.hideHeader = false;
   next();
 });
 
