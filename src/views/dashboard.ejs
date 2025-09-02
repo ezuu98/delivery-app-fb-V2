@@ -6,21 +6,22 @@
 
   <div class="rc-toolbar">
     <div class="rc-search">
-      <input id="searchInput" class="rc-search-input" type="search" placeholder="Search riders" />
+      <span class="rc-search-icon" aria-hidden="true"></span>
+      <input id="searchInput" class="rc-search-input" type="search" placeholder="Search" />
     </div>
     <div class="rc-filters">
-      <select id="dateFilter" class="rc-select">
+      <select id="dateFilter" class="rc-select rc-chip">
         <option value="all">Date Range</option>
         <option value="7">Last 7 days</option>
         <option value="30">Last 30 days</option>
       </select>
-      <select id="riderFilter" class="rc-select">
+      <select id="riderFilter" class="rc-select rc-chip">
         <option value="all">Rider</option>
         <% riders.forEach(r => { %>
           <option value="<%= r.id %>"><%= r.name %></option>
         <% }) %>
       </select>
-      <select id="statusFilter" class="rc-select">
+      <select id="statusFilter" class="rc-select rc-chip">
         <option value="all">Status</option>
         <option value="Active">Active</option>
         <option value="Inactive">Inactive</option>
@@ -32,10 +33,10 @@
     <table class="rc-table" id="riderTable">
       <thead>
         <tr>
-          <th>Rider Name</th>
-          <th>Total KM Traveled</th>
-          <th>Delivery Performance</th>
-          <th>Commission Earned</th>
+          <th class="col-name">Rider Name</th>
+          <th class="col-km">Total KM Traveled</th>
+          <th class="col-perf">Delivery Performance</th>
+          <th class="col-comm">Commission Earned</th>
         </tr>
       </thead>
       <tbody>
