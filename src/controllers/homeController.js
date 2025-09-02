@@ -13,6 +13,8 @@ module.exports = {
 
   dashboard: (req, res) => {
     const pageTitle = 'Dashboard';
-    res.render('dashboard', { title: pageTitle });
+    const riderModel = require('../models/riderModel');
+    const riders = riderModel.list();
+    res.render('dashboard', { title: pageTitle, riders });
   },
 };
