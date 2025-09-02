@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const expressLayouts = require('express-ejs-layouts');
 
 const routes = require('./routes');
 
@@ -10,6 +11,8 @@ const app = express();
 // View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.set('layout', 'layout');
 
 // Middleware
 app.use(cors());
