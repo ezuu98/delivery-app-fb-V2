@@ -1,21 +1,29 @@
 <section class="auth-panel">
   <h2 class="auth-title">Register</h2>
-  <div id="auth-error" class="auth-error" style="display:none"></div>
+  <div id="auth-error" class="auth-error hidden"></div>
   <form id="registerForm" class="auth-form">
     <label class="auth-label">Email
-      <input class="auth-input" id="email" type="email" required />
+      <input class="auth-input" id="email" type="email" autocomplete="email" required />
     </label>
     <label class="auth-label">Password
-      <input class="auth-input" id="password" type="password" minlength="6" required />
+      <span class="password-field">
+        <input class="auth-input" id="password" type="password" minlength="6" autocomplete="new-password" required />
+        <button type="button" id="togglePwd" class="toggle-password" aria-label="Show password">Show</button>
+      </span>
     </label>
-    <button class="auth-button" type="submit">Create account</button>
+    <label class="auth-label">Confirm Password
+      <input class="auth-input" id="confirm" type="password" minlength="6" autocomplete="new-password" required />
+    </label>
+    <button class="auth-button" id="submitBtn" type="submit">Create account</button>
   </form>
   <p class="auth-alt">Have an account? <a href="/auth/login">Login</a></p>
 </section>
 <script type="module">
   const cfg = <%- JSON.stringify(firebaseConfig) %>;
   const errBox = document.getElementById('auth-error');
-  function showErr(msg){ errBox.textContent = msg; errBox.style.display='block'; }
+  const submitBtn = document.getElementById('submitBtn');
+  function showErr(msg){ errBox.textContent = msg; errBox.classList.remove('hidden'); }
+  function clearErr(){ errBox.classList.add('hidden'); }
   if(!cfg || !cfg.apiKey){ showErr('Firebase not configured. Set env vars.'); }
   else {
     import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js').then(({initializeApp})=>{
@@ -26,10 +34,18 @@
     }).then(([app, authMod])=>{
       const { getAuth, createUserWithEmailAndPassword } = authMod;
       const auth = getAuth();
+
+      document.getElementById('togglePwd').addEventListener('click', ()=>{
+        const i = document.getElementById('password');
+        if(i.type === 'password'){ i.type='text'; togglePwd.textContent='Hide'; } else { i.type='password'; togglePwd.textContent='Show'; }
+      });
+
       document.getElementById('registerForm').addEventListener('submit', async (e)=>{
-        e.preventDefault(); errBox.style.display='none';
+        e.preventDefault(); clearErr(); submitBtn.disabled = true;
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm').value;
+        if(password !== confirm){ showErr('Passwords do not match'); submitBtn.disabled=false; return; }
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           const idToken = await cred.user.getIdToken();
@@ -37,6 +53,7 @@
           if (!res.ok) throw new Error('Session creation failed');
           window.location.href = '/dashboard';
         } catch (e) { showErr((e && (e.code || e.message)) || 'Registration failed'); }
+        finally { submitBtn.disabled = false; }
       });
     }).catch(()=>showErr('Failed to load Firebase.'));
   }
