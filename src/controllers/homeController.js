@@ -3,7 +3,7 @@ const messageModel = require('../models/messageModel');
 module.exports = {
   index: (req, res) => {
     const pageTitle = 'Home';
-    res.render('home', { title: pageTitle, intro: 'Welcome to the Delivery App MVC scaffold.' });
+    res.render('home', { title: pageTitle, intro: 'Welcome to FreshBasket.' });
   },
 
   messages: (req, res) => {
