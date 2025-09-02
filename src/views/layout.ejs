@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %> · FreshBasket</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <% if (!(typeof hideHeader !== 'undefined' && hideHeader)) { %>
+    <header class="site-header">
+      <h1 class="site-title"><span class="brand"><img class="brand-logo" src="https://cdn.builder.io/api/v1/image/assets%2Fa5647e4ccf094d4d939a079b9f892c1c%2F240094ac7d6b4725b685503d97c9d9a3?format=webp&width=64" alt="FreshBasket logo" /><span class="brand-name">FreshBasket</span></span></h1>
+      <nav class="site-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/orders">Orders</a>
+        <a href="/riders">Riders</a>
+        <a href="/customers">Customers</a>
+        <a href="/reports">Reports</a>
+        <span class="site-nav-spacer"></span>
+        <button class="icon-btn" aria-label="Notifications" title="Notifications">
+          <svg class="bell-icon" width="29" height="29" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="bellGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#C08B3E"/>
+                <stop offset="50%" stop-color="#D4AF37"/>
+                <stop offset="100%" stop-color="#FFD700"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#bellGold)" d="M12 22a2 2 0 0 0 1.995-1.85L14 20h-4a2 2 0 0 0 1.85 1.995L12 22Zm8-5h-1a1 1 0 0 1-.707-.293l-.147-.147A3.99 3.99 0 0 1 17 14.172V11a5 5 0 1 0-10 0v3.172a3.99 3.99 0 0 1-1.146 2.388l-.147.147A1 1 0 0 1 5 17H4a1 1 0 1 0 0 2h16a1 1 0 1 0 0-2Z"/>
+          </svg>
+        </button>
+        <div class="nav-profile" title="Profile">
+          <svg class="avatar" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="7.5" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <% if (!isAuthenticated) { %>
+          <a href="/auth/login">Login</a>
+          <a href="/auth/register">Register</a>
+        <% } %>
+      </nav>
+    </header>
+    <% } %>
+    <main class="content">
+      <%- body %>
+    </main>
+    <footer class="site-footer">&copy; <%= new Date().getFullYear() %> FreshBasket</footer>
+  </body>
+</html>
