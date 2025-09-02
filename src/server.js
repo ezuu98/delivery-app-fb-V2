@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
 
 const routes = require('./routes');
 
@@ -20,6 +21,23 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Sessions (demo only, MemoryStore not for production)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'change-me',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, sameSite: 'lax' },
+  })
+);
+
+// Set template locals
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = !!(req.session && req.session.user);
+  res.locals.currentUser = req.session ? req.session.user : null;
+  next();
+});
 
 // Routes
 app.use('/', routes);
