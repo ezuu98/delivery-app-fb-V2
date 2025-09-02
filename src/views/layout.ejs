@@ -12,6 +12,13 @@
       <nav class="site-nav">
         <a href="/">Home</a>
         <a href="/messages">Messages (JSON)</a>
+        <% if (isAuthenticated) { %>
+          <a href="/dashboard">Dashboard</a>
+          <form method="post" action="/auth/logout" class="nav-logout"><button type="submit">Logout</button></form>
+        <% } else { %>
+          <a href="/auth/login">Login</a>
+          <a href="/auth/register">Register</a>
+        <% } %>
       </nav>
     </header>
     <main class="content">
