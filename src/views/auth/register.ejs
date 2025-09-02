@@ -36,7 +36,7 @@
           const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ idToken }) });
           if (!res.ok) throw new Error('Session creation failed');
           window.location.href = '/dashboard';
-        } catch (e) { showErr(e.message || 'Registration failed'); }
+        } catch (e) { showErr((e && (e.code || e.message)) || 'Registration failed'); }
       });
     }).catch(()=>showErr('Failed to load Firebase.'));
   }
