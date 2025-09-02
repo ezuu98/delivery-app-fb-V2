@@ -1,12 +1,11 @@
 const { Router } = require('express');
-const authController = require('../controllers/authController');
+const authController = require('../controllers/firebaseAuthController');
 
 const router = Router();
 
 router.get('/login', authController.showLogin);
-router.post('/login', authController.login);
 router.get('/register', authController.showRegister);
-router.post('/register', authController.register);
+router.post('/session', authController.sessionLogin);
 router.post('/logout', authController.logout);
 
 module.exports = router;
