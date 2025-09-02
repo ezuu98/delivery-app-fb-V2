@@ -9,6 +9,9 @@ const routes = require('./routes');
 
 const app = express();
 
+// Behind proxies (fly.dev) - trust X-Forwarded-Proto for secure cookies
+app.set('trust proxy', 1);
+
 // View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
