@@ -27,12 +27,11 @@ module.exports = {
       if (!idToken) return res.status(400).json({ error: 'Missing idToken' });
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
-      const isSecure = req.secure || req.get('x-forwarded-proto') === 'https';
       res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
         maxAge: expiresIn,
         httpOnly: true,
-        secure: isSecure,
-        sameSite: 'lax',
+        secure: true,
+        sameSite: 'none',
         path: '/',
       });
       return res.status(200).json({ ok: true });
