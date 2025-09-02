@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <% if (!hideHeader) { %>
+    <% if (!(typeof hideHeader !== 'undefined' && hideHeader)) { %>
     <header class="site-header">
       <h1 class="site-title">Delivery App</h1>
       <nav class="site-nav">
