@@ -1,0 +1,5 @@
+<section class="dashboard">
+  <h2 class="dashboard-title">Welcome, <%= currentUser && currentUser.email %></h2>
+  <p class="dashboard-text">This page is protected. Only authenticated users can see it.</p>
+  <form method="post" action="/auth/logout"><button class="auth-button" type="submit">Log out</button></form>
+</section>
