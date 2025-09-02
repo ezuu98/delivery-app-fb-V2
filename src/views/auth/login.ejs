@@ -1,26 +1,39 @@
-<section class="auth-panel">
-  <h2 class="auth-title">Login</h2>
-  <div id="auth-error" class="auth-error hidden"></div>
-  <div id="auth-success" class="auth-success hidden"></div>
-  <form id="loginForm" class="auth-form">
-    <label class="auth-label">Email
-      <input class="auth-input" id="email" type="email" autocomplete="email" required />
-    </label>
-    <label class="auth-label">Password
-      <span class="password-field">
-        <input class="auth-input" id="password" type="password" autocomplete="current-password" required />
-        <button type="button" id="togglePwd" class="toggle-password" aria-label="Show password">Show</button>
-      </span>
-    </label>
-    <div class="auth-actions">
-      <label class="remember">
-        <input type="checkbox" id="rememberMe" /> Remember me
+<section class="auth-layout">
+  <div class="auth-hero">
+    <img class="hero-logo" src="https://cdn.builder.io/api/v1/image/assets%2Fa5647e4ccf094d4d939a079b9f892c1c%2F240094ac7d6b4725b685503d97c9d9a3?format=webp&width=96" alt="FreshBasket logo" />
+    <h2 class="hero-heading">Welcome back</h2>
+    <p class="hero-sub">Sign in to manage orders, riders and deliveries.</p>
+    <ul class="hero-points">
+      <li>Secure account access</li>
+      <li>Real-time dashboards</li>
+      <li>Faster operations</li>
+    </ul>
+  </div>
+
+  <div class="auth-panel auth-panel-card">
+    <h2 class="auth-title">Sign in to FreshBasket</h2>
+    <div id="auth-error" class="auth-error hidden"></div>
+    <div id="auth-success" class="auth-success hidden"></div>
+    <form id="loginForm" class="auth-form">
+      <label class="auth-label">Email
+        <input class="auth-input" id="email" type="email" autocomplete="email" required />
       </label>
-      <button class="link-button" id="forgotBtn" type="button">Forgot password?</button>
-    </div>
-    <button class="auth-button" id="submitBtn" type="submit">Sign in</button>
-  </form>
-  <p class="auth-alt">No account? <a href="/auth/register">Register</a></p>
+      <label class="auth-label">Password
+        <span class="password-field">
+          <input class="auth-input" id="password" type="password" autocomplete="current-password" required />
+          <button type="button" id="togglePwd" class="toggle-password" aria-label="Show password">Show</button>
+        </span>
+      </label>
+      <div class="auth-actions">
+        <label class="remember">
+          <input type="checkbox" id="rememberMe" /> Remember me
+        </label>
+        <button class="link-button" id="forgotBtn" type="button">Forgot password?</button>
+      </div>
+      <button class="auth-button auth-button-wide" id="submitBtn" type="submit">Sign in</button>
+    </form>
+    <p class="auth-alt">No account? <a href="/auth/register">Register</a></p>
+  </div>
 </section>
 <script type="module">
   const cfg = <%- JSON.stringify(firebaseConfig) %>;
