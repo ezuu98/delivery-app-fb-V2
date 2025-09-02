@@ -19,7 +19,8 @@
 .auth-label{display:flex;flex-direction:column;gap:8px}
 .auth-input{padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;width:100%;background:#fff;font-size:16px}
 .auth-input:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.15)}
-.toggle-password{background:none;border:0;color:#0070f3;padding:0 4px;cursor:pointer}
+.toggle-password{background:none;border:0;color:#0070f3;padding:0 6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.toggle-password svg{width:18px;height:18px}
 .auth-button{background:#0070f3;color:#fff;border:0;border-radius:10px;padding:12px 16px;cursor:pointer}
 .auth-button-wide{width:100%;margin-top:6px}
 .auth-error{color:#b00020;margin-bottom:10px}
