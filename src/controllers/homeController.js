@@ -10,4 +10,9 @@ module.exports = {
     const items = messageModel.list();
     res.json({ data: items });
   },
+
+  dashboard: (req, res) => {
+    const pageTitle = 'Dashboard';
+    res.render('dashboard', { title: pageTitle });
+  },
 };
