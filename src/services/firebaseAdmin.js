@@ -15,10 +15,16 @@ function initFirebaseAdmin() {
     return null;
   }
 
-  admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  });
-  initialized = true;
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+    });
+    initialized = true;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to initialize Firebase Admin:', err && err.message ? err.message : err);
+    return null;
+  }
   return admin;
 }
 
