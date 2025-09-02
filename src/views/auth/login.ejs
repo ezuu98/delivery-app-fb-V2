@@ -1,16 +1,43 @@
 <section class="auth-panel">
   <h2 class="auth-title">Login</h2>
-  <% if (error) { %>
-    <div class="auth-error"><%= error %></div>
-  <% } %>
-  <form method="post" action="/auth/login" class="auth-form">
+  <div id="auth-error" class="auth-error" style="display:none"></div>
+  <form id="loginForm" class="auth-form">
     <label class="auth-label">Email
-      <input class="auth-input" type="email" name="email" value="<%= email %>" required />
+      <input class="auth-input" id="email" type="email" required />
     </label>
     <label class="auth-label">Password
-      <input class="auth-input" type="password" name="password" required />
+      <input class="auth-input" id="password" type="password" required />
     </label>
     <button class="auth-button" type="submit">Sign in</button>
   </form>
   <p class="auth-alt">No account? <a href="/auth/register">Register</a></p>
 </section>
+<script type="module">
+  const cfg = <%- JSON.stringify(firebaseConfig) %>;
+  const errBox = document.getElementById('auth-error');
+  function showErr(msg){ errBox.textContent = msg; errBox.style.display='block'; }
+  if(!cfg || !cfg.apiKey){ showErr('Firebase not configured. Set env vars.'); }
+  else {
+    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js').then(({initializeApp})=>{
+      return Promise.all([
+        Promise.resolve(initializeApp(cfg)),
+        import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js')
+      ]);
+    }).then(([app, authMod])=>{
+      const { getAuth, signInWithEmailAndPassword } = authMod;
+      const auth = getAuth();
+      document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+        e.preventDefault(); errBox.style.display='none';
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        try {
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          const idToken = await cred.user.getIdToken();
+          const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ idToken }) });
+          if (!res.ok) throw new Error('Session creation failed');
+          window.location.href = '/dashboard';
+        } catch (e) { showErr(e.message || 'Login failed'); }
+      });
+    }).catch(()=>showErr('Failed to load Firebase.'));
+  }
+</script>
