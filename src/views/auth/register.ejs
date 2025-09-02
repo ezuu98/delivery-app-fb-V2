@@ -1,0 +1,16 @@
+<section class="auth-panel">
+  <h2 class="auth-title">Register</h2>
+  <% if (error) { %>
+    <div class="auth-error"><%= error %></div>
+  <% } %>
+  <form method="post" action="/auth/register" class="auth-form">
+    <label class="auth-label">Email
+      <input class="auth-input" type="email" name="email" value="<%= email %>" required />
+    </label>
+    <label class="auth-label">Password
+      <input class="auth-input" type="password" name="password" minlength="6" required />
+    </label>
+    <button class="auth-button" type="submit">Create account</button>
+  </form>
+  <p class="auth-alt">Have an account? <a href="/auth/login">Login</a></p>
+</section>
