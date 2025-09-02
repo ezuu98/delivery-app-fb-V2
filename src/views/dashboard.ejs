@@ -1,5 +1,95 @@
-<section class="dashboard">
-  <h2 class="dashboard-title">Welcome, <%= currentUser && currentUser.email %></h2>
-  <p class="dashboard-text">This page is protected. Only authenticated users can see it.</p>
-  <form method="post" action="/auth/logout"><button class="auth-button" type="submit">Log out</button></form>
+<section class="rider-commissions">
+  <header class="rc-header">
+    <h2 class="rc-title">Rider Commissions</h2>
+    <p class="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+  </header>
+
+  <div class="rc-toolbar">
+    <div class="rc-search">
+      <input id="searchInput" class="rc-search-input" type="search" placeholder="Search riders" />
+    </div>
+    <div class="rc-filters">
+      <select id="dateFilter" class="rc-select">
+        <option value="all">Date Range</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+      </select>
+      <select id="riderFilter" class="rc-select">
+        <option value="all">Rider</option>
+        <% riders.forEach(r => { %>
+          <option value="<%= r.id %>"><%= r.name %></option>
+        <% }) %>
+      </select>
+      <select id="statusFilter" class="rc-select">
+        <option value="all">Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="rc-table-wrapper">
+    <table class="rc-table" id="riderTable">
+      <thead>
+        <tr>
+          <th>Rider Name</th>
+          <th>Total KM Traveled</th>
+          <th>Delivery Performance</th>
+          <th>Commission Earned</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% riders.forEach(r => { %>
+          <tr data-rider-id="<%= r.id %>" data-status="<%= r.status %>" data-last-days="<%= r.lastActiveDays %>">
+            <td class="rc-col-name"><%= r.name %></td>
+            <td class="rc-col-km"><%= r.totalKm %> <span class="rc-km-unit">km</span></td>
+            <td class="rc-col-perf">
+              <div class="rc-progress">
+                <progress max="100" value="<%= r.performance %>" class="rc-progress-bar"></progress>
+                <span class="rc-progress-value"><%= r.performance %></span>
+              </div>
+            </td>
+            <td class="rc-col-commission">$<%= r.commissionUsd %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 </section>
+
+<script>
+  (function(){
+    const rows = Array.from(document.querySelectorAll('#riderTable tbody tr'));
+    const search = document.getElementById('searchInput');
+    const dateF = document.getElementById('dateFilter');
+    const riderF = document.getElementById('riderFilter');
+    const statusF = document.getElementById('statusFilter');
+
+    function matches(row){
+      const name = row.querySelector('.rc-col-name').textContent.toLowerCase();
+      const q = (search.value||'').toLowerCase().trim();
+      if(q && !name.includes(q)) return false;
+
+      const statusSel = statusF.value;
+      if(statusSel !== 'all' && row.dataset.status !== statusSel) return false;
+
+      const riderSel = riderF.value;
+      if(riderSel !== 'all' && row.dataset.riderId !== riderSel) return false;
+
+      const dSel = dateF.value;
+      const last = parseInt(row.dataset.lastDays,10) || 9999;
+      if(dSel !== 'all'){
+        const n = parseInt(dSel,10);
+        if(!(last <= n)) return false;
+      }
+      return true;
+    }
+
+    function apply(){
+      rows.forEach(r=>{ r.style.display = matches(r) ? '' : 'none'; });
+    }
+
+    [search, dateF, riderF, statusF].forEach(el=> el.addEventListener('input', apply));
+    [dateF, riderF, statusF].forEach(el=> el.addEventListener('change', apply));
+  })();
+</script>
