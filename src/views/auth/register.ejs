@@ -76,7 +76,9 @@
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           const idToken = await cred.user.getIdToken();
-          const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken }) });
+          const fullName = document.getElementById('fullName').value.trim();
+          const contactNumber = document.getElementById('contactNumber').value.trim();
+          const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile: { fullName, contactNumber } }) });
           if (!res.ok) throw new Error('Session creation failed');
           showOk('Account created successfully. Redirecting...');
           setTimeout(()=> window.location.href = '/dashboard', 700);
