@@ -8,6 +8,7 @@ FreshBasket is a Node.js/Express app that serves a React Single Page Application
 - Vite build (outputs to public/assets/app.js)
 - Firebase Auth (Web SDK) + firebase-admin (session cookies)
 - Cookie-based auth (Secure, SameSite=None)
+- Redis cache (optional) for orders and assignments with in-memory fallback
 - CSS (vanilla) with Inter font
 
 ## Project structure
