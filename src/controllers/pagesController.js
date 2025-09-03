@@ -1,5 +1,10 @@
+const { listOrders, isConfigured } = require('../services/shopify');
+
 module.exports = {
-  orders: (req, res) => res.render('sections/orders', { title: 'Orders' }),
+  orders: async (req, res) => {
+    const { orders, error, configured } = await listOrders({ limit: 25 });
+    return res.render('sections/orders', { title: 'Orders', orders, shopifyError: error, shopifyConfigured: configured && isConfigured() });
+  },
   riders: (req, res) => {
     const riderModel = require('../models/riderModel');
     const riders = riderModel.list();
