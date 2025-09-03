@@ -84,7 +84,7 @@
         clearMsgs();
         const email = document.getElementById('email').value.trim();
         if(!email) return showErr('Enter your email first');
-        try { await sendPasswordResetEmail(auth, email); showOk('Password reset email sent'); }
+        try { await sendPasswordResetEmail(auth, email); showOk('If an account exists for that email, a reset link has been sent.'); }
         catch(e){ showErr(mapError(e)); }
       });
 
