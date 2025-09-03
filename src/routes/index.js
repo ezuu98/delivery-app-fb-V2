@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const path = require('path');
 const homeController = require('../controllers/homeController');
-const pagesController = require('../controllers/pagesController');
+// SSR pages removed; using SPA
 const apiController = require('../controllers/apiController');
 const { getClientConfig } = require('../controllers/firebaseAuthController');
 const authRoutes = require('./auth');
@@ -28,8 +28,8 @@ router.get('/riders', ensureAuthenticated, sendSpa);
 router.get('/riders/:id', ensureAuthenticated, sendSpa);
 router.get('/reports', ensureAuthenticated, sendSpa);
 
-// Keep customers SSR for now
-router.get('/customers', ensureAuthenticated, pagesController.customers);
+// Customers via SPA
+router.get('/customers', ensureAuthenticated, sendSpa);
 
 // API routes
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
