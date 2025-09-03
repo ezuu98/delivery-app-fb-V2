@@ -7,15 +7,15 @@ export default function SiteLayout({ children }){
     const profileBtn = document.getElementById('profileBtn');
     const profileMenu = document.getElementById('profileMenu');
 
-    function toggle(menu, btn){
+    function setOpen(menu, btn, open){
       if(!menu) return;
-      menu.classList.toggle('hidden');
-      const open = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', !open);
+      menu.setAttribute('aria-hidden', open ? 'false' : 'true');
       if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
     function closeAll(){
-      [notifMenu, profileMenu].forEach(m=>{ if(m && !m.classList.contains('hidden')) m.classList.add('hidden'); });
-      [notifBtn, profileBtn].forEach(b=>{ if(b) b.setAttribute('aria-expanded','false'); });
+      setOpen(notifMenu, notifBtn, false);
+      setOpen(profileMenu, profileBtn, false);
     }
 
     function onDocClick(e){
@@ -24,8 +24,22 @@ export default function SiteLayout({ children }){
     }
     function onKey(e){ if(e.key === 'Escape') closeAll(); }
 
-    if(notifBtn && notifMenu){ notifBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(notifMenu, notifBtn); if(profileMenu) profileMenu.classList.add('hidden'); }); }
-    if(profileBtn && profileMenu){ profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(profileMenu, profileBtn); if(notifMenu) notifMenu.classList.add('hidden'); }); }
+    function attachMenuInteractions(menu){
+      if(!menu) return;
+      menu.querySelectorAll('.dropdown-item').forEach(el=>{
+        el.addEventListener('click', ()=> closeAll());
+      });
+    }
+
+    if(notifBtn && notifMenu){
+      notifBtn.addEventListener('click', (e)=>{ e.stopPropagation(); setOpen(profileMenu, profileBtn, false); setOpen(notifMenu, notifBtn, notifMenu.classList.contains('hidden')); });
+      attachMenuInteractions(notifMenu);
+    }
+    if(profileBtn && profileMenu){
+      profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); setOpen(notifMenu, notifBtn, false); setOpen(profileMenu, profileBtn, profileMenu.classList.contains('hidden')); });
+      attachMenuInteractions(profileMenu);
+    }
+
     document.addEventListener('click', onDocClick);
     document.addEventListener('keydown', onKey);
 
