@@ -18,10 +18,10 @@ function initFirebaseAdmin() {
     }
   }
 
-  if (!projectId || !clientEmail || !privateKey || !/-----BEGIN PRIVATE KEY-----[\s\S]+-----END PRIVATE KEY-----/m.test(privateKey)) {
+  if (!projectId || !clientEmail || !privateKey) {
     // Do not throw to allow app to start; protected routes will fail with 401
     // eslint-disable-next-line no-console
-    console.warn('Firebase Admin not fully configured or invalid private key. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
+    console.warn('Firebase Admin not fully configured. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
     return null;
   }
 
