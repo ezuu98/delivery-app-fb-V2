@@ -42,7 +42,7 @@
       <tbody>
         <% riders.forEach(r => { %>
           <tr data-rider-id="<%= r.id %>" data-status="<%= r.status %>" data-last-days="<%= r.lastActiveDays %>">
-            <td class="rc-col-name"><%= r.name %></td>
+            <td class="rc-col-name"><a href="/riders/<%= r.id %>"><%= r.name %></a></td>
             <td class="rc-col-km"><%= r.totalKm %> <span class="rc-km-unit">km</span></td>
             <td class="rc-col-perf">
               <div class="rc-progress">

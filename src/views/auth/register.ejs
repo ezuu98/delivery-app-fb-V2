@@ -1,7 +1,14 @@
 <section class="auth-panel">
   <h2 class="auth-title">Register</h2>
   <div id="auth-error" class="auth-error hidden"></div>
+  <div id="auth-success" class="auth-success hidden"></div>
   <form id="registerForm" class="auth-form">
+    <label class="auth-label">Full name
+      <input class="auth-input" id="fullName" type="text" autocomplete="name" required />
+    </label>
+    <label class="auth-label">Contact number
+      <input class="auth-input" id="contactNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. +1 555 123 4567" />
+    </label>
     <label class="auth-label">Email
       <input class="auth-input" id="email" type="email" autocomplete="email" required />
     </label>
@@ -24,9 +31,19 @@
 <script type="module">
   const cfg = <%- JSON.stringify(firebaseConfig) %>;
   const errBox = document.getElementById('auth-error');
+  const okBox = document.getElementById('auth-success');
   const submitBtn = document.getElementById('submitBtn');
+  function mapError(e){
+    const code = (e && e.code) || '';
+    if(code.includes('email-already-in-use')) return 'An account with this email already exists.';
+    if(code.includes('weak-password')) return 'Password should be at least 6 characters.';
+    if(code.includes('invalid-email')) return 'Please enter a valid email address.';
+    if(code.includes('network-request-failed')) return 'Network error. Check your connection and try again.';
+    return (e && (e.message || e.code)) || 'Something went wrong.';
+  }
   function showErr(msg){ errBox.textContent = msg; errBox.classList.remove('hidden'); }
-  function clearErr(){ errBox.classList.add('hidden'); }
+  function showOk(msg){ okBox.textContent = msg; okBox.classList.remove('hidden'); }
+  function clearMsgs(){ errBox.classList.add('hidden'); okBox.classList.add('hidden'); }
   if(!cfg || !cfg.apiKey){ showErr('Firebase not configured. Set env vars.'); }
   else {
     import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js').then(({initializeApp})=>{
@@ -51,19 +68,22 @@
       });
 
       document.getElementById('registerForm').addEventListener('submit', async (e)=>{
-        e.preventDefault(); clearErr(); submitBtn.disabled = true;
+        e.preventDefault(); clearMsgs(); submitBtn.disabled = true; submitBtn.textContent = 'Creating account...';
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const confirm = document.getElementById('confirm').value;
-        if(password !== confirm){ showErr('Passwords do not match'); submitBtn.disabled=false; return; }
+        if(password !== confirm){ showErr('Passwords do not match'); submitBtn.disabled=false; submitBtn.textContent='Create account'; return; }
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           const idToken = await cred.user.getIdToken();
-          const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken }) });
+          const fullName = document.getElementById('fullName').value.trim();
+          const contactNumber = document.getElementById('contactNumber').value.trim();
+          const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile: { fullName, contactNumber } }) });
           if (!res.ok) throw new Error('Session creation failed');
-          window.location.href = '/dashboard';
-        } catch (e) { showErr((e && (e.code || e.message)) || 'Registration failed'); }
-        finally { submitBtn.disabled = false; }
+          showOk('Account created successfully. Redirecting...');
+          setTimeout(()=> window.location.href = '/dashboard', 700);
+        } catch (e) { showErr(mapError(e)); }
+        finally { submitBtn.disabled = false; submitBtn.textContent='Create account'; }
       });
     }).catch(()=>showErr('Failed to load Firebase.'));
   }

@@ -12,9 +12,6 @@ module.exports = {
   },
 
   dashboard: (req, res) => {
-    const pageTitle = 'Dashboard';
-    const riderModel = require('../models/riderModel');
-    const riders = riderModel.list();
-    res.render('dashboard', { title: pageTitle, riders });
+    return res.redirect('/riders');
   },
 };

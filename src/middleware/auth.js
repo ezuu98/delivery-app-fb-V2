@@ -3,4 +3,9 @@ function ensureAuthenticated(req, res, next) {
   return res.redirect('/auth/login');
 }
 
-module.exports = { ensureAuthenticated };
+function ensureAuthenticatedJson(req, res, next) {
+  if (req.user) return next();
+  return res.status(401).json({ error: 'Unauthorized' });
+}
+
+module.exports = { ensureAuthenticated, ensureAuthenticatedJson };

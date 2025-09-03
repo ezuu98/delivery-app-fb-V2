@@ -1,0 +1,86 @@
+import React, { useEffect } from 'react';
+
+export default function SiteLayout({ children }){
+  useEffect(()=>{
+    const notifBtn = document.getElementById('notifBtn');
+    const notifMenu = document.getElementById('notifMenu');
+    const profileBtn = document.getElementById('profileBtn');
+    const profileMenu = document.getElementById('profileMenu');
+
+    function toggle(menu, btn){
+      if(!menu) return;
+      menu.classList.toggle('hidden');
+      const open = !menu.classList.contains('hidden');
+      if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function closeAll(){
+      [notifMenu, profileMenu].forEach(m=>{ if(m && !m.classList.contains('hidden')) m.classList.add('hidden'); });
+      [notifBtn, profileBtn].forEach(b=>{ if(b) b.setAttribute('aria-expanded','false'); });
+    }
+
+    function onDocClick(e){
+      const isInside = (el)=> el && (el === e.target || el.contains(e.target));
+      if(!isInside(notifMenu) && !isInside(notifBtn) && !isInside(profileMenu) && !isInside(profileBtn)) closeAll();
+    }
+    function onKey(e){ if(e.key === 'Escape') closeAll(); }
+
+    if(notifBtn && notifMenu){ notifBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(notifMenu, notifBtn); if(profileMenu) profileMenu.classList.add('hidden'); }); }
+    if(profileBtn && profileMenu){ profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(profileMenu, profileBtn); if(notifMenu) notifMenu.classList.add('hidden'); }); }
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onKey);
+
+    return ()=>{
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  },[]);
+
+  return (
+    <>
+      <header className="site-header">
+        <h1 className="site-title"><span className="brand"><img className="brand-logo" src="https://cdn.builder.io/api/v1/image/assets%2Fa5647e4ccf094d4d939a079b9f892c1c%2F240094ac7d6b4725b685503d97c9d9a3?format=webp&width=64" alt="FreshBasket logo" /><span className="brand-name">FreshBasket</span></span></h1>
+        <nav className="site-nav">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/orders">Orders</a>
+          <a href="/riders">Riders</a>
+          <a href="/customers">Customers</a>
+          <a href="/reports">Reports</a>
+          <span className="site-nav-spacer"></span>
+          <div className="nav-dropdown">
+            <button id="notifBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="notifMenu" aria-label="Notifications" title="Notifications">
+              <svg className="bell-icon" width="29" height="29" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="bellGold" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#C08B3E"/>
+                    <stop offset="50%" stopColor="#D4AF37"/>
+                    <stop offset="100%" stopColor="#FFD700"/>
+                  </linearGradient>
+                </defs>
+                <path fill="url(#bellGold)" d="M12 22a2 2 0 0 0 1.995-1.85L14 20h-4a2 2 0 0 0 1.85 1.995L12 22Zm8-5h-1a1 1 0 0 1-.707-.293l-.147-.147A3.99 3.99 0 0 1 17 14.172V11a5 5 0 1 0-10 0v3.172a3.99 3.99 0 0 1-1.146 2.388l-.147.147A1 1 0 0 1 5 17H4a1 1 0 1 0 0 2h16a1 1 0 1 0 0-2Z"/>
+              </svg>
+            </button>
+            <div id="notifMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="notifBtn">
+              <div className="dropdown-header">Notifications</div>
+              <div className="dropdown-item">No new notifications</div>
+            </div>
+          </div>
+
+          <div className="nav-dropdown">
+            <button id="profileBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu" title="Profile">
+              <svg className="avatar" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="7.5" r="3.5" stroke="currentColor" strokeWidth="1.5"/><path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+            <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn">
+              <div className="dropdown-header">Signed in</div>
+              <a className="dropdown-item" href="/riders">Riders</a>
+              <a className="dropdown-item" href="/orders">Orders</a>
+              <form method="POST" action="/auth/logout"><button className="dropdown-item" type="submit">Logout</button></form>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <main className="content">{children}</main>
+      <footer className="site-footer">&copy; {new Date().getFullYear()} FreshBasket</footer>
+    </>
+  );
+}

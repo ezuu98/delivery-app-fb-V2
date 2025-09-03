@@ -6,7 +6,17 @@ function initFirebaseAdmin() {
   if (initialized) return admin;
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  const privateKeyB64 = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
+  if (privateKeyB64 && !privateKey) {
+    try { privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8'); } catch (_) { /* ignore */ }
+  }
+  if (privateKey) {
+    privateKey = privateKey.replace(/\\n/g, '\n').replace(/\\r/g, '').trim();
+    if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
+      privateKey = privateKey.slice(1, -1);
+    }
+  }
 
   if (!projectId || !clientEmail || !privateKey) {
     // Do not throw to allow app to start; protected routes will fail with 401
@@ -15,10 +25,16 @@ function initFirebaseAdmin() {
     return null;
   }
 
-  admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  });
-  initialized = true;
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+    });
+    initialized = true;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to initialize Firebase Admin:', err && err.message ? err.message : err);
+    return null;
+  }
   return admin;
 }
 

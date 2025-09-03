@@ -1,19 +1,14 @@
+const riderModel = require('../models/riderModel');
 const { listOrders, isConfigured } = require('../services/shopify');
 
 module.exports = {
-  orders: async (req, res) => {
-    const { orders, error, configured } = await listOrders({ limit: 25 });
-    return res.render('sections/orders', { title: 'Orders', orders, shopifyError: error, shopifyConfigured: configured && isConfigured() });
-  },
-  riders: (req, res) => {
-    const riderModel = require('../models/riderModel');
+  riders: async (req, res) => {
     const riders = riderModel.list();
-    return res.render('dashboard', { title: 'Rider Commissions', riders });
+    return res.json({ riders });
   },
-  riderProfile: (req, res) => {
-    const riderModel = require('../models/riderModel');
+  riderProfile: async (req, res) => {
     const rider = riderModel.getById(req.params.id);
-    if (!rider) return res.status(404).render('404', { title: 'Not Found' });
+    if (!rider) return res.status(404).json({ error: 'Not Found' });
 
     const totalDeliveries = Math.max(1, Math.round(rider.totalKm * 2));
     const avgDeliveryMins = Math.max(10, Math.round(60 - (rider.performance / 100) * 30));
@@ -28,20 +23,17 @@ module.exports = {
       return { date: date.toISOString().slice(0, 10), deliveries, avgTime: avg, distanceKm: km };
     }).reverse();
 
-    return res.render('sections/rider-profile', {
-      title: 'Rider Profile',
-      rider,
-      metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm: rider.totalKm },
-      history,
-    });
+    return res.json({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm: rider.totalKm }, history });
   },
-  customers: (req, res) => res.render('sections/customers', { title: 'Customers' }),
+  orders: async (req, res) => {
+    const { orders, error, configured } = await listOrders({ limit: 50 });
+    return res.json({ orders: orders || [], shopifyError: error || null, shopifyConfigured: configured && isConfigured() });
+  },
   reports: async (req, res) => {
-    const riderModel = require('../models/riderModel');
     const riders = riderModel.list();
     const { orders = [] } = await listOrders({ limit: 50 });
     const totalDeliveries = orders.length;
     const avgDeliveryMins = riders.length ? Math.round(riders.reduce((a, r) => a + (60 - (r.performance / 100) * 30), 0) / riders.length) : 0;
-    return res.render('sections/reports', { title: 'Reporting & Analytics', metrics: { totalDeliveries, avgDeliveryMins }, orders });
+    return res.json({ metrics: { totalDeliveries, avgDeliveryMins }, orders });
   },
 };
