@@ -35,6 +35,9 @@ router.get('/customers', ensureAuthenticated, sendSpa);
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
 router.get('/api/riders/:id', ensureAuthenticatedJson, apiController.riderProfile);
 router.get('/api/orders', ensureAuthenticatedJson, apiController.orders);
+router.get('/api/orders/:id', ensureAuthenticatedJson, apiController.getOrder);
+router.post('/api/orders/:id/assign', ensureAuthenticatedJson, apiController.assignOrder);
+router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, apiController.unassignOrder);
 router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
 
 module.exports = router;
