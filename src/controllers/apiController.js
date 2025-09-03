@@ -1,4 +1,3 @@
-const riderModel = require('../models/riderModel');
 const { listOrders, isConfigured } = require('../services/shopify');
 const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
