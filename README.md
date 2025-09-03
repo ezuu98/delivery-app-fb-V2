@@ -33,7 +33,7 @@ FreshBasket is a Node.js/Express app that serves a React Single Page Application
 │  │   ├─ firebaseAuthController.js
 │  │   └─ apiController.js
 │  ├─ middleware/
-���  │   ├─ currentUser.js  # decodes Firebase session cookie
+│  │   ├─ currentUser.js  # decodes Firebase session cookie
 │  │   └─ auth.js         # ensureAuthenticated guard
 │  ├─ models/             # demo data models
 │  │   ├─ messageModel.js
@@ -72,6 +72,7 @@ Server (Service Account) — used by firebase-admin:
 Optional:
 - PORT (default 3000)
 - REDIS_URL (e.g. redis://:password@host:6379/0) — enables Redis-backed cache
+- SHOPIFY_WEBHOOK_SECRET — used to verify Shopify webhooks
 
 Firebase console setup:
 - Enable Authentication → Email/Password
@@ -96,6 +97,10 @@ Open: http://localhost:3000/
 - Server (firebase-admin) issues session cookie (`__session`)
 - Protected pages require cookie: /dashboard, /orders, /riders, /customers, /reports
 - Logout: POST /auth/logout (clears cookie)
+
+## Firestore
+- The server can upsert orders into Firestore if Firebase Admin is configured.
+- Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY are set.
 
 ## Caching
 - Orders and assignments are cached in Redis when REDIS_URL is set.
