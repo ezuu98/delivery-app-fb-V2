@@ -13,12 +13,12 @@ export default function Login(){
   useEffect(()=>{
     // config is embedded by server via env; fallback to window.__FIREBASE__ if present
     setCfg({
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY || window.__FIREBASE__?.apiKey,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || window.__FIREBASE__?.authDomain,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || window.__FIREBASE__?.projectId,
-      appId: import.meta.env.VITE_FIREBASE_APP_ID || window.__FIREBASE__?.appId,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || window.__FIREBASE__?.messagingSenderId,
-      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || window.__FIREBASE__?.measurementId,
+      apiKey: import.meta.env.FIREBASE_API_KEY,
+      authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN,
+      projectId: import.meta.env.FIREBASE_PROJECT_ID,
+      appId: import.meta.env.FIREBASE_APP_ID,
+      messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID,
+      measurementId: import.meta.env.FIREBASE_MEASUREMENT_ID,
     });
   },[]);
 

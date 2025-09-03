@@ -22,12 +22,12 @@ function loadEnv() {
     },
     firebase: {
       client: {
-        apiKey: reqStr('VITE_FIREBASE_API_KEY'),
-        authDomain: reqStr('VITE_FIREBASE_AUTH_DOMAIN'),
-        projectId: reqStr('VITE_FIREBASE_PROJECT_ID'),
-        appId: reqStr('VITE_FIREBASE_APP_ID'),
-        messagingSenderId: reqStr('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-        measurementId: reqStr('VITE_FIREBASE_MEASUREMENT_ID'),
+        apiKey: reqStr('FIREBASE_API_KEY'),
+        authDomain: reqStr('FIREBASE_AUTH_DOMAIN'),
+        projectId: reqStr('FIREBASE_PROJECT_ID'),
+        appId: reqStr('FIREBASE_APP_ID'),
+        messagingSenderId: reqStr('FIREBASE_MESSAGING_SENDER_ID'),
+        measurementId: reqStr('FIREBASE_MEASUREMENT_ID'),
       },
       admin: {
         projectId: reqStr('FIREBASE_PROJECT_ID'),
@@ -49,7 +49,7 @@ function loadEnv() {
   // Soft validation groups
   const missingCritical = [];
   if (!config.firebase.client.apiKey || !config.firebase.client.authDomain || !config.firebase.client.projectId || !config.firebase.client.appId) {
-    missingCritical.push('Firebase client (VITE_FIREBASE_*)');
+    missingCritical.push('Firebase client (FIREBASE_*)');
   }
   if (!config.firebase.admin.projectId || !config.firebase.admin.clientEmail || !config.firebase.admin.privateKey) {
     log.warn('env.missing.firebaseAdmin', { note: 'Admin features will be disabled until FIREBASE_* are set' });

@@ -57,12 +57,12 @@ npm install
 Set these via your hosting/platform env settings (avoid committing .env files):
 
 Client (Web SDK) — used by React build and/or injected at runtime:
-- VITE_FIREBASE_API_KEY
-- VITE_FIREBASE_AUTH_DOMAIN
-- VITE_FIREBASE_PROJECT_ID
-- VITE_FIREBASE_APP_ID
-- VITE_FIREBASE_MESSAGING_SENDER_ID
-- VITE_FIREBASE_MEASUREMENT_ID (optional)
+- FIREBASE_API_KEY
+- FIREBASE_AUTH_DOMAIN
+- FIREBASE_PROJECT_ID
+- FIREBASE_APP_ID
+- FIREBASE_MESSAGING_SENDER_ID
+- FIREBASE_MEASUREMENT_ID (optional)
 
 Server (Service Account) — used by firebase-admin:
 - FIREBASE_PROJECT_ID
