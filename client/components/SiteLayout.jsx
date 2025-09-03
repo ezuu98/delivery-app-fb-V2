@@ -73,7 +73,7 @@ export default function SiteLayout({ children }){
                 <path fill="url(#bellGold)" d="M12 22a2 2 0 0 0 1.995-1.85L14 20h-4a2 2 0 0 0 1.85 1.995L12 22Zm8-5h-1a1 1 0 0 1-.707-.293l-.147-.147A3.99 3.99 0 0 1 17 14.172V11a5 5 0 1 0-10 0v3.172a3.99 3.99 0 0 1-1.146 2.388l-.147.147A1 1 0 0 1 5 17H4a1 1 0 1 0 0 2h16a1 1 0 1 0 0-2Z"/>
               </svg>
             </button>
-            <div id="notifMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="notifBtn">
+            <div id="notifMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="notifBtn" aria-hidden="true">
               <div className="dropdown-header">Notifications</div>
               <div className="dropdown-item">No new notifications</div>
             </div>
