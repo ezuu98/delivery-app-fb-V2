@@ -3,6 +3,12 @@
   <div id="auth-error" class="auth-error hidden"></div>
   <div id="auth-success" class="auth-success hidden"></div>
   <form id="registerForm" class="auth-form">
+    <label class="auth-label">Full name
+      <input class="auth-input" id="fullName" type="text" autocomplete="name" required />
+    </label>
+    <label class="auth-label">Contact number
+      <input class="auth-input" id="contactNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. +1 555 123 4567" />
+    </label>
     <label class="auth-label">Email
       <input class="auth-input" id="email" type="email" autocomplete="email" required />
     </label>
