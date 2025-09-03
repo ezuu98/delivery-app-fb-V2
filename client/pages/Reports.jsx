@@ -57,7 +57,7 @@ export default function Reports(){
 
           <div className="rc-toolbar reports-toolbar-center">
             <div className="section-title reports-stat-title">Delivery Data</div>
-            <label className="rc-select rc-chip" style={{display:'inline-flex',alignItems:'center',gap:8}}>
+            <label className="rc-select rc-chip toggle-data-label">
               <input type="checkbox" checked={showTable} onChange={(e)=>setShowTable(e.target.checked)} /> Show Delivery Data Table
             </label>
           </div>
