@@ -44,8 +44,6 @@ FreshBasket is a Node.js/Express app that serves a React Single Page Application
 └─ nodemon.json
 ```
 
-Note: All EJS templates were removed. The server serves the SPA (public/index.html) for app routes and exposes JSON APIs.
-
 ## Getting started
 Requirements: Node 18+
 
