@@ -14,10 +14,10 @@ function getClientConfig() {
 
 module.exports = {
   showLogin: (req, res) => {
-    return res.sendFile(require('path').join(__dirname, '..', 'public', 'index.html'));
+    return res.sendFile(require('path').join(__dirname, '..', '..', 'public', 'index.html'));
   },
   showRegister: (req, res) => {
-    return res.sendFile(require('path').join(__dirname, '..', 'public', 'index.html'));
+    return res.sendFile(require('path').join(__dirname, '..', '..', 'public', 'index.html'));
   },
   sessionLogin: async (req, res) => {
     try {
