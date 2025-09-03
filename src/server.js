@@ -9,6 +9,7 @@ const routes = require('./routes');
 const { config } = require('./config/env');
 
 const app = express();
+app.locals.config = config;
 
 // Behind proxies (fly.dev) - trust X-Forwarded-Proto for secure cookies
 app.set('trust proxy', 1);
