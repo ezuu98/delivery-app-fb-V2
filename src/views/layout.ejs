@@ -43,7 +43,7 @@
           </button>
           <div id="profileMenu" class="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn">
             <% if (isAuthenticated && currentUser) { %>
-              <div class="dropdown-header"><%= currentUser.email || 'Signed in' %></div>
+              <div class="dropdown-header"><%= (currentUser && currentUser.claims && (currentUser.claims.name)) || currentUser.email || 'Signed in' %></div>
               <a class="dropdown-item" href="/riders">Riders</a>
               <a class="dropdown-item" href="/orders">Orders</a>
               <form method="POST" action="/auth/logout"><button class="dropdown-item" type="submit">Logout</button></form>
