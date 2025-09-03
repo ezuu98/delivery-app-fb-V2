@@ -34,6 +34,8 @@
 .password-field{position:relative;display:flex;align-items:center}.toggle-password{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#efefef;border:1px solid #ddd;border-radius:4px;padding:4px 6px;cursor:pointer}
 .auth-actions{display:flex;justify-content:space-between;align-items:center;margin:6px 0}.remember{display:flex;align-items:center;gap:6px}.link-button{background:none;border:0;color:#1f5fbf;cursor:pointer;padding:0}
 .auth-success{color:#007a1a;margin-bottom:10px}
+.auth-alt a{color:#1f5fbf;text-decoration:none}
+.auth-alt a:hover{color:#1a4fa3;text-decoration:none}
 
 /* Dashboard */
 .rider-commissions{max-width:1140px;margin:28px auto;padding:0 20px}
