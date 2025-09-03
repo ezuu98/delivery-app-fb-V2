@@ -3,12 +3,19 @@ const path = require('path');
 const homeController = require('../controllers/homeController');
 const pagesController = require('../controllers/pagesController');
 const apiController = require('../controllers/apiController');
+const { getClientConfig } = require('../controllers/firebaseAuthController');
 const authRoutes = require('./auth');
 const { ensureAuthenticated, ensureAuthenticatedJson } = require('../middleware/auth');
 
 const router = Router();
 
 router.use('/auth', authRoutes);
+
+// Runtime Firebase client config for SPA
+router.get('/firebase-config.js', (req, res) => {
+  const cfg = getClientConfig();
+  res.type('application/javascript').send('window.__FIREBASE__=' + JSON.stringify(cfg) + ';');
+});
 
 router.get('/', (req, res) => { return req.user ? res.redirect('/dashboard') : res.redirect('/auth/login'); });
 router.get('/messages', homeController.messages);
