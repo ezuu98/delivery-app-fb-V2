@@ -6,6 +6,7 @@ const apiController = require('../controllers/apiController');
 const { getClientConfig } = require('../controllers/firebaseAuthController');
 const authRoutes = require('./auth');
 const { ensureAuthenticated, ensureAuthenticatedJson } = require('../middleware/auth');
+const { validate } = require('../middleware/validate');
 
 const router = Router();
 
@@ -36,8 +37,9 @@ router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
 router.get('/api/riders/:id', ensureAuthenticatedJson, apiController.riderProfile);
 router.get('/api/orders', ensureAuthenticatedJson, apiController.orders);
 router.get('/api/orders/:id', ensureAuthenticatedJson, apiController.getOrder);
-router.post('/api/orders/:id/assign', ensureAuthenticatedJson, apiController.assignOrder);
-router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, apiController.unassignOrder);
+router.post('/api/orders/:id/assign', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { riderId: 'string' } }), apiController.assignOrder);
+router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.unassignOrder);
 router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
+router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
 
 module.exports = router;
