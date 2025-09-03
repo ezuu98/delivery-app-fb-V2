@@ -11,4 +11,8 @@ function list() {
   return riders.slice();
 }
 
-module.exports = { list };
+function getById(id) {
+  return riders.find(r => String(r.id) === String(id)) || null;
+}
+
+module.exports = { list, getById };
