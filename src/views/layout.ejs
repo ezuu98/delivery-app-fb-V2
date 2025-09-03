@@ -62,8 +62,10 @@
     <% } %>
     <main class="content">
       <%- body %>
+      <div id="react-root"></div>
     </main>
     <footer class="site-footer">&copy; <%= new Date().getFullYear() %> FreshBasket</footer>
+    <script type="module" src="/assets/app.js"></script>
     <script>
       (function(){
         const qs = s => document.querySelector(s);
