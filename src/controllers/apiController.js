@@ -156,7 +156,8 @@ module.exports = {
     const id = String(req.params.id);
     const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
-    return res.json(ok({ order: { ...order, assignment: orderModel.getAssignment(id) || null } }));
+    const assignment = await orderModel.getAssignment(id);
+    return res.json(ok({ order: { ...order, assignment: assignment || null } }));
   },
 
   addDeliveryEvent: async (req, res) => {
