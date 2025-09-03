@@ -16,8 +16,8 @@ async function syncOnce(){
       log.warn('scheduler.orders.error', { error });
       return;
     }
-    orderModel.upsertMany(orders);
-    log.info('scheduler.orders.synced', { count: orders.length, lastSyncAt: orderModel.getLastSync() });
+    await orderModel.upsertMany(orders);
+    log.info('scheduler.orders.synced', { count: orders.length, lastSyncAt: await orderModel.getLastSync() });
   }catch(e){
     log.error('scheduler.orders.exception', { message: e?.message });
   }
