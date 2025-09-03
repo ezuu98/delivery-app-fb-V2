@@ -77,3 +77,19 @@
 .password-field{display:flex;align-items:center;gap:6px}
 .password-field .auth-input{flex:1;min-width:0}
 .auth-input{max-width:100%}
+
+/* Rider Profile (rp-*) */
+.rp-card{padding:20px}
+.rp-details{display:flex;align-items:center;gap:16px}
+.rp-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover}
+.rp-name{margin:0 0 4px;font-size:20px}
+.rp-stats{margin-top:16px}
+.rp-stats-wrap{flex-wrap:wrap}
+
+/* Reports */
+.reports-overview{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.block-chip{display:block}
+.reports-stat-title{margin:0}
+.reports-stat-value{font-size:26px;font-weight:700}
+.reports-toolbar-center{align-items:center}
+.toggle-data-label{display:inline-flex;align-items:center;gap:8px}
