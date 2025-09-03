@@ -1,12 +1,16 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 
 export default function App(){
-  const path = window.location.pathname;
   return (
-    <div style={{padding: '8px 0'}}>
-      <span style={{display:'inline-block',padding:'6px 10px',border:'1px solid #e5e7eb',borderRadius:8,background:'#F7FAFC',color:'#374151'}}>
-        React active on {path}
-      </span>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="*" element={<Navigate to="/auth/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
