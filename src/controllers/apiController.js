@@ -1,6 +1,7 @@
 const { listOrders, isConfigured } = require('../services/shopify');
 const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
+const deliveryModel = require('../models/deliveryModel');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
@@ -97,11 +98,58 @@ module.exports = {
     }
   },
   reports: async (req, res) => {
-    const riders = riderModel.list();
-    const orders = await orderModel.getAll();
-    const totalDeliveries = orders.length;
-    const avgDeliveryMins = riders.length ? Math.round(riders.reduce((a, r) => a + (60 - (r.performance / 100) * 30), 0) / riders.length) : 0;
-    return res.json(ok({ metrics: { totalDeliveries, avgDeliveryMins }, orders }));
+    try{
+      const riders = riderModel.list();
+      const orders = await orderModel.getAll();
+      const assigns = await orderModel.listAssignments();
+      const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const evAll = await deliveryModel.listAll();
+      const eMap = new Map(evAll.map(e => [String(e.orderId), Array.isArray(e.events)?e.events:[]]));
+
+      function parseIso(s){ const t = Date.parse(s); return Number.isFinite(t) ? new Date(t) : null; }
+      function lastOf(list, type){
+        for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
+        return null;
+      }
+
+      const deliveries = [];
+      for (const { orderId, events } of evAll){
+        const id = String(orderId);
+        const order = orders.find(o => String(o.id||o.name||o.order_number) === id) || null;
+        const assignment = aMap.get(id) || null;
+        const etaEv = lastOf(events, 'eta');
+        const ofdEv = lastOf(events, 'out_for_delivery');
+        const pickupEv = lastOf(events, 'pickup');
+        const deliveredEv = lastOf(events, 'delivered');
+        const startAt = ofdEv?.at || pickupEv?.at || (order?.created_at || null);
+        const deliveredAt = deliveredEv?.at || null;
+        let durationMins = null;
+        if (startAt && deliveredAt){
+          const t1 = Date.parse(startAt); const t2 = Date.parse(deliveredAt);
+          if (Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1) durationMins = Math.round((t2 - t1) / 60000);
+        }
+        const status = deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new'));
+        deliveries.push({
+          orderId: id,
+          orderNumber: order?.name || order?.order_number || id,
+          riderId: assignment?.riderId || etaEv?.riderId || ofdEv?.riderId || pickupEv?.riderId || deliveredEv?.riderId || null,
+          expectedMinutes: etaEv?.expectedMinutes ?? null,
+          expectedAt: etaEv?.expectedAt ?? null,
+          deliveredAt,
+          durationMins,
+          status,
+        });
+      }
+
+      const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
+      const totalDeliveries = completed.length;
+      const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a, d) => a + (d.durationMins || 0), 0) / completed.length) : 0;
+
+      return res.json(ok({ metrics: { totalDeliveries, avgDeliveryMins }, deliveries, orders }));
+    }catch(e){
+      log.error('reports.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to load reports'));
+    }
   },
 
   getOrder: async (req, res) => {
@@ -109,6 +157,26 @@ module.exports = {
     const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
     return res.json(ok({ order: { ...order, assignment: orderModel.getAssignment(id) || null } }));
+  },
+
+  addDeliveryEvent: async (req, res) => {
+    const id = String(req.params.id);
+    const order = await orderModel.getById(id);
+    if (!order) return res.status(404).json(fail('Order not found'));
+    const { type, riderId = null, timestamp = null, expectedMinutes = null, notes = null } = req.body || {};
+    if (!type) return res.status(400).json(fail('Missing body.type'));
+    const ev = await deliveryModel.addEvent(id, { type, riderId, at: timestamp, expectedMinutes, notes });
+    if (!ev) return res.status(400).json(fail('Invalid event'));
+    log.info('delivery.event.added', { orderId: id, type: ev.type, at: ev.at });
+    return res.json(ok({ event: ev }));
+  },
+
+  getDeliveryEvents: async (req, res) => {
+    const id = String(req.params.id);
+    const order = await orderModel.getById(id);
+    if (!order) return res.status(404).json(fail('Order not found'));
+    const events = await deliveryModel.getEvents(id);
+    return res.json(ok({ events }));
   },
 
   assignOrder: async (req, res) => {
