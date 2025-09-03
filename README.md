@@ -71,6 +71,7 @@ Server (Service Account) — used by firebase-admin:
 
 Optional:
 - PORT (default 3000)
+- REDIS_URL (e.g. redis://:password@host:6379/0) — enables Redis-backed cache
 
 Firebase console setup:
 - Enable Authentication → Email/Password
@@ -95,6 +96,14 @@ Open: http://localhost:3000/
 - Server (firebase-admin) issues session cookie (`__session`)
 - Protected pages require cookie: /dashboard, /orders, /riders, /customers, /reports
 - Logout: POST /auth/logout (clears cookie)
+
+## Caching
+- Orders and assignments are cached in Redis when REDIS_URL is set.
+- Keys:
+  - Hash "orders": field = orderId, value = JSON order
+  - Hash "assignments": field = orderId, value = JSON { riderId, assignedAt, status }
+  - String "orders:lastSyncAt": ISO timestamp
+- Without Redis, the app uses in-memory Maps (per-process ephemeral).
 
 ## Routes
 - GET / → redirects to /dashboard if authenticated, else /auth/login
