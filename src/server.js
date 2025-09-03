@@ -17,6 +17,10 @@ app.set('trust proxy', 1);
 // Middleware
 app.use(cors());
 app.use(morgan('dev'));
+
+// Mount webhooks BEFORE JSON parser to preserve raw body for signature verification
+app.use('/webhooks', require('./routes/webhooks'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
