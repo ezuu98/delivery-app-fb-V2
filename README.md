@@ -33,7 +33,7 @@ FreshBasket is a Node.js/Express app that serves a React Single Page Application
 │  │   ├─ firebaseAuthController.js
 │  │   └─ apiController.js
 │  ├─ middleware/
-│  │   ├─ currentUser.js  # decodes Firebase session cookie
+���  │   ├─ currentUser.js  # decodes Firebase session cookie
 │  │   └─ auth.js         # ensureAuthenticated guard
 │  ├─ models/             # demo data models
 │  │   ├─ messageModel.js
@@ -113,6 +113,7 @@ Open: http://localhost:3000/
 - GET /firebase-config.js → runtime-injected Firebase client config from env
 - GET /orders, /riders, /riders/:id, /customers, /reports, /dashboard → SPA routes (protected)
 - GET /api/* → JSON APIs (orders, riders, reports)
+- POST /webhooks/shopify/orders/create|updated|fulfilled|cancelled → Shopify webhooks (HMAC verified)
 - All other paths → served public/index.html (handled by React Router)
 
 ## Styling & branding
