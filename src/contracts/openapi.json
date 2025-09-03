@@ -54,6 +54,11 @@
       }
     },
 
-    "/api/reports": { "get": { "summary": "Delivery analytics summary", "responses": {"200": {"description":"OK"}} } }
+    "/api/reports": { "get": { "summary": "Delivery analytics summary", "responses": {"200": {"description":"OK"}} } },
+
+    "/api/debug/seed-order": {
+      "post": { "summary": "Seed a test order", "responses": {"200": {"description":"OK"}} },
+      "get": { "summary": "Seed a test order (convenience)", "responses": {"200": {"description":"OK"}} }
+    }
   }
 }
