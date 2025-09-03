@@ -30,12 +30,12 @@ module.exports = {
   },
   orders: async (req, res) => {
     try{
-      let cached = orderModel.getAll();
+      let cached = await orderModel.getAll();
       if (!cached.length) {
         const { orders = [], error } = await listOrders({ limit: 50 });
         if (error) log.warn('orders.fetch.error', { error });
-        orderModel.upsertMany(orders);
-        cached = orderModel.getAll();
+        await orderModel.upsertMany(orders);
+        cached = await orderModel.getAll();
       }
       const withAssignments = cached.map(o=> ({
         ...o,
@@ -49,7 +49,7 @@ module.exports = {
   },
   reports: async (req, res) => {
     const riders = riderModel.list();
-    const orders = orderModel.getAll();
+    const orders = await orderModel.getAll();
     const totalDeliveries = orders.length;
     const avgDeliveryMins = riders.length ? Math.round(riders.reduce((a, r) => a + (60 - (r.performance / 100) * 30), 0) / riders.length) : 0;
     return res.json(ok({ metrics: { totalDeliveries, avgDeliveryMins }, orders }));
@@ -57,7 +57,7 @@ module.exports = {
 
   getOrder: async (req, res) => {
     const id = String(req.params.id);
-    const order = orderModel.getById(id);
+    const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
     return res.json(ok({ order: { ...order, assignment: orderModel.getAssignment(id) || null } }));
   },
@@ -67,18 +67,18 @@ module.exports = {
     const { riderId } = req.body || {};
     const rider = riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
-    const order = orderModel.getById(id);
+    const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
-    const assignment = orderModel.assign(id, riderId);
+    const assignment = await orderModel.assign(id, riderId);
     log.info('order.assigned', { orderId: id, riderId });
     return res.json(ok({ assignment }));
   },
 
   unassignOrder: async (req, res) => {
     const id = String(req.params.id);
-    const order = orderModel.getById(id);
+    const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
-    orderModel.unassign(id);
+    await orderModel.unassign(id);
     log.info('order.unassigned', { orderId: id });
     return res.json(ok({ ok: true }));
   },
