@@ -83,7 +83,7 @@ export default function SiteLayout({ children }){
             <button id="profileBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu" title="Profile">
               <svg className="avatar" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="7.5" r="3.5" stroke="currentColor" strokeWidth="1.5"/><path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
-            <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn">
+            <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn" aria-hidden="true">
               <div className="dropdown-header">Signed in</div>
               <a className="dropdown-item" href="/riders">Riders</a>
               <a className="dropdown-item" href="/orders">Orders</a>
