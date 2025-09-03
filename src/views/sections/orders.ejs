@@ -1,1 +1,39 @@
-<section class="section-page"><h2 class="section-title">Orders</h2><p class="section-note">Orders overview will appear here.</p></section>
+<section class="rider-commissions">
+  <header class="rc-header">
+    <h2 class="rc-title">Orders</h2>
+    <p class="rc-subtitle">Recent orders synced from Shopify.</p>
+  </header>
+
+  <% if (!shopifyConfigured) { %>
+    <div class="section-note">Shopify is not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN to enable orders sync.</div>
+  <% } %>
+  <% if (shopifyError) { %>
+    <div class="auth-error"><%= shopifyError %></div>
+  <% } %>
+
+  <div class="rc-table-wrapper">
+    <table class="rc-table">
+      <thead>
+        <tr>
+          <th class="col-name">Order</th>
+          <th class="col-km">Customer</th>
+          <th class="col-perf">Created</th>
+          <th class="col-comm">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (orders || []).forEach(o => { %>
+          <tr>
+            <td class="rc-col-name">#<%= o.name || o.order_number || o.id %></td>
+            <td class="rc-col-km"><%= (o.customer && (o.customer.first_name || '')) + ' ' + (o.customer && (o.customer.last_name || '')) %></td>
+            <td class="rc-col-perf"><%= new Date(o.created_at).toLocaleString() %></td>
+            <td class="rc-col-commission"><%= o.total_price && o.currency ? (o.currency + ' ' + o.total_price) : (o.total_price || '-') %></td>
+          </tr>
+        <% }) %>
+        <% if (!orders || orders.length === 0) { %>
+          <tr><td colspan="4" class="section-note">No orders to display.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</section>
