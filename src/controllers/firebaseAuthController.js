@@ -13,6 +13,7 @@ function getClientConfig() {
 }
 
 module.exports = {
+  getClientConfig,
   showLogin: (req, res) => {
     return res.sendFile(require('path').join(__dirname, '..', '..', 'public', 'index.html'));
   },
