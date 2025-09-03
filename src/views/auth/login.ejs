@@ -43,6 +43,15 @@
   const errBox = document.getElementById('auth-error');
   const okBox = document.getElementById('auth-success');
   const submitBtn = document.getElementById('submitBtn');
+  function mapError(e){
+    const code = (e && e.code) || '';
+    if(code.includes('invalid-email')) return 'Please enter a valid email address.';
+    if(code.includes('user-not-found')) return 'No account found with that email.';
+    if(code.includes('wrong-password')) return 'Incorrect password. Try again.';
+    if(code.includes('too-many-requests')) return 'Too many attempts. Please wait and try again.';
+    if(code.includes('network-request-failed')) return 'Network error. Check your connection and try again.';
+    return (e && (e.message || e.code)) || 'Something went wrong.';
+  }
   function showErr(msg){ errBox.textContent = msg; errBox.classList.remove('hidden'); }
   function showOk(msg){ okBox.textContent = msg; okBox.classList.remove('hidden'); }
   function clearMsgs(){ errBox.classList.add('hidden'); okBox.classList.add('hidden'); }
@@ -74,11 +83,11 @@
         const email = document.getElementById('email').value.trim();
         if(!email) return showErr('Enter your email first');
         try { await sendPasswordResetEmail(auth, email); showOk('Password reset email sent'); }
-        catch(e){ showErr((e && (e.code || e.message)) || 'Could not send reset email'); }
+        catch(e){ showErr(mapError(e)); }
       });
 
       document.getElementById('loginForm').addEventListener('submit', async (e)=>{
-        e.preventDefault(); clearMsgs(); submitBtn.disabled = true;
+        e.preventDefault(); clearMsgs(); submitBtn.disabled = true; submitBtn.textContent = 'Signing in...';
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const remember = document.getElementById('rememberMe').checked;
@@ -88,9 +97,10 @@
           const idToken = await cred.user.getIdToken();
           const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken }) });
           if (!res.ok) throw new Error('Session creation failed');
-          window.location.href = '/dashboard';
-        } catch (e) { showErr((e && (e.code || e.message)) || 'Login failed'); }
-        finally { submitBtn.disabled = false; }
+          showOk('Signed in successfully. Redirecting...');
+          setTimeout(()=> window.location.href = '/dashboard', 600);
+        } catch (e) { showErr(mapError(e)); }
+        finally { submitBtn.disabled = false; submitBtn.textContent = 'Sign in'; }
       });
     }).catch(()=>showErr('Failed to load Firebase.'));
   }
