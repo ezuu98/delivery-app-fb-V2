@@ -6,6 +6,7 @@ const cors = require('cors');
 const { currentUserMiddleware } = require('./middleware/currentUser');
 
 const routes = require('./routes');
+const { config } = require('./config/env');
 
 const app = express();
 
