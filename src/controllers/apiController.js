@@ -3,11 +3,24 @@ const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
+const { paginate, parseIntParam } = require('../utils/pagination');
 
 module.exports = {
   riders: async (req, res) => {
-    const riders = riderModel.list();
-    return res.json(ok({ riders }));
+    const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
+    const list = riderModel.list();
+    const filtered = list.filter(r => {
+      if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
+      if (status !== 'all' && String(r.status) !== String(status)) return false;
+      if (lastDays !== 'all') {
+        const n = parseIntParam(lastDays, 0);
+        const last = parseInt(r.lastActiveDays, 10) || 9999;
+        if (!(last <= n)) return false;
+      }
+      return true;
+    });
+    const p = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
+    return res.json(ok({ riders: p.items }, p.meta));
   },
   riderProfile: async (req, res) => {
     const rider = riderModel.getById(req.params.id);
@@ -30,18 +43,54 @@ module.exports = {
   },
   orders: async (req, res) => {
     try{
+      const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
       let cached = await orderModel.getAll();
       if (!cached.length) {
-        const { orders = [], error } = await listOrders({ limit: 50 });
+        const { orders = [], error } = await listOrders({ limit: 100 });
         if (error) log.warn('orders.fetch.error', { error });
         await orderModel.upsertMany(orders);
         cached = await orderModel.getAll();
       }
-      const withAssignments = cached.map(o=> ({
+      const ql = String(q).toLowerCase().trim();
+      function getOrderStatus(o){
+        const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
+        const tagStr = tags.join(',').toLowerCase();
+        if(tagStr.includes('assigned')) return 'assigned';
+        if(o.fulfillment_status === 'fulfilled') return 'delivered';
+        if(o.fulfillment_status === 'partial') return 'in-transit';
+        return 'new';
+      }
+      const fromTs = created_at_min ? Date.parse(created_at_min) : null;
+      const toTs = created_at_max ? Date.parse(created_at_max) : null;
+
+      const filtered = cached.filter(o => {
+        if (status !== 'all' && getOrderStatus(o) !== status) return false;
+        if (ql){
+          const name = String(o.name || o.order_number || o.id || '').toLowerCase();
+          const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
+          const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
+          const text = `${name} ${customer} ${addr}`;
+          if(!text.includes(ql)) return false;
+        }
+        if (fromTs || toTs){
+          const t = o.created_at ? Date.parse(o.created_at) : null;
+          if (!t) return false;
+          if (fromTs && t < fromTs) return false;
+          if (toTs && t > toTs) return false;
+        }
+        return true;
+      });
+
+      const { items, meta } = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
+
+      const assigns = await orderModel.listAssignments();
+      const amap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const withAssignments = items.map(o => ({
         ...o,
-        assignment: orderModel.getAssignment(String(o.id) || String(o.name) || String(o.order_number)) || null,
+        assignment: amap.get(String(o.id) || String(o.name) || String(o.order_number)) || null,
       }));
-      return res.json(ok({ orders: withAssignments, shopifyError: null, shopifyConfigured: isConfigured() }));
+
+      return res.json(ok({ orders: withAssignments, shopifyError: null, shopifyConfigured: isConfigured() }, meta));
     }catch(e){
       log.error('orders.list.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to load orders'));
