@@ -1,0 +1,32 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "FreshBasket API", "version": "1.0.0" },
+  "paths": {
+    "/api/riders": { "get": { "summary": "List riders", "parameters": [
+      {"name":"q","in":"query","schema":{"type":"string"}},
+      {"name":"status","in":"query","schema":{"type":"string","enum":["all","Active","Inactive"]}},
+      {"name":"lastDays","in":"query","schema":{"type":"string"}},
+      {"name":"page","in":"query","schema":{"type":"integer","minimum":1}},
+      {"name":"limit","in":"query","schema":{"type":"integer","minimum":1}}
+    ], "responses": {"200": {"description":"OK"}} } },
+    "/api/orders": { "get": { "summary": "List orders", "parameters": [
+      {"name":"q","in":"query","schema":{"type":"string"}},
+      {"name":"status","in":"query","schema":{"type":"string","enum":["all","new","assigned","in-transit","delivered"]}},
+      {"name":"created_at_min","in":"query","schema":{"type":"string","format":"date"}},
+      {"name":"created_at_max","in":"query","schema":{"type":"string","format":"date"}},
+      {"name":"page","in":"query","schema":{"type":"integer","minimum":1}},
+      {"name":"limit","in":"query","schema":{"type":"integer","minimum":1}}
+    ], "responses": {"200": {"description":"OK"}} } },
+    "/api/orders/{id}": { "get": { "summary": "Get order", "parameters": [
+      {"name":"id","in":"path","required":true,"schema":{"type":"string"}}
+    ], "responses": {"200": {"description":"OK"}, "404": {"description":"Not Found"}} } },
+    "/api/orders/{id}/assign": { "post": { "summary": "Assign order", "parameters": [
+      {"name":"id","in":"path","required":true,"schema":{"type":"string"}}
+    ], "requestBody": {"required": true, "content": {"application/json": {"schema": {"type":"object","properties":{"riderId":{"type":"string"}},"required":["riderId"]}}}},
+      "responses": {"200": {"description":"OK"}, "400": {"description":"Bad Request"}, "404": {"description":"Not Found"}}
+    } },
+    "/api/orders/{id}/unassign": { "post": { "summary": "Unassign order", "parameters": [
+      {"name":"id","in":"path","required":true,"schema":{"type":"string"}}
+    ], "responses": {"200": {"description":"OK"}, "404": {"description":"Not Found"}} } }
+  }
+}
