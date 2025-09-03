@@ -42,6 +42,8 @@ router.post('/api/orders/:id/delivery-events', ensureAuthenticatedJson, validate
 router.post('/api/orders/:id/assign', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { riderId: 'string' } }), apiController.assignOrder);
 router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.unassignOrder);
 router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
+router.post('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
+router.get('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
 
 module.exports = router;
