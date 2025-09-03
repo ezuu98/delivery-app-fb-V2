@@ -2,6 +2,7 @@ const { listOrders, isConfigured } = require('../services/shopify');
 const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
 const deliveryModel = require('../models/deliveryModel');
+const { getFirestore } = require('../services/firestore');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
@@ -178,6 +179,31 @@ module.exports = {
     if (!order) return res.status(404).json(fail('Order not found'));
     const events = await deliveryModel.getEvents(id);
     return res.json(ok({ events }));
+  },
+
+  seedOrder: async (req, res) => {
+    try{
+      const id = String(req.body?.id || `TEST-${Date.now()}`);
+      const order = {
+        id,
+        name: id,
+        order_number: id,
+        created_at: new Date().toISOString(),
+        fulfillment_status: 'open',
+        customer: { first_name: 'Test', last_name: 'Customer' },
+        shipping_address: { address1: '123 Demo St', city: 'Demo City', province: 'DC', country: 'US' },
+        tags: ['seed'],
+      };
+      await orderModel.upsertMany([order]);
+      try{
+        const db = getFirestore();
+        if (db) await db.collection('orders').doc(String(order.id)).set(order, { merge: true });
+      }catch(_){}
+      return res.json(ok({ order }));
+    }catch(e){
+      log.error('seed.order.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to seed order'));
+    }
   },
 
   assignOrder: async (req, res) => {
