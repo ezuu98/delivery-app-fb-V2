@@ -39,6 +39,9 @@ app.use((req, res, next) => {
 // Routes
 app.use('/', routes);
 
+// Global error handler
+app.use(require('./middleware/validate').errorHandler);
+
 // 404 handler -> serve SPA and let React Router handle
 app.use((req, res) => {
   res.status(200).sendFile(require('path').join(__dirname, '..', 'public', 'index.html'));
