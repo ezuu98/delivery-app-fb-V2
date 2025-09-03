@@ -23,8 +23,31 @@ module.exports = {
     try {
       const admin = initFirebaseAdmin();
       if (!admin) return res.status(500).json({ error: 'Firebase Admin not configured' });
-      const { idToken } = req.body;
+      const { idToken, profile } = req.body;
       if (!idToken) return res.status(400).json({ error: 'Missing idToken' });
+
+      // If profile data provided (during registration), update the user
+      if (profile && (profile.fullName || profile.contactNumber)) {
+        try {
+          const decoded = await admin.auth().verifyIdToken(idToken);
+          const uid = decoded && decoded.uid;
+          if (uid) {
+            const updates = {};
+            if (profile.fullName && typeof profile.fullName === 'string') {
+              const name = profile.fullName.trim().slice(0, 120);
+              if (name) updates.displayName = name;
+            }
+            if (Object.keys(updates).length) await admin.auth().updateUser(uid, updates);
+            if (profile.contactNumber && typeof profile.contactNumber === 'string') {
+              const phone = profile.contactNumber.trim().slice(0, 40);
+              if (phone) await admin.auth().setCustomUserClaims(uid, { contactNumber: phone });
+            }
+          }
+        } catch (_) {
+          // ignore profile update errors; do not block session creation
+        }
+      }
+
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
       res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
