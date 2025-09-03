@@ -9,22 +9,34 @@ export default function Riders(){
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
 
   useEffect(()=>{
     let alive = true;
     (async ()=>{
       setLoading(true); setError('');
       try{
-        const res = await fetch('/api/riders', { credentials:'include' });
+        const params = new URLSearchParams();
+        if(q) params.set('q', q);
+        if(statusFilter !== 'all') params.set('status', statusFilter);
+        if(dateFilter !== 'all') params.set('lastDays', dateFilter);
+        params.set('page', String(page));
+        params.set('limit', String(limit));
+        const res = await fetch(`/api/riders?${params.toString()}`, { credentials:'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        if(alive){ setRiders(Array.isArray(data.riders)?data.riders:[]); }
+        if(alive){
+          setRiders(Array.isArray(data.riders)?data.riders:[]);
+          setMeta({ total: data.meta?.total||0, page: data.meta?.page||1, limit: data.meta?.limit||limit, pages: data.meta?.pages||1 });
+        }
       }catch(e){ if(alive){ setError(e.message||'Failed to load riders'); } }
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[]);
+  },[q,statusFilter,dateFilter,page,limit]);
 
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
@@ -51,10 +63,10 @@ export default function Riders(){
         <div className="rc-toolbar">
           <div className="rc-search">
             <span className="rc-search-icon" aria-hidden="true"></span>
-            <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>setQ(e.target.value)} />
+            <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
           <div className="rc-filters">
-            <select className="rc-select rc-chip" value={dateFilter} onChange={e=>setDateFilter(e.target.value)}>
+            <select className="rc-select rc-chip" value={dateFilter} onChange={e=>{ setDateFilter(e.target.value); setPage(1); }}>
               <option value="all">Date Range</option>
               <option value="7">Last 7 days</option>
               <option value="30">Last 30 days</option>
@@ -63,13 +75,16 @@ export default function Riders(){
               <option value="all">Rider</option>
               {riders.map(r => (<option key={r.id} value={r.id}>{r.name}</option>))}
             </select>
-            <select className="rc-select rc-chip" value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}>
+            <select className="rc-select rc-chip" value={statusFilter} onChange={e=>{ setStatusFilter(e.target.value); setPage(1); }}>
               <option value="all">Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
-        </div>
+            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
+            </select>
+          </div>
 
         <div className="rc-table-wrapper">
           <table className="rc-table">
@@ -106,6 +121,14 @@ export default function Riders(){
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="rc-toolbar" aria-label="pagination">
+          <div className="rc-filters">
+            <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
+            <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
+            <button className="rc-select rc-chip" disabled={meta.page>=meta.pages || loading} onClick={()=>setPage(p=>Math.min(meta.pages,p+1))}>Next</button>
+          </div>
         </div>
       </section>
     </SiteLayout>

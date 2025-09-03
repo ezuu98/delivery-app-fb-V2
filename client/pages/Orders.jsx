@@ -14,6 +14,11 @@ export default function Orders(){
   const [orders, setOrders] = useState([]);
   const [q, setQ] = useState('');
   const [tab, setTab] = useState('all');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [shopifyErr, setShopifyErr] = useState('');
@@ -24,7 +29,14 @@ export default function Orders(){
     (async ()=>{
       setLoading(true); setError(''); setShopifyErr('');
       try{
-        const res = await fetch('/api/orders', { credentials:'include' });
+        const params = new URLSearchParams();
+        if(q) params.set('q', q);
+        if(tab && tab !== 'all') params.set('status', tab);
+        if(from) params.set('created_at_min', from);
+        if(to) params.set('created_at_max', to);
+        params.set('page', String(page));
+        params.set('limit', String(limit));
+        const res = await fetch(`/api/orders?${params.toString()}`, { credentials:'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load orders');
         const data = await res.json();
@@ -32,28 +44,15 @@ export default function Orders(){
           setOrders(Array.isArray(data.orders) ? data.orders : []);
           setShopifyErr(data.shopifyError || '');
           setShopifyConfigured(!!data.shopifyConfigured);
+          setMeta({ total: data.meta?.total||0, page: data.meta?.page||1, limit: data.meta?.limit||limit, pages: data.meta?.pages||1 });
         }
       }catch(e){ if(alive){ setError(e.message||'Failed to load orders'); } }
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[]);
+  },[q, tab, page, limit, from, to]);
 
-  const filtered = useMemo(()=>{
-    const ql = q.toLowerCase().trim();
-    return orders.filter(o=>{
-      const status = getOrderStatus(o);
-      if(tab !== 'all' && status !== tab) return false;
-      if(ql){
-        const name = String(o.name || o.order_number || o.id || '').toLowerCase();
-        const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
-        const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
-        const text = `${name} ${customer} ${addr}`;
-        if(!text.includes(ql)) return false;
-      }
-      return true;
-    });
-  },[orders,q,tab]);
+  const filtered = useMemo(()=> orders, [orders]);
 
   return (
     <SiteLayout>
@@ -66,14 +65,19 @@ export default function Orders(){
         <div className="rc-toolbar">
           <div className="rc-search">
             <span className="rc-search-icon" aria-hidden="true"></span>
-            <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>setQ(e.target.value)} />
+            <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
           <div className="rc-filters">
             {['all','new','assigned','in-transit','delivered'].map(k=> (
-              <button key={k} className={`rc-select rc-chip${tab===k?' active':''}`} onClick={()=>setTab(k)} data-filter={k}>
+              <button key={k} className={`rc-select rc-chip${tab===k?' active':''}`} onClick={()=>{ setTab(k); setPage(1); }} data-filter={k}>
                 {k==='all'?'All':k.replace('-',' ')}
               </button>
             ))}
+            <input className="rc-select rc-chip" type="date" value={from} onChange={e=>{ setFrom(e.target.value); setPage(1); }} />
+            <input className="rc-select rc-chip" type="date" value={to} onChange={e=>{ setTo(e.target.value); setPage(1); }} />
+            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
+            </select>
           </div>
         </div>
 
@@ -124,6 +128,13 @@ export default function Orders(){
               )}
             </tbody>
           </table>
+        </div>
+        <div className="rc-toolbar" aria-label="pagination">
+          <div className="rc-filters">
+            <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
+            <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
+            <button className="rc-select rc-chip" disabled={meta.page>=meta.pages || loading} onClick={()=>setPage(p=>Math.min(meta.pages,p+1))}>Next</button>
+          </div>
         </div>
       </section>
     </SiteLayout>

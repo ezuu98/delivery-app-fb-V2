@@ -3,16 +3,17 @@ const { SESSION_COOKIE_NAME } = require('../middleware/currentUser');
 
 function getClientConfig() {
   return {
-    apiKey: process.env.FIREBASE_API_KEY || null,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN || null,
-    projectId: process.env.FIREBASE_PROJECT_ID || null,
-    appId: process.env.FIREBASE_APP_ID || null,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || null,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID || null,
+    apiKey: process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || null,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN || process.env.VITE_FIREBASE_AUTH_DOMAIN || null,
+    projectId: process.env.FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID || null,
+    appId: process.env.FIREBASE_APP_ID || process.env.VITE_FIREBASE_APP_ID || null,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || null,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID || process.env.VITE_FIREBASE_MEASUREMENT_ID || null,
   };
 }
 
 module.exports = {
+  getClientConfig,
   showLogin: (req, res) => {
     return res.sendFile(require('path').join(__dirname, '..', '..', 'public', 'index.html'));
   },

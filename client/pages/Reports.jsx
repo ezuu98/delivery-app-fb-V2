@@ -3,7 +3,7 @@ import SiteLayout from '../components/SiteLayout.jsx';
 
 export default function Reports(){
   const [metrics, setMetrics] = useState({ totalDeliveries: 0, avgDeliveryMins: 0 });
-  const [orders, setOrders] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
   const [showTable, setShowTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,7 +19,7 @@ export default function Reports(){
         const data = await res.json();
         if(alive){
           setMetrics(data.metrics || { totalDeliveries: 0, avgDeliveryMins: 0 });
-          setOrders(Array.isArray(data.orders) ? data.orders : []);
+          setDeliveries(Array.isArray(data.deliveries) ? data.deliveries : []);
         }
       }catch(e){ if(alive) setError(e.message||'Failed to load reports'); }
       finally{ if(alive) setLoading(false); }
@@ -76,17 +76,17 @@ export default function Reports(){
                   </tr>
                 </thead>
                 <tbody>
-                  {!loading && !error && orders.map((o,i)=> (
-                    <tr key={o.id||o.name||o.order_number||i}>
-                      <td className="rc-col-name">#{o.name || o.order_number || o.id}</td>
-                      <td className="rc-col-km">-</td>
+                  {!loading && !error && deliveries.map((d,i)=> (
+                    <tr key={d.orderId||i}>
+                      <td className="rc-col-name">#{d.orderNumber || d.orderId}</td>
+                      <td className="rc-col-km">{d.riderId || '-'}</td>
+                      <td className="rc-col-perf">{d.expectedMinutes!=null ? `${d.expectedMinutes} mins` : '-'}</td>
+                      <td className="rc-col-perf">{d.durationMins!=null ? `${d.durationMins} mins` : '-'}</td>
                       <td className="rc-col-perf">-</td>
-                      <td className="rc-col-perf">-</td>
-                      <td className="rc-col-perf">-</td>
-                      <td className="rc-col-commission">{o.fulfillment_status || 'new'}</td>
+                      <td className="rc-col-commission">{d.status || 'new'}</td>
                     </tr>
                   ))}
-                  {!loading && !error && orders.length === 0 && (
+                  {!loading && !error && deliveries.length === 0 && (
                     <tr><td colSpan={6} className="section-note">No data.</td></tr>
                   )}
                   {loading && (

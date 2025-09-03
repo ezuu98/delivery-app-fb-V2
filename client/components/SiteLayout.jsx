@@ -7,15 +7,15 @@ export default function SiteLayout({ children }){
     const profileBtn = document.getElementById('profileBtn');
     const profileMenu = document.getElementById('profileMenu');
 
-    function toggle(menu, btn){
+    function setOpen(menu, btn, open){
       if(!menu) return;
-      menu.classList.toggle('hidden');
-      const open = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', !open);
+      menu.setAttribute('aria-hidden', open ? 'false' : 'true');
       if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
     function closeAll(){
-      [notifMenu, profileMenu].forEach(m=>{ if(m && !m.classList.contains('hidden')) m.classList.add('hidden'); });
-      [notifBtn, profileBtn].forEach(b=>{ if(b) b.setAttribute('aria-expanded','false'); });
+      setOpen(notifMenu, notifBtn, false);
+      setOpen(profileMenu, profileBtn, false);
     }
 
     function onDocClick(e){
@@ -24,8 +24,22 @@ export default function SiteLayout({ children }){
     }
     function onKey(e){ if(e.key === 'Escape') closeAll(); }
 
-    if(notifBtn && notifMenu){ notifBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(notifMenu, notifBtn); if(profileMenu) profileMenu.classList.add('hidden'); }); }
-    if(profileBtn && profileMenu){ profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggle(profileMenu, profileBtn); if(notifMenu) notifMenu.classList.add('hidden'); }); }
+    function attachMenuInteractions(menu){
+      if(!menu) return;
+      menu.querySelectorAll('.dropdown-item').forEach(el=>{
+        el.addEventListener('click', ()=> closeAll());
+      });
+    }
+
+    if(notifBtn && notifMenu){
+      notifBtn.addEventListener('click', (e)=>{ e.stopPropagation(); setOpen(profileMenu, profileBtn, false); setOpen(notifMenu, notifBtn, notifMenu.classList.contains('hidden')); });
+      attachMenuInteractions(notifMenu);
+    }
+    if(profileBtn && profileMenu){
+      profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); setOpen(notifMenu, notifBtn, false); setOpen(profileMenu, profileBtn, profileMenu.classList.contains('hidden')); });
+      attachMenuInteractions(profileMenu);
+    }
+
     document.addEventListener('click', onDocClick);
     document.addEventListener('keydown', onKey);
 
@@ -59,7 +73,7 @@ export default function SiteLayout({ children }){
                 <path fill="url(#bellGold)" d="M12 22a2 2 0 0 0 1.995-1.85L14 20h-4a2 2 0 0 0 1.85 1.995L12 22Zm8-5h-1a1 1 0 0 1-.707-.293l-.147-.147A3.99 3.99 0 0 1 17 14.172V11a5 5 0 1 0-10 0v3.172a3.99 3.99 0 0 1-1.146 2.388l-.147.147A1 1 0 0 1 5 17H4a1 1 0 1 0 0 2h16a1 1 0 1 0 0-2Z"/>
               </svg>
             </button>
-            <div id="notifMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="notifBtn">
+            <div id="notifMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="notifBtn" aria-hidden="true">
               <div className="dropdown-header">Notifications</div>
               <div className="dropdown-item">No new notifications</div>
             </div>
@@ -69,7 +83,7 @@ export default function SiteLayout({ children }){
             <button id="profileBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu" title="Profile">
               <svg className="avatar" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="7.5" r="3.5" stroke="currentColor" strokeWidth="1.5"/><path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
-            <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn">
+            <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn" aria-hidden="true">
               <div className="dropdown-header">Signed in</div>
               <a className="dropdown-item" href="/riders">Riders</a>
               <a className="dropdown-item" href="/orders">Orders</a>
