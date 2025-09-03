@@ -13,6 +13,7 @@ router.get('/messages', homeController.messages);
 router.get('/dashboard', ensureAuthenticated, homeController.dashboard);
 router.get('/orders', ensureAuthenticated, pagesController.orders);
 router.get('/riders', ensureAuthenticated, pagesController.riders);
+router.get('/riders/:id', ensureAuthenticated, pagesController.riderProfile);
 router.get('/customers', ensureAuthenticated, pagesController.customers);
 router.get('/reports', ensureAuthenticated, pagesController.reports);
 
