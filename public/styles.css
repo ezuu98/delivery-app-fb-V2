@@ -56,6 +56,11 @@
 .rc-progress-bar::-webkit-progress-bar{background:#e5e7eb;border-radius:999px}
 .rc-progress-bar::-webkit-progress-value{background:#0070f3;border-radius:999px}
 .rc-progress-value{font-weight:600;color:#111827}
+.status-chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#F7FAFC;text-transform:capitalize;font-size:12px}
+.status-new{background:#f8fafc}
+.status-assigned{background:#eef6ff;border-color:#cfe0ff;color:#1f5fbf}
+.status-in-transit{background:#fff8e1;border-color:#ffe0a3;color:#8a6b00}
+.status-delivered{background:#e7f8ef;border-color:#bfe8cf;color:#0d7a3a}
 /* Auth form fixes */
 *,*:before,*:after{box-sizing:border-box}
 .auth-panel{overflow:hidden}
