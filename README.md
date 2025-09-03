@@ -1,44 +1,50 @@
-# FreshBasket — Express MVC + Firebase Auth
+# FreshBasket — Express API + React SPA + Firebase Auth
 
-FreshBasket is a Node.js/Express MVC web app with EJS views and Firebase Authentication. It uses a single shared package.json and runs with one command.
+FreshBasket is a Node.js/Express app that serves a React Single Page Application (SPA) bundled with Vite, with Firebase Authentication (client) and Firebase Admin session cookies on the server.
 
 ## Tech Stack
-- Node.js + Express (MVC)
-- EJS + express-ejs-layouts
-- Firebase Auth (Web SDK) with Admin session cookies (firebase-admin)
-- Cookie-based auth (secure, SameSite=None)
+- Node.js + Express (API, static serving)
+- React 18 + React Router (SPA)
+- Vite build (outputs to public/assets/app.js)
+- Firebase Auth (Web SDK) + firebase-admin (session cookies)
+- Cookie-based auth (Secure, SameSite=None)
 - CSS (vanilla) with Inter font
 
 ## Project structure
 ```
 ./
 ├─ package.json
-├─ public/                # static assets (styles.css, images)
+├─ public/                # static assets (index.html, styles.css, built app.js)
+│  └─ assets/app.js       # built by Vite
+├─ client/                # React source
+│  ├─ main.jsx            # SPA entry
+│  ├─ App.jsx             # routes
+│  ├─ components/         # shared components
+│  └─ pages/              # SPA pages (Login, Register, Riders, Orders, Reports, Customers, RiderProfile)
 ├─ src/
 │  ├─ index.js            # app entry
-│  ├─ server.js           # express server + middleware
-│  ├─ routes/             # route definitions
+│  ├─ server.js           # express server + middleware (SPA only)
+│  ├─ routes/             # route definitions (auth, api, spa routing)
 │  │   ├─ index.js
 │  │   └─ auth.js
-│  ├─ controllers/        # controllers for views and endpoints
+│  ├─ controllers/        # controllers for auth/api
 │  │   ├─ homeController.js
 │  │   ├─ firebaseAuthController.js
-│  │   └─ pagesController.js
+│  │   └─ apiController.js
 │  ├─ middleware/
 │  │   ├─ currentUser.js  # decodes Firebase session cookie
 │  │   └─ auth.js         # ensureAuthenticated guard
 │  ├─ models/             # demo data models
 │  │   ├─ messageModel.js
 │  │   └─ riderModel.js
-│  ├─ services/
-│  │   └─ firebaseAdmin.js
-│  └─ views/              # EJS templates (layouts + pages)
-│      ├─ layout.ejs
-│      ├─ home.ejs, 404.ejs, dashboard.ejs
-│      ├─ auth/login.ejs, auth/register.ejs
-│      └─ sections/{orders,riders,customers,reports}.ejs
+│  └─ services/
+│      ├─ firebaseAdmin.js
+│      └─ shopify.js
+├─ vite.config.js         # Vite build config (outputs to public/assets)
 └─ nodemon.json
 ```
+
+Note: All EJS templates were removed. The server serves the SPA (public/index.html) for app routes and exposes JSON APIs.
 
 ## Getting started
 Requirements: Node 18+
@@ -49,17 +55,17 @@ npm install
 ```
 
 2) Configure environment variables
-Set these in your environment (recommended via the platform env settings, not a committed .env):
+Set these via your hosting/platform env settings (avoid committing .env files):
 
-Client (Web SDK):
-- FIREBASE_API_KEY
-- FIREBASE_AUTH_DOMAIN
-- FIREBASE_PROJECT_ID
-- FIREBASE_APP_ID
-- FIREBASE_MESSAGING_SENDER_ID
-- FIREBASE_MEASUREMENT_ID (optional)
+Client (Web SDK) — used by React build and/or injected at runtime:
+- VITE_FIREBASE_API_KEY
+- VITE_FIREBASE_AUTH_DOMAIN
+- VITE_FIREBASE_PROJECT_ID
+- VITE_FIREBASE_APP_ID
+- VITE_FIREBASE_MESSAGING_SENDER_ID
+- VITE_FIREBASE_MEASUREMENT_ID (optional)
 
-Admin (Service Account):
+Server (Service Account) — used by firebase-admin:
 - FIREBASE_PROJECT_ID
 - FIREBASE_CLIENT_EMAIL
 - FIREBASE_PRIVATE_KEY  # use literal \n for newlines
@@ -72,13 +78,17 @@ Firebase console setup:
 - Authentication → Settings → Authorized domains: add your deployed domain and localhost
 - If your API key has HTTP referrer restrictions (GCP → Credentials), add the same domains
 
-3) Run the app
+3) Build client (optional in dev; required for deployment if not prebuilt)
+```
+npm run build:client
+```
+This generates public/assets/app.js.
+
+4) Run the app
 ```
 npm run dev
 ```
 Open: http://localhost:3000/
-
-Note: The app sets a secure SameSite=None session cookie named `__session`. If running inside an iframe or with third‑party cookies blocked, open the preview in a new tab.
 
 ## Auth flow
 - Client signs in via Firebase Web SDK on /auth/login or registers on /auth/register
@@ -89,18 +99,19 @@ Note: The app sets a secure SameSite=None session cookie named `__session`. If r
 
 ## Routes
 - GET / → redirects to /dashboard if authenticated, else /auth/login
-- GET /auth/login, /auth/register → public pages (header hidden)
+- GET /auth/login, /auth/register → public SPA routes
 - POST /auth/session → exchange Firebase ID token for session cookie
 - POST /auth/logout → clear cookie
-- GET /dashboard → Rider commissions dashboard (protected)
-- GET /orders, /riders, /customers, /reports → placeholder pages (protected)
-- GET /messages → demo JSON
+- GET /firebase-config.js → runtime-injected Firebase client config from env
+- GET /orders, /riders, /riders/:id, /customers, /reports, /dashboard → SPA routes (protected)
+- GET /api/* → JSON APIs (orders, riders, reports)
+- All other paths → served public/index.html (handled by React Router)
 
 ## Styling & branding
 - Navbar shows FreshBasket brand and logo
 - Global background: #F7FAFC
 - Inter font (700 on brand/title)
-- Nav links scale on hover (no color change)
+- Nav links scale on hover
 
 ## Security notes (production)
 - Always serve over HTTPS; cookies are `Secure` + `SameSite=None`
@@ -115,8 +126,9 @@ Note: The app sets a secure SameSite=None session cookie named `__session`. If r
 - Private key parse error: ensure FIREBASE_PRIVATE_KEY uses `\n` for newlines
 
 ## Scripts
-- `npm run dev`  → start with nodemon
-- `npm start`    → start without watch
+- `npm run dev`        → start with nodemon
+- `npm start`          → start without watch
+- `npm run build:client` → build SPA to public/assets
 
 ## License
 MIT
