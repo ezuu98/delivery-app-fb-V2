@@ -1,4 +1,5 @@
 const redisSvc = require('../services/redis');
+const { getFirestore } = require('../services/firestore');
 const log = require('../utils/logger');
 
 // In-memory fallback
@@ -65,6 +66,11 @@ async function assign(orderId, riderId){
   } else {
     assignments.set(id, rec);
   }
+  // Persist to Firestore (best-effort)
+  try{
+    const db = getFirestore();
+    if (db) await db.collection('assignments').doc(id).set({ orderId: id, ...rec }, { merge: true });
+  }catch(e){ log.warn('firestore.assignments.set.failed', { message: e?.message }); }
   return rec;
 }
 
@@ -77,6 +83,10 @@ async function unassign(orderId){
   } else {
     assignments.delete(id);
   }
+  try{
+    const db = getFirestore();
+    if (db) await db.collection('assignments').doc(id).set({ orderId: id, status: 'unassigned', unassignedAt: new Date().toISOString() }, { merge: true });
+  }catch(e){ log.warn('firestore.assignments.unassign.failed', { message: e?.message }); }
 }
 
 async function getAssignment(orderId){
@@ -85,9 +95,20 @@ async function getAssignment(orderId){
   if (hasRedis) {
     const cli = redisSvc.getClient();
     const v = await cli.hGet('assignments', id);
-    return v ? JSON.parse(v) : null;
+    if (v) return JSON.parse(v);
+  } else {
+    const v = assignments.get(id) || null;
+    if (v) return v;
   }
-  return assignments.get(id) || null;
+  // Fallback to Firestore
+  try{
+    const db = getFirestore();
+    if (db){
+      const snap = await db.collection('assignments').doc(id).get();
+      if (snap.exists) return snap.data() || null;
+    }
+  }catch(e){ log.warn('firestore.assignments.get.failed', { message: e?.message }); }
+  return null;
 }
 
 async function listAssignments(){
@@ -95,9 +116,23 @@ async function listAssignments(){
   if (hasRedis) {
     const cli = redisSvc.getClient();
     const all = await cli.hGetAll('assignments');
-    return Object.entries(all || {}).map(([orderId, v])=> ({ orderId, ...(v ? JSON.parse(v) : {}) }));
+    const list = Object.entries(all || {}).map(([orderId, v])=> ({ orderId, ...(v ? JSON.parse(v) : {}) }));
+    if (list.length) return list;
+  } else {
+    const list = Array.from(assignments.entries()).map(([orderId, a])=> ({ orderId, ...a }));
+    if (list.length) return list;
   }
-  return Array.from(assignments.entries()).map(([orderId, a])=> ({ orderId, ...a }));
+  // Fallback to Firestore
+  try{
+    const db = getFirestore();
+    if (db){
+      const snap = await db.collection('assignments').get();
+      const res = [];
+      snap.forEach(doc => { const d = doc.data() || {}; res.push({ orderId: String(d.orderId || doc.id), ...d }); });
+      return res;
+    }
+  }catch(e){ log.warn('firestore.assignments.list.failed', { message: e?.message }); }
+  return [];
 }
 
 async function getLastSync(){
