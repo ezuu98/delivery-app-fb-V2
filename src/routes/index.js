@@ -11,6 +11,7 @@ const { validate } = require('../middleware/validate');
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/shopify', require('./shopify'));
 
 // Runtime Firebase client config for SPA
 router.get('/firebase-config.js', (req, res) => {
