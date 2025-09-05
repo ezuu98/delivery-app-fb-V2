@@ -1,8 +1,10 @@
 const DEFAULT_VERSION = process.env.SHOPIFY_API_VERSION || '2024-07';
 
+const { getStoredToken, getDefaultShop } = require('./shopifyAuth');
+
 function getConfig() {
-  const shop = process.env.SHOPIFY_SHOP; // e.g. your-store.myshopify.com
-  const token = process.env.SHOPIFY_ADMIN_TOKEN; // Admin API access token
+  const shop = process.env.SHOPIFY_SHOP || null; // e.g. your-store.myshopify.com
+  const token = process.env.SHOPIFY_ADMIN_TOKEN || null; // Admin API access token
   return { shop, token, version: DEFAULT_VERSION };
 }
 
@@ -29,10 +31,12 @@ function parseNextPageInfo(linkHeader) {
 }
 
 async function requestShopify(path, query = {}) {
-  const { shop, token, version } = getConfig();
+  let { shop, token, version } = getConfig();
+  if (!shop) shop = await getDefaultShop();
+  if (!token && shop) token = await getStoredToken(shop);
   if (!shop || !token) {
     // eslint-disable-next-line no-console
-    console.warn('Shopify not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN.');
+    console.warn('Shopify not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN or complete OAuth install.');
     return { ok: false, status: 503, data: null, error: 'Not configured', headers: {} };
   }
   const url = new URL(`https://${shop}/admin/api/${version}${path}`);
