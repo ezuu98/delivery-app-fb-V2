@@ -7,6 +7,7 @@ const { getClientConfig } = require('../controllers/firebaseAuthController');
 const authRoutes = require('./auth');
 const { ensureAuthenticated, ensureAuthenticatedJson } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
+const mobileController = require('../controllers/mobileController');
 
 const router = Router();
 
