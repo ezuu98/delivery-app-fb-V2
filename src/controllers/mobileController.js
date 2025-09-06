@@ -76,7 +76,7 @@ module.exports = {
         if (q.empty) return res.status(400).json(stdFail('No account found for that contact number', 400));
         const doc = q.docs[0];
         const d = doc.data() || {};
-        if (!d.email) return res.status(400).json(fail('Account missing email'));
+        if (!d.email) return res.status(400).json(stdFail('Account missing email', 400));
         email = d.email;
       }
       if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
