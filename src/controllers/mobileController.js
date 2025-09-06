@@ -9,11 +9,9 @@ const { paginate, parseIntParam } = require('../utils/pagination');
 async function verifyBearer(req){
   const admin = initFirebaseAdmin();
   if (!admin) return null;
-  let token = null;
   const h = req.headers && req.headers.authorization;
-  if (h && /^bearer\s+/i.test(h)) token = h.split(/\s+/)[1];
-  if (!token && req.query && req.query.idToken) token = String(req.query.idToken);
-  if (!token && req.body && req.body.idToken) token = String(req.body.idToken);
+  if (!h || !/^bearer\s+/i.test(h)) return null;
+  const token = h.split(/\s+/)[1];
   if (!token) return null;
   try { return await admin.auth().verifyIdToken(token); } catch { return null; }
 }
