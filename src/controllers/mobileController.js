@@ -1,6 +1,6 @@
 const { initFirebaseAdmin } = require('../services/firebaseAdmin');
 const { getFirestore } = require('../services/firestore');
-const { ok, fail } = require('../utils/response');
+const { ok, fail, stdOk, stdFail } = require('../utils/response');
 const { getClientConfig } = require('./firebaseAuthController');
 
 async function verifyBearer(req){
