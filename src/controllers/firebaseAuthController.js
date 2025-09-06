@@ -61,14 +61,15 @@ module.exports = {
           if (db) {
             const docRef = db.collection('riders').doc(uid);
             const now = new Date().toISOString();
-            const payload = {
-              uid,
-              email: decoded.email || null,
-              displayName: (profile && profile.fullName) ? String(profile.fullName).trim().slice(0,120) : (decoded.name || null),
-              contactNumber: (profile && profile.contactNumber) ? String(profile.contactNumber).trim().slice(0,40) : (decoded.contactNumber || null),
-              photoURL: decoded.picture || null,
-              updatedAt: now,
-            };
+            const payload = { uid, updatedAt: now };
+            const displayNameFromProfile = profile && profile.fullName ? String(profile.fullName).trim().slice(0,120) : undefined;
+            const contactFromProfile = profile && profile.contactNumber ? String(profile.contactNumber).trim().slice(0,40) : undefined;
+            if (decoded.email !== undefined) payload.email = decoded.email || null;
+            if (displayNameFromProfile !== undefined) payload.displayName = displayNameFromProfile;
+            else if (decoded.name !== undefined) payload.displayName = decoded.name || null;
+            if (contactFromProfile !== undefined) payload.contactNumber = contactFromProfile;
+            else if (decoded.contactNumber !== undefined) payload.contactNumber = decoded.contactNumber || null;
+            if (decoded.picture !== undefined) payload.photoURL = decoded.picture || null;
             const snap = await docRef.get();
             if (!snap.exists) payload.createdAt = now;
             await docRef.set(payload, { merge: true });
