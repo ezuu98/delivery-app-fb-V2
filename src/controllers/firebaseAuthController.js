@@ -59,6 +59,8 @@ module.exports = {
         httpOnly: true,
         secure: !!isSecure,
         sameSite,
+        // Enable CHIPS so the cookie works inside third‑party iframes
+        partitioned: !!isSecure,
         path: '/',
       });
       return res.status(200).json({ ok: true });
