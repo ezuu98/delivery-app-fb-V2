@@ -1,4 +1,5 @@
 const { initFirebaseAdmin } = require('../services/firebaseAdmin');
+const { getFirestore } = require('../services/firestore');
 const { SESSION_COOKIE_NAME } = require('../middleware/currentUser');
 
 function getClientConfig() {
@@ -51,6 +52,30 @@ module.exports = {
 
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
+      // Write/update rider profile in Firestore keyed by Firebase UID for mobile access
+      try {
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        const uid = decoded && decoded.uid;
+        if (uid) {
+          const db = getFirestore();
+          if (db) {
+            const docRef = db.collection('riders').doc(uid);
+            const now = new Date().toISOString();
+            const payload = {
+              uid,
+              email: decoded.email || null,
+              displayName: (profile && profile.fullName) ? String(profile.fullName).trim().slice(0,120) : (decoded.name || null),
+              contactNumber: (profile && profile.contactNumber) ? String(profile.contactNumber).trim().slice(0,40) : (decoded.contactNumber || null),
+              photoURL: decoded.picture || null,
+              updatedAt: now,
+            };
+            const snap = await docRef.get();
+            if (!snap.exists) payload.createdAt = now;
+            await docRef.set(payload, { merge: true });
+          }
+        }
+      } catch (_) { /* ignore firestore write errors */ }
+
       // Always set Secure + SameSite=None + Partitioned to support third-party iframe previews
       const cookieParts = [
         `${SESSION_COOKIE_NAME}=${sessionCookie}`,
