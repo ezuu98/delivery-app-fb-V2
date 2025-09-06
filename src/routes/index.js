@@ -48,4 +48,7 @@ router.post('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seed
 router.get('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
 
+// Mobile API
+router.get('/api/mobile/me', mobileController.me);
+
 module.exports = router;
