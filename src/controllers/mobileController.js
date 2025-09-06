@@ -73,7 +73,7 @@ module.exports = {
         if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
         const cn = String(contactNumber).trim();
         const q = await db.collection('riders').where('contactNumber','==', cn).limit(1).get();
-        if (q.empty) return res.status(400).json(fail('No account found for that contact number'));
+        if (q.empty) return res.status(400).json(stdFail('No account found for that contact number', 400));
         const doc = q.docs[0];
         const d = doc.data() || {};
         if (!d.email) return res.status(400).json(fail('Account missing email'));
