@@ -136,7 +136,7 @@ module.exports = {
         if (admin) await admin.auth().setCustomUserClaims(uid, { contactNumber: cn });
       } catch (_) {}
       const doc = await db.collection('riders').doc(uid).get();
-      return res.json(ok({ rider: { id: uid, ...doc.data() } }));
+      return res.status(200).json(stdOk({ rider: { id: uid, ...doc.data() } }, 'Contact number bound', 200));
     }catch(e){
       return res.status(500).json(fail('Failed to bind contact number'));
     }
