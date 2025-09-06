@@ -23,8 +23,12 @@ async function upsertRider({ uid, email, displayName, contactNumber, photoURL })
   const now = new Date().toISOString();
   const docRef = db.collection('riders').doc(uid);
   const snap = await docRef.get();
-  const payload = { uid, email: email||null, displayName: displayName||null, contactNumber: contactNumber||null, photoURL: photoURL||null, updatedAt: now };
+  const payload = { uid, updatedAt: now };
   if (!snap.exists) payload.createdAt = now;
+  if (email !== undefined) payload.email = email;
+  if (displayName !== undefined) payload.displayName = displayName;
+  if (contactNumber !== undefined) payload.contactNumber = contactNumber;
+  if (photoURL !== undefined) payload.photoURL = photoURL;
   await docRef.set(payload, { merge: true });
   const doc = await docRef.get();
   return { id: uid, ...doc.data() };
@@ -96,7 +100,7 @@ module.exports = {
           displayName = u.displayName || null; photoURL = u.photoURL || null;
         }
       }catch(_){ }
-      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: contactNumber || null, photoURL });
+      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: (contactNumber !== undefined ? contactNumber : undefined), photoURL });
       return res.json(ok({ idToken: data.idToken, uid: data.localId, rider }));
     }catch(e){ return res.status(500).json(fail('Login failed')); }
   },
