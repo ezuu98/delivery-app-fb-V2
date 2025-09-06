@@ -51,8 +51,9 @@ module.exports = {
 
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
-      const forwardedProto = (req.headers['x-forwarded-proto'] || '').toString().split(',')[0].trim();
-      const isSecure = req.secure || forwardedProto === 'https';
+      const forwardedProtoRaw = (req.headers['x-forwarded-proto'] || '').toString();
+      const forwardedList = forwardedProtoRaw.split(',').map(v => v.trim().toLowerCase()).filter(Boolean);
+      const isSecure = req.secure || forwardedList.includes('https');
       const sameSite = isSecure ? 'none' : 'lax';
       res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
         maxAge: expiresIn,
