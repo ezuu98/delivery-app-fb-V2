@@ -63,7 +63,18 @@ module.exports = {
   // Login with email/password via Firebase REST, then upsert/refresh Firestore rider and return idToken
   login: async (req, res) => {
     try{
-      const { email, password } = req.body || {};
+      let { email, password, contactNumber = null } = req.body || {};
+      if (!email && contactNumber) {
+        const db = getFirestore();
+        if (!db) return res.status(503).json(fail('Firestore unavailable'));
+        const cn = String(contactNumber).trim();
+        const q = await db.collection('riders').where('contactNumber','==', cn).limit(1).get();
+        if (q.empty) return res.status(400).json(fail('No account found for that contact number'));
+        const doc = q.docs[0];
+        const d = doc.data() || {};
+        if (!d.email) return res.status(400).json(fail('Account missing email'));
+        email = d.email;
+      }
       if (!email || !password) return res.status(400).json(fail('Missing email/password'));
       const key = getApiKey();
       if (!key) return res.status(500).json(fail('Firebase not configured'));
@@ -85,7 +96,7 @@ module.exports = {
           displayName = u.displayName || null; photoURL = u.photoURL || null;
         }
       }catch(_){ }
-      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: null, photoURL });
+      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: contactNumber || null, photoURL });
       return res.json(ok({ idToken: data.idToken, uid: data.localId, rider }));
     }catch(e){ return res.status(500).json(fail('Login failed')); }
   },
