@@ -94,20 +94,71 @@ Open: http://localhost:3000/
 ## Auth flow
 - Client signs in via Firebase Web SDK on /auth/login or registers on /auth/register
 - Client sends ID token to server: POST /auth/session
-- Server (firebase-admin) issues session cookie (`__session`)
+- Server (firebase-admin) issues session cookie (`__session`) with Secure; SameSite=None; Partitioned
 - Protected pages require cookie: /dashboard, /orders, /riders, /customers, /reports
 - Logout: POST /auth/logout (clears cookie)
 
+## Standard API response schema
+- Success:
+```
+{
+  "statusCode": 200,
+  "message": "OK",
+  "data": { ... }
+}
+```
+- Error:
+```
+{
+  "statusCode": 400,
+  "message": "Reason",
+  "details": { ... optional ... },
+  "code": "... optional ..."
+}
+```
+
+## Mobile APIs
+All endpoints are JSON.
+
+- POST /api/mobile/register
+  - Body: { email, password, fullName?, contactNumber? }
+  - Response: { statusCode: 200, message: "Registered successfully", data: { registered: true } }
+
+- POST /api/mobile/login
+  - Body: either { email, password } OR { contactNumber, password }
+  - Response: { statusCode: 200, message: "Logged in successfully", data: { idToken, uid, rider } }
+
+- GET /api/mobile/me
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Response: { statusCode: 200, message: "OK", data: { rider } }
+
+- POST /api/mobile/bind-contact
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Body: { contactNumber }
+  - Response: { statusCode: 200, message: "Contact number bound", data: { rider } }
+
+Rider document (Firestore): collection "riders", doc id = Firebase UID.
+Fields: uid, email, displayName, contactNumber, photoURL, createdAt, updatedAt.
+
+## Postman quickstart
+1) Register: POST /api/mobile/register with email/password (+ optional fullName/contactNumber)
+2) Login: POST /api/mobile/login with email/password or contactNumber/password → copy idToken
+3) Bind contact (optional): POST /api/mobile/bind-contact with Bearer idToken and { contactNumber }
+4) Me: GET /api/mobile/me with Bearer idToken
+
+## Orders & Shopify
+- Local cache and demo models are provided.
+- Real Shopify orders require configuration:
+  - SHOPIFY_API_KEY, SHOPIFY_API_SECRET (for OAuth) OR SHOPIFY_ADMIN_TOKEN (private app/admin token)
+  - SHOPIFY_SHOP (e.g. your-store.myshopify.com)
+- Connect via OAuth: GET /shopify/install?shop=your-store.myshopify.com
+
 ## Firestore
-- The server can upsert orders into Firestore if Firebase Admin is configured.
-- Ensure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY are set.
+- The server upserts riders on login/registration into `riders/{uid}`.
+- Ensure FIREBASE_* env vars for Admin SDK are set.
 
 ## Caching
 - Orders and assignments are cached in Redis when REDIS_URL is set.
-- Keys:
-  - Hash "orders": field = orderId, value = JSON order
-  - Hash "assignments": field = orderId, value = JSON { riderId, assignedAt, status }
-  - String "orders:lastSyncAt": ISO timestamp
 - Without Redis, the app uses in-memory Maps (per-process ephemeral).
 
 ## Routes
@@ -128,15 +179,15 @@ Open: http://localhost:3000/
 - Nav links scale on hover
 
 ## Security notes (production)
-- Always serve over HTTPS; cookies are `Secure` + `SameSite=None`
+- Always serve over HTTPS; cookies use Secure + SameSite=None + Partitioned (CHIPS)
 - Keep service account keys secret; never commit them
 - Consider CSRF protection on session endpoints
 - Add rate limiting and helmet headers
 - Replace demo in-memory models with a real database
 
 ## Troubleshooting
+- Cookie not sticking in embedded previews: open in a new tab or ensure HTTPS; CHIPS is enabled
 - auth/network-request-failed: add your domain to Firebase Auth Authorized domains and API key referrers; disable VPN/ad-block
-- Not redirected after login: ensure `__session` cookie exists; if embedded, open in a new tab
 - Private key parse error: ensure FIREBASE_PRIVATE_KEY uses `\n` for newlines
 
 ## Scripts
