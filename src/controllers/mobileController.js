@@ -55,8 +55,8 @@ module.exports = {
           if (contactNumber) await admin.auth().setCustomUserClaims(data.localId, { contactNumber: String(contactNumber).trim().slice(0,40) });
         }
       }catch(_){}
-      const rider = await upsertRider({ uid: data.localId, email, displayName: fullName, contactNumber, photoURL: null });
-      return res.json(ok({ idToken: data.idToken, uid: data.localId, rider }));
+      await upsertRider({ uid: data.localId, email, displayName: fullName, contactNumber, photoURL: null });
+      return res.json(ok({ registered: true }));
     }catch(e){ return res.status(500).json(fail('Registration failed')); }
   },
 
