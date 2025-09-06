@@ -87,8 +87,9 @@ module.exports = {
         'SameSite=None',
         'Partitioned',
       ];
+      const { ok } = require('../utils/response');
       res.setHeader('Set-Cookie', cookieParts.join('; '));
-      return res.status(200).json({ ok: true });
+      return res.status(200).json(ok());
     } catch (e) {
       return res.status(401).json({ error: 'Invalid ID token' });
     }
