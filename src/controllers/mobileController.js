@@ -115,4 +115,26 @@ module.exports = {
       return res.status(500).json(fail('Failed to load rider'));
     }
   },
+
+  bindContact: async (req, res) => {
+    try{
+      const decoded = await verifyBearer(req);
+      if (!decoded) return res.status(401).json(fail('Unauthorized'));
+      const { contactNumber } = req.body || {};
+      const cn = contactNumber ? String(contactNumber).trim().slice(0, 40) : '';
+      if (!cn) return res.status(400).json(fail('Missing contactNumber'));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore unavailable'));
+      const uid = decoded.uid;
+      await db.collection('riders').doc(uid).set({ contactNumber: cn, updatedAt: new Date().toISOString() }, { merge: true });
+      try {
+        const admin = initFirebaseAdmin();
+        if (admin) await admin.auth().setCustomUserClaims(uid, { contactNumber: cn });
+      } catch (_) {}
+      const doc = await db.collection('riders').doc(uid).get();
+      return res.json(ok({ rider: { id: uid, ...doc.data() } }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to bind contact number'));
+    }
+  },
 };
