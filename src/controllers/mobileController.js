@@ -138,7 +138,7 @@ module.exports = {
       const doc = await db.collection('riders').doc(uid).get();
       return res.status(200).json(stdOk({ rider: { id: uid, ...doc.data() } }, 'Contact number bound', 200));
     }catch(e){
-      return res.status(500).json(fail('Failed to bind contact number'));
+      return res.status(500).json(stdFail('Failed to bind contact number', 500));
     }
   },
 };
