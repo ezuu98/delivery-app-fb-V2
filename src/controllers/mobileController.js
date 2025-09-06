@@ -151,7 +151,7 @@ module.exports = {
       const decoded = await verifyBearer(req);
       if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
       const { displayName, contactNumber } = req.body || {};
-      if (displayName == null && contactNumber == null) return res.status(400).json(stdFail('No fields to update', 400));
+      if (displayName == null && contactNumber == null) return res.status(400).json(stdFail('No fields to update. Allowed fields: displayName, contactNumber', 400, { allowedFields: ['displayName','contactNumber'] }));
       const db = getFirestore();
       if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
       const uid = decoded.uid;
