@@ -39,7 +39,7 @@ module.exports = {
   register: async (req, res) => {
     try{
       const { email, password, fullName = null, contactNumber = null } = req.body || {};
-      if (!email || !password) return res.status(400).json(fail('Missing email/password'));
+      if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
       const key = getApiKey();
       if (!key) return res.status(500).json(fail('Firebase not configured'));
       const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
@@ -79,7 +79,7 @@ module.exports = {
         if (!d.email) return res.status(400).json(fail('Account missing email'));
         email = d.email;
       }
-      if (!email || !password) return res.status(400).json(fail('Missing email/password'));
+      if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
       const key = getApiKey();
       if (!key) return res.status(500).json(fail('Firebase not configured'));
       const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(key)}`, {
