@@ -70,7 +70,7 @@ module.exports = {
       let { email, password, contactNumber = null } = req.body || {};
       if (!email && contactNumber) {
         const db = getFirestore();
-        if (!db) return res.status(503).json(fail('Firestore unavailable'));
+        if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
         const cn = String(contactNumber).trim();
         const q = await db.collection('riders').where('contactNumber','==', cn).limit(1).get();
         if (q.empty) return res.status(400).json(fail('No account found for that contact number'));
@@ -111,7 +111,7 @@ module.exports = {
       if (!decoded) return res.status(401).json(fail('Unauthorized'));
       const uid = decoded.uid;
       const db = getFirestore();
-      if (!db) return res.status(503).json(fail('Firestore unavailable'));
+      if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
       const doc = await db.collection('riders').doc(uid).get();
       if (!doc.exists) return res.json(ok({ rider: null }));
       return res.json(ok({ rider: { id: uid, ...doc.data() } }));
@@ -128,7 +128,7 @@ module.exports = {
       const cn = contactNumber ? String(contactNumber).trim().slice(0, 40) : '';
       if (!cn) return res.status(400).json(fail('Missing contactNumber'));
       const db = getFirestore();
-      if (!db) return res.status(503).json(fail('Firestore unavailable'));
+      if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
       const uid = decoded.uid;
       await db.collection('riders').doc(uid).set({ contactNumber: cn, updatedAt: new Date().toISOString() }, { merge: true });
       try {
