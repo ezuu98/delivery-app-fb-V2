@@ -116,7 +116,7 @@ module.exports = {
       if (!doc.exists) return res.status(200).json(stdOk({ rider: null }, 'OK', 200));
       return res.status(200).json(stdOk({ rider: { id: uid, ...doc.data() } }, 'OK', 200));
     }catch(e){
-      return res.status(500).json(fail('Failed to load rider'));
+      return res.status(500).json(stdFail('Failed to load rider', 500));
     }
   },
 
