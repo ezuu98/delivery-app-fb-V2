@@ -52,5 +52,6 @@ router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFi
 router.post('/api/mobile/register', mobileController.register);
 router.post('/api/mobile/login', mobileController.login);
 router.get('/api/mobile/me', mobileController.me);
+router.post('/api/mobile/bind-contact', mobileController.bindContact);
 
 module.exports = router;
