@@ -52,6 +52,10 @@ router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFi
 router.post('/api/mobile/register', mobileController.register);
 router.post('/api/mobile/login', mobileController.login);
 router.get('/api/mobile/me', mobileController.me);
+router.patch('/api/mobile/me', mobileController.updateProfile);
 router.post('/api/mobile/bind-contact', mobileController.bindContact);
+router.get('/api/mobile/orders', mobileController.listOrders);
+router.get('/api/mobile/orders/:id', mobileController.getOrder);
+router.post('/api/mobile/orders/:id/events', mobileController.addOrderEvent);
 
 module.exports = router;
