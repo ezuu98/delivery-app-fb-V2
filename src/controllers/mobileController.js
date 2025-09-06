@@ -89,7 +89,7 @@ module.exports = {
       const data = await resp.json().catch(()=>({}));
       if (!resp.ok || !data.idToken || !data.localId) {
         const msg = data && (data.error && data.error.message ? data.error.message : JSON.stringify(data));
-        return res.status(400).json(fail(msg || 'Login failed'));
+        return res.status(400).json(stdFail(msg || 'Login failed', 400));
       }
       // Get user info to enrich Firestore
       let displayName = null; let photoURL = null;
