@@ -1,6 +1,7 @@
 const { initFirebaseAdmin } = require('../services/firebaseAdmin');
 const { getFirestore } = require('../services/firestore');
 const { ok, fail } = require('../utils/response');
+const { getClientConfig } = require('./firebaseAuthController');
 
 async function verifyBearer(req){
   const h = req.headers && req.headers.authorization;
@@ -11,7 +12,84 @@ async function verifyBearer(req){
   try { return await admin.auth().verifyIdToken(token); } catch { return null; }
 }
 
+function getApiKey(){
+  const cfg = getClientConfig();
+  return (cfg && cfg.apiKey) || process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || '';
+}
+
+async function upsertRider({ uid, email, displayName, contactNumber, photoURL }){
+  const db = getFirestore();
+  if (!db) return null;
+  const now = new Date().toISOString();
+  const docRef = db.collection('riders').doc(uid);
+  const snap = await docRef.get();
+  const payload = { uid, email: email||null, displayName: displayName||null, contactNumber: contactNumber||null, photoURL: photoURL||null, updatedAt: now };
+  if (!snap.exists) payload.createdAt = now;
+  await docRef.set(payload, { merge: true });
+  const doc = await docRef.get();
+  return { id: uid, ...doc.data() };
+}
+
 module.exports = {
+  // Register with email/password via Firebase REST, then upsert Firestore rider and return idToken
+  register: async (req, res) => {
+    try{
+      const { email, password, fullName = null, contactNumber = null } = req.body || {};
+      if (!email || !password) return res.status(400).json(fail('Missing email/password'));
+      const key = getApiKey();
+      if (!key) return res.status(500).json(fail('Firebase not configured'));
+      const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, displayName: fullName || undefined, returnSecureToken: true })
+      });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok || !data.idToken || !data.localId) {
+        const msg = data && (data.error && data.error.message ? data.error.message : JSON.stringify(data));
+        return res.status(400).json(fail(msg || 'Registration failed'));
+      }
+      // Optionally set displayName/claims via Admin
+      try{
+        const admin = initFirebaseAdmin();
+        if (admin) {
+          if (fullName) await admin.auth().updateUser(data.localId, { displayName: String(fullName).trim().slice(0,120) });
+          if (contactNumber) await admin.auth().setCustomUserClaims(data.localId, { contactNumber: String(contactNumber).trim().slice(0,40) });
+        }
+      }catch(_){}
+      const rider = await upsertRider({ uid: data.localId, email, displayName: fullName, contactNumber, photoURL: null });
+      return res.json(ok({ idToken: data.idToken, uid: data.localId, rider }));
+    }catch(e){ return res.status(500).json(fail('Registration failed')); }
+  },
+
+  // Login with email/password via Firebase REST, then upsert/refresh Firestore rider and return idToken
+  login: async (req, res) => {
+    try{
+      const { email, password } = req.body || {};
+      if (!email || !password) return res.status(400).json(fail('Missing email/password'));
+      const key = getApiKey();
+      if (!key) return res.status(500).json(fail('Firebase not configured'));
+      const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(key)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, returnSecureToken: true })
+      });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok || !data.idToken || !data.localId) {
+        const msg = data && (data.error && data.error.message ? data.error.message : JSON.stringify(data));
+        return res.status(400).json(fail(msg || 'Login failed'));
+      }
+      // Get user info to enrich Firestore
+      let displayName = null; let photoURL = null;
+      try{
+        const admin = initFirebaseAdmin();
+        if (admin) {
+          const u = await admin.auth().getUser(data.localId);
+          displayName = u.displayName || null; photoURL = u.photoURL || null;
+        }
+      }catch(_){ }
+      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: null, photoURL });
+      return res.json(ok({ idToken: data.idToken, uid: data.localId, rider }));
+    }catch(e){ return res.status(500).json(fail('Login failed')); }
+  },
+
   me: async (req, res) => {
     try{
       const decoded = await verifyBearer(req);
