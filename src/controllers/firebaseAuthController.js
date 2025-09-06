@@ -51,19 +51,17 @@ module.exports = {
 
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
-      const forwardedProtoRaw = (req.headers['x-forwarded-proto'] || '').toString();
-      const forwardedList = forwardedProtoRaw.split(',').map(v => v.trim().toLowerCase()).filter(Boolean);
-      const isSecure = req.secure || forwardedList.includes('https');
-      const sameSite = isSecure ? 'none' : 'lax';
-      res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
-        maxAge: expiresIn,
-        httpOnly: true,
-        secure: !!isSecure,
-        sameSite,
-        // Enable CHIPS so the cookie works inside third‑party iframes
-        partitioned: !!isSecure,
-        path: '/',
-      });
+      // Always set Secure + SameSite=None + Partitioned to support third-party iframe previews
+      const cookieParts = [
+        `${SESSION_COOKIE_NAME}=${sessionCookie}`,
+        `Max-Age=${Math.floor(expiresIn / 1000)}`,
+        'Path=/',
+        'HttpOnly',
+        'Secure',
+        'SameSite=None',
+        'Partitioned',
+      ];
+      res.setHeader('Set-Cookie', cookieParts.join('; '));
       return res.status(200).json({ ok: true });
     } catch (e) {
       return res.status(401).json({ error: 'Invalid ID token' });
