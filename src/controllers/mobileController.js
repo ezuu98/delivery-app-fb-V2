@@ -41,7 +41,7 @@ module.exports = {
       const { email, password, fullName = null, contactNumber = null } = req.body || {};
       if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
       const key = getApiKey();
-      if (!key) return res.status(500).json(fail('Firebase not configured'));
+      if (!key) return res.status(500).json(stdFail('Firebase not configured', 500));
       const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, displayName: fullName || undefined, returnSecureToken: true })
@@ -81,7 +81,7 @@ module.exports = {
       }
       if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
       const key = getApiKey();
-      if (!key) return res.status(500).json(fail('Firebase not configured'));
+      if (!key) return res.status(500).json(stdFail('Firebase not configured', 500));
       const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(key)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, returnSecureToken: true })
