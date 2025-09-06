@@ -60,7 +60,7 @@ module.exports = {
         }
       }catch(_){}
       await upsertRider({ uid: data.localId, email, displayName: fullName, contactNumber, photoURL: null });
-      return res.json(ok({ registered: true }));
+      return res.status(200).json(stdOk({ registered: true }, 'Registered successfully', 200));
     }catch(e){ return res.status(500).json(fail('Registration failed')); }
   },
 
