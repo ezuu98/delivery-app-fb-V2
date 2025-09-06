@@ -126,7 +126,7 @@ module.exports = {
       if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
       const { contactNumber } = req.body || {};
       const cn = contactNumber ? String(contactNumber).trim().slice(0, 40) : '';
-      if (!cn) return res.status(400).json(fail('Missing contactNumber'));
+      if (!cn) return res.status(400).json(stdFail('Missing contactNumber', 400));
       const db = getFirestore();
       if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
       const uid = decoded.uid;
@@ -140,5 +140,115 @@ module.exports = {
     }catch(e){
       return res.status(500).json(stdFail('Failed to bind contact number', 500));
     }
+  },
+
+  updateProfile: async (req, res) => {
+    try{
+      const decoded = await verifyBearer(req);
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
+      const { displayName, contactNumber } = req.body || {};
+      if (displayName == null && contactNumber == null) return res.status(400).json(stdFail('No fields to update', 400));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
+      const uid = decoded.uid;
+      const patch = { updatedAt: new Date().toISOString() };
+      if (displayName != null) patch.displayName = String(displayName).trim().slice(0,120) || null;
+      if (contactNumber != null) patch.contactNumber = String(contactNumber).trim().slice(0,40) || null;
+      await db.collection('riders').doc(uid).set(patch, { merge: true });
+      try{
+        const admin = initFirebaseAdmin();
+        if (admin) {
+          if (displayName != null) await admin.auth().updateUser(uid, { displayName: patch.displayName || undefined });
+          if (contactNumber != null) await admin.auth().setCustomUserClaims(uid, { contactNumber: patch.contactNumber || undefined });
+        }
+      }catch(_){ }
+      const doc = await db.collection('riders').doc(uid).get();
+      return res.status(200).json(stdOk({ rider: { id: uid, ...doc.data() } }, 'Profile updated', 200));
+    }catch(e){ return res.status(500).json(stdFail('Failed to update profile', 500)); }
+  },
+
+  listOrders: async (req, res) => {
+    try{
+      const decoded = await verifyBearer(req);
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
+      const uid = decoded.uid;
+      const { status = 'all', q = '', page = '1', limit = '20' } = req.query || {};
+      let cached = await orderModel.getAll();
+      const assigns = await orderModel.listAssignments();
+      const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
+
+      function statusOf(o){
+        const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
+        const tagStr = tags.join(',').toLowerCase();
+        if(tagStr.includes('assigned')) return 'assigned';
+        if(o.fulfillment_status === 'fulfilled') return 'delivered';
+        if(o.fulfillment_status === 'partial') return 'in-transit';
+        return 'new';
+      }
+
+      const items = cached.map(o => ({
+        ...o,
+        assignment: aMap.get(String(o.id) || String(o.name) || String(o.order_number)) || null,
+      }));
+
+      const evAll = await deliveryModel.listAll();
+      const evMap = new Map(evAll.map(e => [String(e.orderId), Array.isArray(e.events)?e.events:[]]));
+      function isMine(o){
+        const a = o.assignment;
+        if (a && String(a.riderId) === String(uid)) return true;
+        const evs = evMap.get(String(o.id) || String(o.name) || String(o.order_number)) || [];
+        return evs.some(e=> String(e.riderId||'') === String(uid));
+      }
+
+      const ql = String(q).toLowerCase().trim();
+      const filtered = items.filter(o => {
+        if (!isMine(o)) return false;
+        if (status !== 'all' && statusOf(o) !== status) return false;
+        if (ql){
+          const name = String(o.name || o.order_number || o.id || '').toLowerCase();
+          const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
+          const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
+          const text = `${name} ${customer} ${addr}`;
+          if(!text.includes(ql)) return false;
+        }
+        return true;
+      });
+
+      const { items: pageItems } = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
+      return res.status(200).json(stdOk({ orders: pageItems }, 'OK', 200));
+    }catch(e){ return res.status(500).json(stdFail('Failed to load orders', 500)); }
+  },
+
+  getOrder: async (req, res) => {
+    try{
+      const decoded = await verifyBearer(req);
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
+      const uid = decoded.uid;
+      const id = String(req.params.id);
+      const o = await orderModel.getById(id);
+      if (!o) return res.status(404).json(stdFail('Order not found', 404));
+      const assigns = await orderModel.listAssignments();
+      const a = assigns.find(x => String(x.orderId) === id) || null;
+      const evs = await deliveryModel.getEvents(id);
+      const mine = (a && String(a.riderId) === String(uid)) || (Array.isArray(evs) && evs.some(e => String(e.riderId||'') === String(uid)));
+      if (!mine) return res.status(403).json(stdFail('Forbidden', 403));
+      return res.status(200).json(stdOk({ order: { ...o, assignment: a || null, events: evs || [] } }, 'OK', 200));
+    }catch(e){ return res.status(500).json(stdFail('Failed to load order', 500)); }
+  },
+
+  addOrderEvent: async (req, res) => {
+    try{
+      const decoded = await verifyBearer(req);
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
+      const uid = decoded.uid;
+      const id = String(req.params.id);
+      const { type, expectedMinutes = null, notes = null } = req.body || {};
+      if (!type) return res.status(400).json(stdFail('Missing type', 400));
+      const o = await orderModel.getById(id);
+      if (!o) return res.status(404).json(stdFail('Order not found', 404));
+      const ev = await deliveryModel.addEvent(id, { type, expectedMinutes, notes, riderId: uid });
+      if (!ev) return res.status(400).json(stdFail('Invalid event', 400));
+      return res.status(200).json(stdOk({ event: ev }, 'Event recorded', 200));
+    }catch(e){ return res.status(500).json(stdFail('Failed to add event', 500)); }
   },
 };
