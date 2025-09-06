@@ -132,19 +132,32 @@ All endpoints are JSON.
   - Headers: Authorization: Bearer <Firebase idToken>
   - Response: { statusCode: 200, message: "OK", data: { rider } }
 
+- PATCH /api/mobile/me
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Body: { displayName?, contactNumber? }
+  - Response: { statusCode: 200, message: "Profile updated", data: { rider } }
+
 - POST /api/mobile/bind-contact
   - Headers: Authorization: Bearer <Firebase idToken>
   - Body: { contactNumber }
   - Response: { statusCode: 200, message: "Contact number bound", data: { rider } }
 
+- GET /api/mobile/orders
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Query: status=all|new|assigned|in-transit|delivered, q?, page?, limit?
+  - Response: { statusCode: 200, message: "OK", data: { orders: [...] } }
+
+- GET /api/mobile/orders/:id
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Response: { statusCode: 200, message: "OK", data: { order: { ... , events: [...] } } }
+
+- POST /api/mobile/orders/:id/events
+  - Headers: Authorization: Bearer <Firebase idToken>
+  - Body: { type: 'eta'|'pickup'|'out_for_delivery'|'delivered'|'delay', expectedMinutes?, notes? }
+  - Response: { statusCode: 200, message: "Event recorded", data: { event } }
+
 Rider document (Firestore): collection "riders", doc id = Firebase UID.
 Fields: uid, email, displayName, contactNumber, photoURL, createdAt, updatedAt.
-
-## Postman quickstart
-1) Register: POST /api/mobile/register with email/password (+ optional fullName/contactNumber)
-2) Login: POST /api/mobile/login with email/password or contactNumber/password → copy idToken
-3) Bind contact (optional): POST /api/mobile/bind-contact with Bearer idToken and { contactNumber }
-4) Me: GET /api/mobile/me with Bearer idToken
 
 ## Orders & Shopify
 - Local cache and demo models are provided.
