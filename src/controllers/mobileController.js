@@ -113,8 +113,8 @@ module.exports = {
       const db = getFirestore();
       if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
       const doc = await db.collection('riders').doc(uid).get();
-      if (!doc.exists) return res.json(ok({ rider: null }));
-      return res.json(ok({ rider: { id: uid, ...doc.data() } }));
+      if (!doc.exists) return res.status(200).json(stdOk({ rider: null }, 'OK', 200));
+      return res.status(200).json(stdOk({ rider: { id: uid, ...doc.data() } }, 'OK', 200));
     }catch(e){
       return res.status(500).json(fail('Failed to load rider'));
     }
