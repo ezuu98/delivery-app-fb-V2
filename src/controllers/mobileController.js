@@ -108,7 +108,7 @@ module.exports = {
   me: async (req, res) => {
     try{
       const decoded = await verifyBearer(req);
-      if (!decoded) return res.status(401).json(fail('Unauthorized'));
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
       const uid = decoded.uid;
       const db = getFirestore();
       if (!db) return res.status(503).json(stdFail('Firestore unavailable', 503));
@@ -123,7 +123,7 @@ module.exports = {
   bindContact: async (req, res) => {
     try{
       const decoded = await verifyBearer(req);
-      if (!decoded) return res.status(401).json(fail('Unauthorized'));
+      if (!decoded) return res.status(401).json(stdFail('Unauthorized', 401));
       const { contactNumber } = req.body || {};
       const cn = contactNumber ? String(contactNumber).trim().slice(0, 40) : '';
       if (!cn) return res.status(400).json(fail('Missing contactNumber'));
