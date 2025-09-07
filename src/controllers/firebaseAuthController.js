@@ -1,4 +1,5 @@
 const { initFirebaseAdmin } = require('../services/firebaseAdmin');
+const { getFirestore } = require('../services/firestore');
 const { SESSION_COOKIE_NAME } = require('../middleware/currentUser');
 
 function getClientConfig() {
@@ -51,14 +52,44 @@ module.exports = {
 
       const expiresIn = 1000 * 60 * 60 * 24 * 5; // 5 days
       const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
-      res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
-        maxAge: expiresIn,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        path: '/',
-      });
-      return res.status(200).json({ ok: true });
+      // Write/update rider profile in Firestore keyed by Firebase UID for mobile access
+      try {
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        const uid = decoded && decoded.uid;
+        if (uid) {
+          const db = getFirestore();
+          if (db) {
+            const docRef = db.collection('riders').doc(uid);
+            const now = new Date().toISOString();
+            const payload = { uid, updatedAt: now };
+            const displayNameFromProfile = profile && profile.fullName ? String(profile.fullName).trim().slice(0,120) : undefined;
+            const contactFromProfile = profile && profile.contactNumber ? String(profile.contactNumber).trim().slice(0,40) : undefined;
+            if (decoded.email !== undefined) payload.email = decoded.email || null;
+            if (displayNameFromProfile !== undefined) payload.displayName = displayNameFromProfile;
+            else if (decoded.name !== undefined) payload.displayName = decoded.name || null;
+            if (contactFromProfile !== undefined) payload.contactNumber = contactFromProfile;
+            else if (decoded.contactNumber !== undefined) payload.contactNumber = decoded.contactNumber || null;
+            if (decoded.picture !== undefined) payload.photoURL = decoded.picture || null;
+            const snap = await docRef.get();
+            if (!snap.exists) payload.createdAt = now;
+            await docRef.set(payload, { merge: true });
+          }
+        }
+      } catch (_) { /* ignore firestore write errors */ }
+
+      // Always set Secure + SameSite=None + Partitioned to support third-party iframe previews
+      const cookieParts = [
+        `${SESSION_COOKIE_NAME}=${sessionCookie}`,
+        `Max-Age=${Math.floor(expiresIn / 1000)}`,
+        'Path=/',
+        'HttpOnly',
+        'Secure',
+        'SameSite=None',
+        'Partitioned',
+      ];
+      const { ok } = require('../utils/response');
+      res.setHeader('Set-Cookie', cookieParts.join('; '));
+      return res.status(200).json(ok());
     } catch (e) {
       return res.status(401).json({ error: 'Invalid ID token' });
     }

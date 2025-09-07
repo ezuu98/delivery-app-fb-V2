@@ -10,7 +10,7 @@ const { paginate, parseIntParam } = require('../utils/pagination');
 module.exports = {
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
-    const list = riderModel.list();
+    const list = await riderModel.list();
     const filtered = list.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
       if (status !== 'all' && String(r.status) !== String(status)) return false;
@@ -25,7 +25,7 @@ module.exports = {
     return res.json(ok({ riders: p.items }, p.meta));
   },
   riderProfile: async (req, res) => {
-    const rider = riderModel.getById(req.params.id);
+    const rider = await riderModel.getById(req.params.id);
     if (!rider) return res.status(404).json(fail('Not Found'));
 
     const totalDeliveries = Math.max(1, Math.round(rider.totalKm * 2));
@@ -100,7 +100,7 @@ module.exports = {
   },
   reports: async (req, res) => {
     try{
-      const riders = riderModel.list();
+      const riders = await riderModel.list();
       const orders = await orderModel.getAll();
       const assigns = await orderModel.listAssignments();
       const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
