@@ -11,8 +11,8 @@ const { config } = require('./config/env');
 const app = express();
 app.locals.config = config;
 
-// Behind proxies (fly.dev) - trust X-Forwarded-Proto for secure cookies
-app.set('trust proxy', 1);
+// Behind proxies - trust X-Forwarded-Proto for secure cookies across multi-proxy setups
+app.set('trust proxy', true);
 
 // SPA only - no server-side templates
 

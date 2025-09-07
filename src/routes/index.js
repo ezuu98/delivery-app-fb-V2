@@ -7,6 +7,7 @@ const { getClientConfig } = require('../controllers/firebaseAuthController');
 const authRoutes = require('./auth');
 const { ensureAuthenticated, ensureAuthenticatedJson } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
+const mobileController = require('../controllers/mobileController');
 
 const router = Router();
 
@@ -46,5 +47,15 @@ router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
 router.post('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
+
+// Mobile API
+router.post('/api/mobile/register', mobileController.register);
+router.post('/api/mobile/login', mobileController.login);
+router.get('/api/mobile/me', mobileController.me);
+router.patch('/api/mobile/me', mobileController.updateProfile);
+router.post('/api/mobile/bind-contact', mobileController.bindContact);
+router.get('/api/mobile/orders', mobileController.listOrders);
+router.get('/api/mobile/orders/:id', mobileController.getOrder);
+router.post('/api/mobile/orders/:id/events', mobileController.addOrderEvent);
 
 module.exports = router;

@@ -1,18 +1,40 @@
-const riders = [
-  { id: '1', name: 'Ethan Carter', totalKm: 120, performance: 85, commissionUsd: 150, status: 'Active', lastActiveDays: 3 },
-  { id: '2', name: 'Olivia Bennett', totalKm: 150, performance: 92, commissionUsd: 180, status: 'Active', lastActiveDays: 6 },
-  { id: '3', name: 'Noah Thompson', totalKm: 100, performance: 78, commissionUsd: 120, status: 'Inactive', lastActiveDays: 40 },
-  { id: '4', name: 'Ava Martinez', totalKm: 130, performance: 88, commissionUsd: 160, status: 'Active', lastActiveDays: 10 },
-  { id: '5', name: 'Liam Harris', totalKm: 110, performance: 82, commissionUsd: 130, status: 'Active', lastActiveDays: 20 },
-  { id: '6', name: 'Sophia Clark', totalKm: 140, performance: 90, commissionUsd: 170, status: 'Active', lastActiveDays: 2 }
-];
+const { getFirestore } = require('../services/firestore');
 
-function list() {
-  return riders.slice();
+function daysSince(iso){
+  const t = Date.parse(iso || '');
+  if (!Number.isFinite(t)) return 9999;
+  const diff = Date.now() - t;
+  return Math.max(0, Math.floor(diff / 86400000));
 }
 
-function getById(id) {
-  return riders.find(r => String(r.id) === String(id)) || null;
+function mapRider(doc){
+  const d = doc && doc.data ? doc.data() : (doc || {});
+  const id = String((doc && doc.id) || d.uid || '');
+  const name = d.displayName || d.name || d.email || 'Unknown';
+  const totalKm = Number(d.totalKm || 0);
+  const performance = Number(d.performance || 80);
+  const commissionUsd = Number(d.commissionUsd || 0);
+  const lastActiveDays = daysSince(d.updatedAt || d.createdAt || null);
+  const status = lastActiveDays <= 30 ? 'Active' : 'Inactive';
+  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays };
+}
+
+async function list() {
+  const db = getFirestore();
+  if (!db) return [];
+  const snap = await db.collection('riders').get();
+  const res = [];
+  snap.forEach(doc => { res.push(mapRider(doc)); });
+  return res;
+}
+
+async function getById(id) {
+  const db = getFirestore();
+  if (!db) return null;
+  const ref = db.collection('riders').doc(String(id));
+  const snap = await ref.get();
+  if (!snap.exists) return null;
+  return mapRider(snap);
 }
 
 module.exports = { list, getById };
