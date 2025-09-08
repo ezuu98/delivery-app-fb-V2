@@ -316,7 +316,7 @@ module.exports = {
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
     const { riderId } = req.body || {};
-    const rider = riderModel.getById(riderId);
+    const rider = await riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
     const assignment = await orderModel.assign(id, riderId);
     log.info('order.assigned', { orderId: id, riderId });
