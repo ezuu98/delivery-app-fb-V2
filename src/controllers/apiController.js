@@ -177,13 +177,11 @@ module.exports = {
   },
 
   getOrder: async (req, res) => {
-    let id = String(req.params.id);
-    // strip leading hash characters (Shopify order names often include '#')
-    id = id.replace(/^#+/, '');
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
-    const assignment = await orderModel.getAssignment(id);
-    return res.json(ok({ order: { ...order, assignment: assignment || null } }));
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const assignment = await orderModel.getAssignment(found.key);
+    return res.json(ok({ order: { ...found.order, assignment: assignment || null } }));
   },
 
   addDeliveryEvent: async (req, res) => {
