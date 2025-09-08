@@ -58,6 +58,23 @@ export default function Orders(){
 
   const filtered = useMemo(()=> orders, [orders]);
 
+  // visible respects tab: when tab==='all' hide assigned orders; otherwise filter by status
+  const visible = useMemo(()=>{
+    if(!Array.isArray(orders)) return [];
+    if(tab === 'all') return orders.filter(o => getOrderStatus(o) !== 'assigned');
+    return orders.filter(o => getOrderStatus(o) === tab);
+  }, [orders, tab]);
+
+  function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
+  function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function onAssigned(payload){
+    try{
+      const { orderId } = payload || {};
+      if(!orderId) return;
+      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id) !== String(orderId)));
+    }catch(e){}
+  }
+
   return (
     <SiteLayout>
       <section className="rider-commissions">
