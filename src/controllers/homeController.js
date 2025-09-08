@@ -1,4 +1,5 @@
 const messageModel = require('../models/messageModel');
+const path = require('path');
 
 module.exports = {
   index: (req, res) => {
@@ -11,7 +12,8 @@ module.exports = {
     res.json({ data: items });
   },
 
+  // Serve SPA dashboard (avoid redirect loop)
   dashboard: (req, res) => {
-    return res.redirect('/dashboard');
+    return res.sendFile(path.join(__dirname, '..', '..', 'public', 'index.html'));
   },
 };
