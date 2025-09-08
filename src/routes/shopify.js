@@ -3,6 +3,8 @@ const { newState, setState, getState, buildInstallUrl, exchangeCodeForToken, sto
 const log = require('../utils/logger');
 
 const router = Router();
+const { ensureAuthenticated } = require('../middleware/auth');
+const { registerWebhook } = require('../services/shopify');
 
 function getBaseUrl(req){
   const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
