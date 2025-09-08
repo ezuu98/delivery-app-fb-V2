@@ -31,8 +31,6 @@ router.get('/riders', ensureAuthenticated, sendSpa);
 router.get('/riders/:id', ensureAuthenticated, sendSpa);
 router.get('/reports', ensureAuthenticated, sendSpa);
 
-// Customers via SPA
-router.get('/customers', ensureAuthenticated, sendSpa);
 
 // API routes
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
