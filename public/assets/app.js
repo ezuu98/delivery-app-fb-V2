@@ -17648,7 +17648,7 @@ function p_() {
         columnNumber: 11
       }, this),
       /* @__PURE__ */ d.jsxDEV("div", { className: "rc-filters", children: [
-        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-chip", value: b, onChange: (P) => {
+        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: b, onChange: (P) => {
           R(P.target.value), fe(1);
         }, children: [
           /* @__PURE__ */ d.jsxDEV("option", { value: "all", children: "Date Range" }, void 0, !1, {
@@ -17671,7 +17671,7 @@ function p_() {
           lineNumber: 76,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-chip", value: f, onChange: (P) => A(P.target.value), children: [
+        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: f, onChange: (P) => A(P.target.value), children: [
           /* @__PURE__ */ d.jsxDEV("option", { value: "all", children: "Rider" }, void 0, !1, {
             fileName: "/app/code/client/pages/Riders.jsx",
             lineNumber: 82,
@@ -17687,7 +17687,7 @@ function p_() {
           lineNumber: 81,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-chip", value: D, onChange: (P) => {
+        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: D, onChange: (P) => {
           T(P.target.value), fe(1);
         }, children: [
           /* @__PURE__ */ d.jsxDEV("option", { value: "all", children: "Status" }, void 0, !1, {
@@ -17715,7 +17715,7 @@ function p_() {
         lineNumber: 75,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-chip", value: J, onChange: (P) => {
+      /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: J, onChange: (P) => {
         ue(parseInt(P.target.value, 10)), fe(1);
       }, children: [10, 20, 50, 100].map((P) => /* @__PURE__ */ d.jsxDEV("option", { value: P, children: [
         P,
@@ -18436,21 +18436,21 @@ function v_() {
           lineNumber: 94,
           columnNumber: 15
         }, this)),
-        /* @__PURE__ */ d.jsxDEV("input", { className: "rc-select rc-chip", type: "date", value: M, onChange: (W) => {
+        /* @__PURE__ */ d.jsxDEV("input", { className: "rc-chip", type: "date", value: M, onChange: (W) => {
           z(W.target.value), A(1);
         } }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 98,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("input", { className: "rc-select rc-chip", type: "date", value: Q, onChange: (W) => {
+        /* @__PURE__ */ d.jsxDEV("input", { className: "rc-chip", type: "date", value: Q, onChange: (W) => {
           fe(W.target.value), A(1);
         } }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 99,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-chip", value: D, onChange: (W) => {
+        /* @__PURE__ */ d.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: D, onChange: (W) => {
           T(parseInt(W.target.value, 10)), A(1);
         }, children: [10, 20, 50, 100].map((W) => /* @__PURE__ */ d.jsxDEV("option", { value: W, children: [
           W,
