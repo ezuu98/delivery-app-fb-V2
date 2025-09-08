@@ -78,7 +78,7 @@ export default function Riders(){
               <option value="7">Last 7 days</option>
               <option value="30">Last 30 days</option>
             </select>
-            <select className="rc-select rc-chip" value={riderFilter} onChange={e=>setRiderFilter(e.target.value)}>
+            <select className="rc-select rc-select-arrow rc-chip" value={riderFilter} onChange={e=>setRiderFilter(e.target.value)}>
               <option value="all">Rider</option>
               {riders.map(r => (<option key={r.id} value={r.id}>{r.name}</option>))}
             </select>
