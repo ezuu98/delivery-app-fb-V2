@@ -94,7 +94,7 @@ export default function Dashboard(){
                     <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                     <td className="rc-col-date">{dateStr}</td>
                     <td className="rc-col-time">{timeStr}</td>
-                    <td className="rc-col-action"><a className="order-action" href={`/orders`}>Manage</a></td>
+                    <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(orderId)}>Manage</button></td>
                   </tr>
                 );
               })}
