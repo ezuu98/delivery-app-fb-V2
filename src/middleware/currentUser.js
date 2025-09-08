@@ -1,5 +1,4 @@
 const cookieParser = require('cookie-parser');
-const cookieParser = require('cookie-parser');
 const { initFirebaseAdmin } = require('../services/firebaseAdmin');
 const log = require('../utils/logger');
 
