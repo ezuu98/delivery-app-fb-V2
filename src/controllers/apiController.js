@@ -311,23 +311,23 @@ module.exports = {
   },
 
   assignOrder: async (req, res) => {
-    let id = String(req.params.id);
-    id = id.replace(/^#+/, '');
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const id = found.key;
     const { riderId } = req.body || {};
     const rider = riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
     const assignment = await orderModel.assign(id, riderId);
     log.info('order.assigned', { orderId: id, riderId });
     return res.json(ok({ assignment }));
   },
 
   unassignOrder: async (req, res) => {
-    let id = String(req.params.id);
-    id = id.replace(/^#+/, '');
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const id = found.key;
     await orderModel.unassign(id);
     log.info('order.unassigned', { orderId: id });
     return res.json(ok({ ok: true }));
