@@ -57,9 +57,14 @@ export default function Riders(){
   return (
     <SiteLayout>
       <section className="rider-commissions">
-        <header className="rc-header">
-          <h2 className="rc-title">Rider Commissions</h2>
-          <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+        <header className="rc-header riders-header">
+          <div className="riders-header-left">
+            <h2 className="rc-title">Rider Commissions</h2>
+            <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+          </div>
+          <div className="riders-header-right">
+            <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
+          </div>
         </header>
 
         <div className="rc-toolbar">
