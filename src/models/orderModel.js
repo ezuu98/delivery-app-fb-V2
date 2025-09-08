@@ -69,7 +69,14 @@ async function assign(orderId, riderId){
   // Persist to Firestore (best-effort)
   try{
     const db = getFirestore();
-    if (db) await db.collection('assignments').doc(id).set({ orderId: id, ...rec }, { merge: true });
+    if (db) {
+      // store assignment record
+      await db.collection('assignments').doc(id).set({ orderId: id, ...rec }, { merge: true });
+      // also persist riderId directly on the order document so downstream consumers can read it from orders collection
+      try{
+        await db.collection('orders').doc(id).set({ riderId: String(riderId), assignedAt: rec.assignedAt }, { merge: true });
+      }catch(e){ log.warn('firestore.orders.assign.failed', { message: e?.message }); }
+    }
   }catch(e){ log.warn('firestore.assignments.set.failed', { message: e?.message }); }
   return rec;
 }
@@ -85,7 +92,13 @@ async function unassign(orderId){
   }
   try{
     const db = getFirestore();
-    if (db) await db.collection('assignments').doc(id).set({ orderId: id, status: 'unassigned', unassignedAt: new Date().toISOString() }, { merge: true });
+    if (db) {
+      await db.collection('assignments').doc(id).set({ orderId: id, status: 'unassigned', unassignedAt: new Date().toISOString() }, { merge: true });
+      try{
+        // clear riderId from the order document
+        await db.collection('orders').doc(id).set({ riderId: null, assignedAt: null, unassignedAt: new Date().toISOString() }, { merge: true });
+      }catch(e){ log.warn('firestore.orders.unassign.failed', { message: e?.message }); }
+    }
   }catch(e){ log.warn('firestore.assignments.unassign.failed', { message: e?.message }); }
 }
 
