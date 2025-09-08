@@ -126,12 +126,12 @@ export default function Orders(){
               {!loading && error && (
                 <tr><td colSpan={6} className="auth-error">{error}</td></tr>
               )}
-              {!loading && !error && filtered.map((o,i)=>{
+              {!loading && !error && visible.map((o,i)=>{
                 const status = getOrderStatus(o);
                 const fname = o.customer?.first_name || '';
                 const lname = o.customer?.last_name || '';
                 const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
-                const action = status === 'new' ? 'Assign' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
+                const action = status === 'new' ? 'Assign Rider' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
                   <tr key={orderId||i} data-status={status}>
@@ -140,7 +140,7 @@ export default function Orders(){
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-commission"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                     <td className="rc-col-commission">{o.created_at ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-commission"><a href="#" className="order-action" data-action={action.toLowerCase()}>{action}</a></td>
+                    <td className="rc-col-commission"><button className="order-action" onClick={(e)=>{ e.preventDefault(); if(status==='new') openAssign(String(orderId).replace(/^#+/, '')); }}>{action}</button></td>
                   </tr>
                 );
               })}
