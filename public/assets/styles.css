@@ -46,6 +46,31 @@
 .rc-subtitle{margin:0;color:#6b7280}
 .rc-toolbar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:12px 0 18px}
 .rc-search{flex:1;position:relative}
+
+/* Dashboard specific */
+.dashboard-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.dashboard-header-left{flex:1}
+.dashboard-header-right{display:flex;align-items:center;gap:12px}
+.stat-card{background:#fff;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;text-align:center;min-width:88px}
+.stat-value{font-size:18px;font-weight:700}
+.stat-label{font-size:12px;color:#6b7280}
+.btn-primary{background:#0070f3;color:#fff;border:0;padding:10px 14px;border-radius:10px;cursor:pointer}
+
+.dashboard-table thead th.col-order{width:16%}
+.dashboard-table thead th.col-customer{width:16%}
+.dashboard-table thead th.col-address{width:28%}
+.dashboard-table thead th.col-status{width:10%}
+.dashboard-table thead th.col-date{width:8%}
+.dashboard-table thead th.col-time{width:8%}
+.dashboard-table thead th.col-action{width:8%}
+
+/* Responsive adjustments */
+@media (max-width:880px){
+  .dashboard-header{flex-direction:column;align-items:flex-start}
+  .dashboard-header-right{width:100%;display:flex;justify-content:space-between}
+  .dashboard-table thead th.col-address{display:none}
+  .dashboard-table tbody td.rc-col-address{display:none}
+}
 .rc-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:currentColor;opacity:.45;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain}
 .rc-search-input{width:100%;padding:12px 14px 12px 40px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}
 .rc-filters{display:flex;gap:10px;margin-left:0;padding-left:0;align-items:center}
