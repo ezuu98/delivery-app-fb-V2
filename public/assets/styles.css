@@ -74,7 +74,7 @@
 
 /* Manage action */
 .order-action{background:transparent;border:0;color:#6b7280;cursor:pointer;padding:6px 10px;border-radius:8px}
-.order-action.btn-manage{background:#f3f4f6;color:#374151}
+.order-action.btn-manage{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;padding:8px 12px;font-weight:600}
 .order-action.btn-manage:hover{background:#e8eaf0}
 
 /* Assign modal */
