@@ -66,6 +66,38 @@ async function assign(orderId, riderId){
   } else {
     assignments.set(id, rec);
   }
+
+  // Update cached order record (redis or in-memory) so UI status reflects assignment immediately
+  try{
+    const has = await ensureRedis();
+    if (has) {
+      const cli = redisSvc.getClient();
+      const raw = await cli.hGet('orders', id);
+      if (raw) {
+        try{
+          const ord = JSON.parse(raw);
+          // normalize tags to array
+          let tags = Array.isArray(ord.tags) ? ord.tags.slice() : (typeof ord.tags === 'string' ? ord.tags.split(',').map(s=>s.trim()).filter(Boolean) : []);
+          if (!tags.map(t=>t.toLowerCase()).includes('assigned')) tags.push('assigned');
+          ord.tags = tags;
+          ord.riderId = String(riderId);
+          ord.assignedAt = rec.assignedAt;
+          await cli.hSet('orders', id, JSON.stringify(ord));
+        }catch(e){ /* ignore JSON parse errors */ }
+      }
+    } else {
+      const ord = ordersById.get(id) || null;
+      if (ord) {
+        let tags = Array.isArray(ord.tags) ? ord.tags.slice() : (typeof ord.tags === 'string' ? ord.tags.split(',').map(s=>s.trim()).filter(Boolean) : []);
+        if (!tags.map(t=>t.toLowerCase()).includes('assigned')) tags.push('assigned');
+        ord.tags = tags;
+        ord.riderId = String(riderId);
+        ord.assignedAt = rec.assignedAt;
+        ordersById.set(id, ord);
+      }
+    }
+  }catch(e){ log.warn('order.cache.update.assign.failed', { message: e?.message }); }
+
   // Persist to Firestore (best-effort)
   try{
     const db = getFirestore();
