@@ -60,18 +60,23 @@ async function requestShopify(path, query = {}) {
 
 async function listOrders(params = {}) {
   // params: { limit, status, created_at_min, created_at_max, fulfillment_status, financial_status, fields, since_id, page_info }
-  const query = {
-    limit: params.limit ?? 25,
-    status: params.status ?? 'any',
-    created_at_min: params.created_at_min,
-    created_at_max: params.created_at_max,
-    fulfillment_status: params.fulfillment_status,
-    financial_status: params.financial_status,
-    fields: params.fields,
-    since_id: params.since_id,
-    page_info: params.page_info,
-    order: params.order,
-  };
+  const query = {};
+  // When using cursor pagination (page_info) Shopify forbids additional filters like status/created_at
+  if (params.page_info) {
+    query.page_info = params.page_info;
+    if (params.limit !== undefined && params.limit !== null) query.limit = params.limit;
+  } else {
+    query.limit = params.limit ?? 25;
+    if (params.status !== undefined) query.status = params.status;
+    if (params.created_at_min !== undefined) query.created_at_min = params.created_at_min;
+    if (params.created_at_max !== undefined) query.created_at_max = params.created_at_max;
+    if (params.fulfillment_status !== undefined) query.fulfillment_status = params.fulfillment_status;
+    if (params.financial_status !== undefined) query.financial_status = params.financial_status;
+    if (params.fields !== undefined) query.fields = params.fields;
+    if (params.since_id !== undefined) query.since_id = params.since_id;
+    if (params.order !== undefined) query.order = params.order;
+  }
+
   const resp = await requestShopify('/orders.json', query);
   if (!resp.ok) return { orders: [], page_info: null, error: resp.error, configured: isConfigured() };
   const orders = (resp.data && resp.data.orders) || [];
