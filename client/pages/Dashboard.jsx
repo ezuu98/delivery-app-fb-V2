@@ -93,28 +93,31 @@ export default function Dashboard(){
             <tbody>
               {loading && (<tr><td colSpan={7} className="section-note">Loading…</td></tr>)}
               {!loading && error && (<tr><td colSpan={7} className="auth-error">{error}</td></tr>)}
-              {!loading && !error && orders.map((o,i)=>{
-                const status = getOrderStatus(o);
-                const fname = o.customer?.first_name || '';
-                const lname = o.customer?.last_name || '';
-                const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
-                const displayId = o.name || o.order_number || o.id || i;
-                const canonicalId = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
-                const dt = o.created_at ? new Date(o.created_at) : null;
-                const dateStr = dt ? dt.toLocaleDateString() : '-';
-                const timeStr = dt ? dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
-                return (
-                  <tr key={canonicalId} data-status={status}>
-                    <td className="rc-col-order">{displayId && String(displayId).startsWith('#') ? displayId : (`#${displayId}`)}</td>
-                    <td className="rc-col-customer">{fname} {lname}</td>
-                    <td className="rc-col-address">{addr}</td>
-                    <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
-                    <td className="rc-col-date">{dateStr}</td>
-                    <td className="rc-col-time">{timeStr}</td>
-                    <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(canonicalId)}>Manage</button></td>
-                  </tr>
-                );
-              })}
+              {!loading && !error && (()=>{
+                const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
+                return visible.map((o,i)=>{
+                  const status = getOrderStatus(o);
+                  const fname = o.customer?.first_name || '';
+                  const lname = o.customer?.last_name || '';
+                  const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
+                  const displayId = o.name || o.order_number || o.id || i;
+                  const canonicalId = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
+                  const dt = o.created_at ? new Date(o.created_at) : null;
+                  const dateStr = dt ? dt.toLocaleDateString() : '-';
+                  const timeStr = dt ? dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+                  return (
+                    <tr key={canonicalId} data-status={status}>
+                      <td className="rc-col-order">{displayId && String(displayId).startsWith('#') ? displayId : (`#${displayId}`)}</td>
+                      <td className="rc-col-customer">{fname} {lname}</td>
+                      <td className="rc-col-address">{addr}</td>
+                      <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
+                      <td className="rc-col-date">{dateStr}</td>
+                      <td className="rc-col-time">{timeStr}</td>
+                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(canonicalId)}>Assign Rider</button></td>
+                    </tr>
+                  );
+                });
+              })()}
               {!loading && !error && orders.length === 0 && (<tr><td colSpan={7} className="section-note">No recent orders.</td></tr>)}
             </tbody>
           </table>
