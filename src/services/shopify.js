@@ -86,7 +86,10 @@ async function fetchAllOrders(params = {}) {
   let page = 0;
   const maxPages = Number(params.maxPages || 50); // safety cap
   while (page < maxPages) {
-    const { orders, page_info, error } = await listOrders({ ...params, page_info: pageInfo });
+    // When using page_info cursor pagination Shopify does not allow certain other params
+    // (like status, created_at_min/max). For subsequent pages only pass page_info and limit.
+    const callParams = pageInfo ? { page_info: pageInfo, limit: params.limit } : { ...params };
+    const { orders, page_info, error } = await listOrders(callParams);
     if (error) return { orders: all, error };
     all.push(...orders);
     if (!page_info) break;
