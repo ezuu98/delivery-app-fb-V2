@@ -88,7 +88,25 @@
 .assign-table th{background:#f9fafb;padding:10px;text-align:left;border-bottom:1px solid #eef2f7}
 .assign-table td{padding:10px;border-bottom:1px solid #f3f4f6}
 .btn-assign{background:#0070f3;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
-.btn-assign:disabled{opacity:0.6;cursor:not-allowed}
+    .btn-assign:disabled{opacity:0.6;cursor:not-allowed}
+
+    /* Secondary button */
+    .btn-secondary{background:#fff;color:#374151;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn-secondary:hover{background:#f8fafc}
+
+    /* Create rider button specific */
+    .btn-create-rider{padding:10px 14px}
+
+    /* Create Rider modal */
+    .create-rider-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .create-rider-modal{background:#fff;border-radius:12px;max-width:520px;width:96%;box-shadow:0 18px 60px rgba(0,0,0,0.12);overflow:hidden}
+    .create-rider-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f7}
+    .create-rider-title{margin:0;font-size:18px}
+    .create-rider-close{background:transparent;border:0;font-size:18px;cursor:pointer}
+    .create-rider-body{padding:12px 16px;max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+    .field-label{display:flex;flex-direction:column;gap:8px}
+    .field-input{padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px}
+    .create-rider-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
 .rc-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:currentColor;opacity:.45;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain}
 .rc-search-input{width:100%;padding:12px 14px 12px 40px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}
 .rc-filters{display:flex;gap:10px;margin-left:0;padding-left:0;align-items:center}
