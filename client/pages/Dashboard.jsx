@@ -34,6 +34,16 @@ export default function Dashboard(){
     return 'new';
   }
 
+  const [showAssign, setShowAssign] = useState(false);
+  const [activeOrder, setActiveOrder] = useState(null);
+
+  function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
+  function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function onAssigned(){
+    // refresh orders after assign
+    window.location.reload();
+  }
+
   return (
     <SiteLayout>
       <section className="dashboard-orders">
