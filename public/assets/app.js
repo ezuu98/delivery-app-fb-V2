@@ -18548,10 +18548,7 @@ function v_() {
           var aa, In;
           const at = wv(W), St = ((aa = W.customer) == null ? void 0 : aa.first_name) || "", Zt = ((In = W.customer) == null ? void 0 : In.last_name) || "", Xe = W.shipping_address && `${W.shipping_address.address1 || ""} ${W.shipping_address.city || ""}${W.shipping_address.province ? `, ${W.shipping_address.province}` : ""}${W.shipping_address.country ? `, ${W.shipping_address.country}` : ""}` || "-", en = at === "new" ? "Assign Rider" : at === "assigned" ? "View" : at === "in-transit" ? "Track" : "Details", it = W.name || W.order_number || W.id;
           return /* @__PURE__ */ d.jsxDEV("tr", { "data-status": at, children: [
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name", children: [
-              "#",
-              it
-            ] }, void 0, !0, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name", children: it }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 139,
               columnNumber: 21
