@@ -6,6 +6,9 @@ export default function Dashboard(){
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
+  const [meta, setMeta] = useState({ total: 0, page: 1, limit: 25, pages: 1 });
 
   useEffect(()=>{
     let alive = true;
@@ -13,17 +16,21 @@ export default function Dashboard(){
       setLoading(true); setError('');
       try{
         const params = new URLSearchParams();
-        params.set('limit', '25');
+        params.set('limit', String(limit));
+        params.set('page', String(page));
         const res = await fetch(`/api/orders?${params.toString()}`, { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load orders');
         const data = await res.json();
-        if(alive){ setOrders(Array.isArray(data.orders) ? data.orders : []); }
+        if(alive){
+          setOrders(Array.isArray(data.orders) ? data.orders : []);
+          setMeta({ total: data.meta?.total || 0, page: data.meta?.page || page, limit: data.meta?.limit || limit, pages: data.meta?.pages || 1 });
+        }
       }catch(e){ if(alive) setError(e.message || 'Failed to load orders'); }
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[]);
+  },[page, limit]);
 
   function getOrderStatus(o){
     if (o && o.assignment) return 'assigned';
