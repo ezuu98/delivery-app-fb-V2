@@ -82,7 +82,7 @@ export default function Riders(){
               <option value="all">Rider</option>
               {riders.map(r => (<option key={r.id} value={r.id}>{r.name}</option>))}
             </select>
-            <select className="rc-select rc-chip" value={statusFilter} onChange={e=>{ setStatusFilter(e.target.value); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={statusFilter} onChange={e=>{ setStatusFilter(e.target.value); setPage(1); }}>
               <option value="all">Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
