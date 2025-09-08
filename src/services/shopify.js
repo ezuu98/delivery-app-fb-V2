@@ -104,4 +104,34 @@ async function fetchAllOrders(params = {}) {
   return { orders: all, error: null };
 }
 
-module.exports = { listOrders, isConfigured, fetchAllOrders };
+async function registerWebhook(topic, address, format = 'json'){
+  if(!topic || !address) return { ok: false, error: 'Missing params' };
+  const body = { webhook: { topic, address, format } };
+  const url = '/webhooks.json';
+  // requestShopify supports building URL from shop/token
+  const resp = await requestShopify(url, {});
+  // requestShopify currently only handles GET style; implement direct fetch for POST
+  let { shop, token, version } = getConfig();
+  if (!shop) shop = await getDefaultShop();
+  if (!token && shop) token = await getStoredToken(shop);
+  if (!shop || !token) return { ok: false, error: 'Not configured' };
+  const fullUrl = `https://${shop}/admin/api/${version}${url}`;
+  try{
+    const res = await fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        'X-Shopify-Access-Token': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(()=>null);
+    if (!res.ok) return { ok: false, status: res.status, data, error: data || 'Failed' };
+    return { ok: true, status: res.status, data };
+  }catch(e){
+    return { ok: false, error: e?.message || String(e) };
+  }
+}
+
+module.exports = { listOrders, isConfigured, fetchAllOrders, registerWebhook };
