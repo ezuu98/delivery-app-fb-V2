@@ -82,19 +82,20 @@ export default function Dashboard(){
                 const fname = o.customer?.first_name || '';
                 const lname = o.customer?.last_name || '';
                 const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
-                const orderId = o.name || o.order_number || o.id || i;
+                const displayId = o.name || o.order_number || o.id || i;
+                const canonicalId = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
                 const dt = o.created_at ? new Date(o.created_at) : null;
                 const dateStr = dt ? dt.toLocaleDateString() : '-';
                 const timeStr = dt ? dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
                 return (
-                  <tr key={orderId} data-status={status}>
-                    <td className="rc-col-order">#{orderId}</td>
+                  <tr key={canonicalId} data-status={status}>
+                    <td className="rc-col-order">{displayId && String(displayId).startsWith('#') ? displayId : (`#${displayId}`)}</td>
                     <td className="rc-col-customer">{fname} {lname}</td>
                     <td className="rc-col-address">{addr}</td>
                     <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                     <td className="rc-col-date">{dateStr}</td>
                     <td className="rc-col-time">{timeStr}</td>
-                    <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(orderId)}>Manage</button></td>
+                    <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(canonicalId)}>Manage</button></td>
                   </tr>
                 );
               })}
