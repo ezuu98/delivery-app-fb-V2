@@ -117,6 +117,9 @@ export default function Dashboard(){
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
         )}
+        {showCreateRider && (
+          <CreateRiderModal onClose={closeCreateRider} onCreated={onRiderCreated} />
+        )}
       </section>
     </SiteLayout>
   );
