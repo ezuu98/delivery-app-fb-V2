@@ -48,7 +48,7 @@ export default function Dashboard(){
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
   function onAssigned(payload){
-    // remove assigned order from the dashboard list so it is not visible
+    // remove assigned order from the dashboard list so it is not visible and update totals
     try{
       const { orderId } = payload || {};
       if (!orderId) return;
@@ -56,6 +56,8 @@ export default function Dashboard(){
         const key = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
         return String(key) !== String(orderId);
       }));
+      // decrement total count to reflect removal
+      setMeta(prev => ({ ...(prev || {}), total: Math.max(0, (prev?.total || 0) - 1) }));
     }catch(e){ /* ignore */ }
   }
 
