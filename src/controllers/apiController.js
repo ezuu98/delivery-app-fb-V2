@@ -7,6 +7,29 @@ const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
 
+async function findOrderByAnyId(id){
+  const raw = String(id || '');
+  const tried = [];
+  const candidates = [];
+  // try exact
+  candidates.push(raw);
+  // try stripped
+  candidates.push(raw.replace(/^#+/, ''));
+  // try with single leading #
+  if(!raw.startsWith('#')) candidates.push('#' + raw);
+  // try with double leading #
+  if(!raw.startsWith('##')) candidates.push('##' + raw);
+  for(const k of candidates){
+    if(!k) continue;
+    tried.push(k);
+    try{
+      const o = await orderModel.getById(String(k));
+      if(o) return { key: String(k), order: o };
+    }catch(_){ }
+  }
+  return { key: null, order: null, tried };
+}
+
 module.exports = {
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
