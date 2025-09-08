@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
-import CreateRiderModal from '../components/CreateRiderModal.jsx';
 
 export default function Dashboard(){
   const [orders, setOrders] = useState([]);
@@ -38,7 +37,6 @@ export default function Dashboard(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
-  const [showCreateRider, setShowCreateRider] = useState(false);
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
@@ -47,12 +45,6 @@ export default function Dashboard(){
     window.location.reload();
   }
 
-  function openCreateRider(){ setShowCreateRider(true); }
-  function closeCreateRider(){ setShowCreateRider(false); }
-  function onRiderCreated(){
-    // small feedback: reload to ensure riders show in assign modal
-    window.location.reload();
-  }
 
   return (
     <SiteLayout>
@@ -68,7 +60,6 @@ export default function Dashboard(){
               <div className="stat-label">Orders</div>
             </div>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
-            <button className="btn-secondary btn-create-rider" onClick={openCreateRider}>Create Rider</button>
           </div>
         </header>
 
@@ -116,9 +107,6 @@ export default function Dashboard(){
         </div>
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
-        )}
-        {showCreateRider && (
-          <CreateRiderModal onClose={closeCreateRider} onCreated={onRiderCreated} />
         )}
       </section>
     </SiteLayout>
