@@ -56,21 +56,12 @@ export default function SiteLayout({ children }){
       <header className="site-header">
         <h1 className="site-title"><span className="brand"><img className="brand-logo" src="https://cdn.builder.io/api/v1/image/assets%2Fa5647e4ccf094d4d939a079b9f892c1c%2F240094ac7d6b4725b685503d97c9d9a3?format=webp&width=64" alt="FreshBasket logo" /><span className="brand-name">FreshBasket</span></span></h1>
         <nav className="site-nav">
-          {
-            (() => {
-              const navigate = useNavigate();
-              return (
-                <>
-                  <Link to="/dashboard" onClick={(e)=>{ e.preventDefault(); navigate('/dashboard'); }}>Dashboard</Link>
-                  <Link to="/orders" onClick={(e)=>{ e.preventDefault(); navigate('/orders'); }}>Orders</Link>
-                  <Link to="/riders" onClick={(e)=>{ e.preventDefault(); navigate('/riders'); }}>Riders</Link>
-                  <Link to="/customers" onClick={(e)=>{ e.preventDefault(); navigate('/customers'); }}>Customers</Link>
-                  <Link to="/reports" onClick={(e)=>{ e.preventDefault(); navigate('/reports'); }}>Reports</Link>
-                  <span className="site-nav-spacer"></span>
-                </>
-              );
-            })()
-          }
+          <Link to="/dashboard" onClick={(e)=>{ e.preventDefault(); navigate('/dashboard'); }}>Dashboard</Link>
+          <Link to="/orders" onClick={(e)=>{ e.preventDefault(); navigate('/orders'); }}>Orders</Link>
+          <Link to="/riders" onClick={(e)=>{ e.preventDefault(); navigate('/riders'); }}>Riders</Link>
+          <Link to="/customers" onClick={(e)=>{ e.preventDefault(); navigate('/customers'); }}>Customers</Link>
+          <Link to="/reports" onClick={(e)=>{ e.preventDefault(); navigate('/reports'); }}>Reports</Link>
+          <span className="site-nav-spacer"></span>
           <div className="nav-dropdown">
             <button id="notifBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="notifMenu" aria-label="Notifications" title="Notifications">
               <svg className="bell-icon" width="29" height="29" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
