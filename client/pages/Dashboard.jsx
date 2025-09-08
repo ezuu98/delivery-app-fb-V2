@@ -37,11 +37,19 @@ export default function Dashboard(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [showCreateRider, setShowCreateRider] = useState(false);
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
   function onAssigned(){
     // refresh orders after assign
+    window.location.reload();
+  }
+
+  function openCreateRider(){ setShowCreateRider(true); }
+  function closeCreateRider(){ setShowCreateRider(false); }
+  function onRiderCreated(){
+    // small feedback: reload to ensure riders show in assign modal
     window.location.reload();
   }
 
