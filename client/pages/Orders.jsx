@@ -25,6 +25,9 @@ export default function Orders(){
   const [shopifyErr, setShopifyErr] = useState('');
   const [shopifyConfigured, setShopifyConfigured] = useState(true);
 
+  const [showAssign, setShowAssign] = useState(false);
+  const [activeOrder, setActiveOrder] = useState(null);
+
   useEffect(()=>{
     let alive = true;
     (async ()=>{
