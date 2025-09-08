@@ -26,6 +26,7 @@ export default function Dashboard(){
   },[]);
 
   function getOrderStatus(o){
+    if (o && o.assignment) return 'assigned';
     const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
     const tagStr = tags.join(',').toLowerCase();
     if(tagStr.includes('assigned')) return 'assigned';
