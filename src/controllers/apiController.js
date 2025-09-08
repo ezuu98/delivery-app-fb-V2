@@ -253,6 +253,8 @@ module.exports = {
                   city: billing.city || null,
                   name: billing.name || null,
                   phone: billing.phone || null,
+                  latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
+                  longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
                 },
                 cancel_reason: o.cancel_reason || null,
                 cancelled_at: o.cancelled_at || null,
