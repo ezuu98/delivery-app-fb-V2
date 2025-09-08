@@ -234,7 +234,42 @@ module.exports = {
             for (const o of slice){
               const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
               const ref = db.collection('orders').doc(id);
-              batch.set(ref, o, { merge: true });
+
+              // Transform order to only include requested fields
+              const billing = o.billing_address || o.shipping_address || {};
+              const client = o.client_details || {};
+              const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
+              const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
+
+              const payload = {
+                orderId: id,
+                name: o.name || null,
+                order_number: o.order_number || null,
+                created_at: o.created_at || null,
+                // billing address
+                billing_address: {
+                  address1: billing.address1 || null,
+                  address2: billing.address2 || null,
+                  city: billing.city || null,
+                  name: billing.name || null,
+                  phone: billing.phone || null,
+                },
+                cancel_reason: o.cancel_reason || null,
+                cancelled_at: o.cancelled_at || null,
+                // client details
+                client_details: {
+                  confirmed: client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null),
+                  contact_email: client.contact_email || null,
+                  created_at: client.created_at || null,
+                },
+                closed_at: o.closed_at || null,
+                confirmed: o.confirmed !== undefined ? o.confirmed : null,
+                presentment_money_amount: presentmentAmt,
+                shop_money_amount: shopAmt,
+                current_total_price: o.current_total_price || null,
+              };
+
+              batch.set(ref, payload, { merge: true });
             }
             await batch.commit();
           }
