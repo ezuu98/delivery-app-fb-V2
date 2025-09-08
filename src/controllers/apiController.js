@@ -290,7 +290,8 @@ module.exports = {
   },
 
   assignOrder: async (req, res) => {
-    const id = String(req.params.id);
+    let id = String(req.params.id);
+    id = id.replace(/^#+/, '');
     const { riderId } = req.body || {};
     const rider = riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
@@ -302,7 +303,8 @@ module.exports = {
   },
 
   unassignOrder: async (req, res) => {
-    const id = String(req.params.id);
+    let id = String(req.params.id);
+    id = id.replace(/^#+/, '');
     const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
     await orderModel.unassign(id);
