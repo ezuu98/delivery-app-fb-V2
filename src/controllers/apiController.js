@@ -154,7 +154,9 @@ module.exports = {
   },
 
   getOrder: async (req, res) => {
-    const id = String(req.params.id);
+    let id = String(req.params.id);
+    // strip leading hash characters (Shopify order names often include '#')
+    id = id.replace(/^#+/, '');
     const order = await orderModel.getById(id);
     if (!order) return res.status(404).json(fail('Order not found'));
     const assignment = await orderModel.getAssignment(id);
