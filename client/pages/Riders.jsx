@@ -91,7 +91,6 @@ export default function Riders(){
             <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
-            <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
           </div>
 
         <div className="rc-table-wrapper">
