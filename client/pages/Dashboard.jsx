@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import AssignModal from '../components/AssignModal.jsx';
 
 export default function Dashboard(){
   const [orders, setOrders] = useState([]);
