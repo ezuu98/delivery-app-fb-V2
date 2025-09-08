@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function SiteLayout({ children }){
   useEffect(()=>{
@@ -54,11 +55,11 @@ export default function SiteLayout({ children }){
       <header className="site-header">
         <h1 className="site-title"><span className="brand"><img className="brand-logo" src="https://cdn.builder.io/api/v1/image/assets%2Fa5647e4ccf094d4d939a079b9f892c1c%2F240094ac7d6b4725b685503d97c9d9a3?format=webp&width=64" alt="FreshBasket logo" /><span className="brand-name">FreshBasket</span></span></h1>
         <nav className="site-nav">
-          <a href="/dashboard">Dashboard</a>
-          <a href="/orders">Orders</a>
-          <a href="/riders">Riders</a>
-          <a href="/customers">Customers</a>
-          <a href="/reports">Reports</a>
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/orders">Orders</Link>
+          <Link to="/riders">Riders</Link>
+          <Link to="/customers">Customers</Link>
+          <Link to="/reports">Reports</Link>
           <span className="site-nav-spacer"></span>
           <div className="nav-dropdown">
             <button id="notifBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="notifMenu" aria-label="Notifications" title="Notifications">
@@ -85,8 +86,8 @@ export default function SiteLayout({ children }){
             </button>
             <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn" aria-hidden="true">
               <div className="dropdown-header">Signed in</div>
-              <a className="dropdown-item" href="/riders">Riders</a>
-              <a className="dropdown-item" href="/orders">Orders</a>
+              <Link className="dropdown-item" to="/riders">Riders</Link>
+              <Link className="dropdown-item" to="/orders">Orders</Link>
               <form method="POST" action="/auth/logout"><button className="dropdown-item" type="submit">Logout</button></form>
             </div>
           </div>
