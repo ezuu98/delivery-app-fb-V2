@@ -73,7 +73,7 @@ export default function Riders(){
             <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
           <div className="rc-filters">
-            <select className="rc-select rc-chip" value={dateFilter} onChange={e=>{ setDateFilter(e.target.value); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={dateFilter} onChange={e=>{ setDateFilter(e.target.value); setPage(1); }}>
               <option value="all">Date Range</option>
               <option value="7">Last 7 days</option>
               <option value="30">Last 30 days</option>
