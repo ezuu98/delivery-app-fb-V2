@@ -72,6 +72,7 @@ export default function Orders(){
       const { orderId } = payload || {};
       if(!orderId) return;
       setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id) !== String(orderId)));
+      setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
     }catch(e){}
   }
 
