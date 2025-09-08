@@ -43,4 +43,26 @@ router.get('/callback', async (req, res) => {
   }
 });
 
+// Admin endpoint to register required webhooks pointing to this app
+router.post('/register-webhooks', ensureAuthenticated, async (req, res) => {
+  try{
+    const base = `${req.protocol}://${req.get('host')}`;
+    const hooks = [
+      { topic: 'orders/create', path: '/webhooks/shopify/orders/create' },
+      { topic: 'orders/updated', path: '/webhooks/shopify/orders/updated' },
+      { topic: 'orders/fulfilled', path: '/webhooks/shopify/orders/fulfilled' },
+      { topic: 'orders/cancelled', path: '/webhooks/shopify/orders/cancelled' },
+    ];
+    const results = [];
+    for (const h of hooks){
+      const addr = base + h.path;
+      const r = await registerWebhook(h.topic, addr, 'json');
+      results.push({ topic: h.topic, addr, result: r });
+    }
+    return res.json({ ok: true, results });
+  }catch(e){
+    return res.status(500).json({ ok: false, error: e?.message || 'Failed' });
+  }
+});
+
 module.exports = router;
