@@ -47,9 +47,22 @@ export default function Dashboard(){
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
-  function onAssigned(){
-    // refresh orders after assign
-    window.location.reload();
+  function onAssigned(payload){
+    // update orders in-place so we don't reload the whole page
+    try{
+      const { orderId, riderId } = payload || {};
+      if (!orderId) return;
+      setOrders(prev => prev.map((o, i) => {
+        const key = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
+        if (String(key) !== String(orderId)) return o;
+        const assignedAt = new Date().toISOString();
+        const assignment = { riderId: String(riderId), assignedAt, status: 'assigned' };
+        // ensure tags include 'assigned'
+        const tags = Array.isArray(o.tags) ? o.tags.slice() : (typeof o.tags === 'string' ? o.tags.split(',').map(s=>s.trim()).filter(Boolean) : []);
+        if (!tags.map(t=>t.toLowerCase()).includes('assigned')) tags.push('assigned');
+        return { ...o, assignment, tags, riderId: String(riderId), assignedAt };
+      }));
+    }catch(e){ /* ignore */ }
   }
 
 
