@@ -207,6 +207,50 @@ module.exports = {
     }
   },
 
+  // Admin: fetch all orders from Shopify starting at a given ISO date and persist to local store and Firestore
+  syncOrders: async (req, res) => {
+    try{
+      const { startDate } = req.body || {};
+      const year = new Date().getFullYear();
+      const defaultStart = `${year}-09-01T00:00:00Z`;
+      const created_at_min = startDate ? String(startDate) : defaultStart;
+
+      const { orders = [], error } = await fetchAllOrders({ created_at_min, maxPages: 1000 });
+      if (error) {
+        log.error('admin.syncOrders.fetch.failed', { message: error });
+        return res.status(500).json(fail('Failed to fetch orders from Shopify'));
+      }
+
+      // Persist to local cache (redis/in-memory)
+      await orderModel.upsertMany(orders);
+
+      // Persist to Firestore in chunks of 500
+      try{
+        const db = getFirestore();
+        if (db && Array.isArray(orders) && orders.length){
+          const chunkSize = 500;
+          for (let i = 0; i < orders.length; i += chunkSize){
+            const batch = db.batch();
+            const slice = orders.slice(i, i + chunkSize);
+            for (const o of slice){
+              const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
+              const ref = db.collection('orders').doc(id);
+              batch.set(ref, o, { merge: true });
+            }
+            await batch.commit();
+          }
+        }
+      }catch(e){
+        log.warn('admin.syncOrders.firestore.failed', { message: e?.message });
+      }
+
+      return res.json(ok({ count: Array.isArray(orders) ? orders.length : 0 }));
+    }catch(e){
+      log.error('admin.syncOrders.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to sync orders'));
+    }
+  },
+
   assignOrder: async (req, res) => {
     const id = String(req.params.id);
     const { riderId } = req.body || {};
