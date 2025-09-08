@@ -18,7 +18,6 @@ export default function App(){
         <Route path="/riders/:id" element={<RiderProfile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/reports" element={<Reports />} />
-        <Route path="/customers" element={<Customers />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
