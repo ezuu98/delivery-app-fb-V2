@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function SiteLayout({ children }){
+  const navigate = useNavigate();
   useEffect(()=>{
     const notifBtn = document.getElementById('notifBtn');
     const notifMenu = document.getElementById('notifMenu');
