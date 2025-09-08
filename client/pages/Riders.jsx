@@ -88,7 +88,7 @@ export default function Riders(){
               <option value="Inactive">Inactive</option>
             </select>
           </div>
-            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
           </div>
