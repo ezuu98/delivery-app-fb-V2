@@ -123,6 +123,38 @@ async function unassign(orderId){
     assignments.delete(id);
   }
   try{
+    // update cache first
+    try{
+      const has = await ensureRedis();
+      if (has) {
+        const cli = redisSvc.getClient();
+        const raw = await cli.hGet('orders', id);
+        if (raw) {
+          try{
+            const ord = JSON.parse(raw);
+            let tags = Array.isArray(ord.tags) ? ord.tags.slice() : (typeof ord.tags === 'string' ? ord.tags.split(',').map(s=>s.trim()).filter(Boolean) : []);
+            tags = tags.filter(t => String(t || '').toLowerCase() !== 'assigned');
+            ord.tags = tags;
+            ord.riderId = null;
+            ord.assignedAt = null;
+            ord.unassignedAt = new Date().toISOString();
+            await cli.hSet('orders', id, JSON.stringify(ord));
+          }catch(e){}
+        }
+      } else {
+        const ord = ordersById.get(id) || null;
+        if (ord) {
+          let tags = Array.isArray(ord.tags) ? ord.tags.slice() : (typeof ord.tags === 'string' ? ord.tags.split(',').map(s=>s.trim()).filter(Boolean) : []);
+          tags = tags.filter(t => String(t || '').toLowerCase() !== 'assigned');
+          ord.tags = tags;
+          ord.riderId = null;
+          ord.assignedAt = null;
+          ord.unassignedAt = new Date().toISOString();
+          ordersById.set(id, ord);
+        }
+      }
+    }catch(e){ log.warn('order.cache.update.unassign.failed', { message: e?.message }); }
+
     const db = getFirestore();
     if (db) {
       await db.collection('assignments').doc(id).set({ orderId: id, status: 'unassigned', unassignedAt: new Date().toISOString() }, { merge: true });
