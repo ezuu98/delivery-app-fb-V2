@@ -9,8 +9,28 @@
   </head>
   <body>
     <main class="content"><div id="react-root"></div></main>
-    <footer class="site-footer">&copy; <script>document.write(new Date().getFullYear())</script> FreshBasket</footer>
     <script src="/firebase-config.js"></script>
     <script type="module" src="/assets/app.js?v=2"></script>
+    <script>
+      // Intercept same-origin link clicks to trigger client-side navigation (for static build)
+      document.addEventListener('click', function(e){
+        try{
+          const a = e.target.closest && e.target.closest('a');
+          if(!a) return;
+          const href = a.getAttribute('href');
+          if(!href) return;
+          // ignore anchors, external links, mailto/tel
+          if(href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+          const url = new URL(href, window.location.href);
+          if(url.origin !== window.location.origin) return;
+          // Only handle internal app routes
+          if(url.pathname && url.pathname.startsWith('/')){
+            e.preventDefault();
+            history.pushState({}, '', url.pathname + url.search + url.hash);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }
+        }catch(_){ /* noop */ }
+      }, true);
+    </script>
   </body>
 </html>
