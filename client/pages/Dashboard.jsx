@@ -109,7 +109,7 @@ export default function Dashboard(){
                   const timeStr = dt ? dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
                   return (
                     <tr key={canonicalId} data-status={status}>
-                      <td className="rc-col-order">{displayId && String(displayId).startsWith('#') ? displayId : (`#${displayId}`)}</td>
+                      <td className="rc-col-order">{displayId}</td>
                       <td className="rc-col-customer">{fname} {lname}</td>
                       <td className="rc-col-address">{addr}</td>
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
