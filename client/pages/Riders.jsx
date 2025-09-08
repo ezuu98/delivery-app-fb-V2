@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import CreateRiderModal from '../components/CreateRiderModal.jsx';
 
 export default function Riders(){
   const [riders, setRiders] = useState([]);
@@ -12,6 +13,7 @@ export default function Riders(){
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
+  const [showCreateRider, setShowCreateRider] = useState(false);
 
   useEffect(()=>{
     let alive = true;
@@ -84,9 +86,13 @@ export default function Riders(){
             <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
+            <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
           </div>
 
         <div className="rc-table-wrapper">
+          {showCreateRider && (
+            <CreateRiderModal onClose={()=>setShowCreateRider(false)} onCreated={()=>{ window.location.reload(); }} />
+          )}
           <table className="rc-table">
             <thead>
               <tr>
