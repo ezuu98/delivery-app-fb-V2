@@ -68,6 +68,7 @@ export default function Dashboard(){
               <div className="stat-label">Orders</div>
             </div>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
+            <button className="btn-secondary" onClick={openCreateRider} style={{ marginLeft: '8px' }}>Create Rider</button>
           </div>
         </header>
 
