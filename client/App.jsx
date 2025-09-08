@@ -6,7 +6,6 @@ import Riders from './pages/Riders.jsx';
 import RiderProfile from './pages/RiderProfile.jsx';
 import Orders from './pages/Orders.jsx';
 import Reports from './pages/Reports.jsx';
-import Customers from './pages/Customers.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 
 export default function App(){
