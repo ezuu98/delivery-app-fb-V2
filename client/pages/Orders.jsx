@@ -136,7 +136,7 @@ export default function Orders(){
                 const orderId = o.name || o.order_number || o.id;
                 return (
                   <tr key={orderId||i} data-status={status}>
-                    <td className="rc-col-name">#{orderId}</td>
+                    <td className="rc-col-name">{orderId}</td>
                     <td className="rc-col-km">{fname} {lname}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-commission"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
