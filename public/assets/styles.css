@@ -71,6 +71,24 @@
   .dashboard-table thead th.col-address{display:none}
   .dashboard-table tbody td.rc-col-address{display:none}
 }
+
+/* Manage action */
+.order-action{background:transparent;border:0;color:#6b7280;cursor:pointer;padding:6px 10px;border-radius:8px}
+.order-action.btn-manage{background:#f3f4f6;color:#374151}
+.order-action.btn-manage:hover{background:#e8eaf0}
+
+/* Assign modal */
+.assign-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:2000}
+.assign-modal{background:#fff;border-radius:12px;max-width:760px;width:96%;box-shadow:0 18px 60px rgba(0,0,0,0.2);overflow:hidden}
+.assign-modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f7}
+.assign-modal-title{margin:0;font-size:18px}
+.assign-modal-close{background:transparent;border:0;font-size:18px;cursor:pointer}
+.assign-modal-body{padding:12px 16px;max-height:60vh;overflow:auto}
+.assign-table{width:100%;border-collapse:collapse}
+.assign-table th{background:#f9fafb;padding:10px;text-align:left;border-bottom:1px solid #eef2f7}
+.assign-table td{padding:10px;border-bottom:1px solid #f3f4f6}
+.btn-assign{background:#0070f3;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn-assign:disabled{opacity:0.6;cursor:not-allowed}
 .rc-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:currentColor;opacity:.45;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain}
 .rc-search-input{width:100%;padding:12px 14px 12px 40px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}
 .rc-filters{display:flex;gap:10px;margin-left:0;padding-left:0;align-items:center}
