@@ -12,6 +12,6 @@ module.exports = {
   },
 
   dashboard: (req, res) => {
-    return res.redirect('/riders');
+    return res.redirect('/dashboard');
   },
 };
