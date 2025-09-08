@@ -63,10 +63,13 @@ export default function Dashboard(){
           </div>
           <div className="dashboard-header-right">
             <div className="stat-card">
-              <div className="stat-value">{loading ? '…' : orders.length}</div>
+              <div className="stat-value">{loading ? '…' : meta.total || orders.length}</div>
               <div className="stat-label">Orders</div>
             </div>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
+            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+              {[10,25,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
+            </select>
           </div>
         </header>
 
