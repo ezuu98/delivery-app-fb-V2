@@ -102,6 +102,9 @@ export default function Dashboard(){
             </tbody>
           </table>
         </div>
+        {showAssign && activeOrder && (
+          <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
+        )}
       </section>
     </SiteLayout>
   );
