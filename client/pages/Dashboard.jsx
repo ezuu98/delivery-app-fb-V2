@@ -30,7 +30,7 @@ export default function Dashboard(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[page, limit]);
+  },[page]);
 
   function getOrderStatus(o){
     if (o && o.assignment) return 'assigned';
