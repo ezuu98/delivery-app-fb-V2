@@ -115,6 +115,15 @@ export default function Dashboard(){
             </tbody>
           </table>
         </div>
+
+        <div className="rc-toolbar" aria-label="pagination">
+          <div className="rc-filters">
+            <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
+            <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
+            <button className="rc-select rc-chip" disabled={meta.page>=meta.pages || loading} onClick={()=>setPage(p=>Math.min(meta.pages,p+1))}>Next</button>
+          </div>
+        </div>
+
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
         )}
