@@ -1,6 +1,4 @@
 const admin = require('firebase-admin');
-
-const admin = require('firebase-admin');
 let initialized = false;
 
 function initFirebaseAdmin() {
