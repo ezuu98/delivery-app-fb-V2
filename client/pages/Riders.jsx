@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import CreateRiderModal from '../components/CreateRiderModal.jsx';
 
 export default function Riders(){
   const [riders, setRiders] = useState([]);
@@ -12,6 +13,7 @@ export default function Riders(){
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
+  const [showCreateRider, setShowCreateRider] = useState(false);
 
   useEffect(()=>{
     let alive = true;
@@ -55,9 +57,14 @@ export default function Riders(){
   return (
     <SiteLayout>
       <section className="rider-commissions">
-        <header className="rc-header">
-          <h2 className="rc-title">Rider Commissions</h2>
-          <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+        <header className="rc-header riders-header">
+          <div className="riders-header-left">
+            <h2 className="rc-title">Rider Commissions</h2>
+            <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+          </div>
+          <div className="riders-header-right">
+            <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
+          </div>
         </header>
 
         <div className="rc-toolbar">
@@ -66,27 +73,30 @@ export default function Riders(){
             <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
           <div className="rc-filters">
-            <select className="rc-select rc-chip" value={dateFilter} onChange={e=>{ setDateFilter(e.target.value); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={dateFilter} onChange={e=>{ setDateFilter(e.target.value); setPage(1); }}>
               <option value="all">Date Range</option>
               <option value="7">Last 7 days</option>
               <option value="30">Last 30 days</option>
             </select>
-            <select className="rc-select rc-chip" value={riderFilter} onChange={e=>setRiderFilter(e.target.value)}>
+            <select className="rc-select rc-select-arrow rc-chip" value={riderFilter} onChange={e=>setRiderFilter(e.target.value)}>
               <option value="all">Rider</option>
               {riders.map(r => (<option key={r.id} value={r.id}>{r.name}</option>))}
             </select>
-            <select className="rc-select rc-chip" value={statusFilter} onChange={e=>{ setStatusFilter(e.target.value); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={statusFilter} onChange={e=>{ setStatusFilter(e.target.value); setPage(1); }}>
               <option value="all">Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
-            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
           </div>
 
         <div className="rc-table-wrapper">
+          {showCreateRider && (
+            <CreateRiderModal onClose={()=>setShowCreateRider(false)} onCreated={()=>{ window.location.reload(); }} />
+          )}
           <table className="rc-table">
             <thead>
               <tr>

@@ -3,6 +3,8 @@ const { newState, setState, getState, buildInstallUrl, exchangeCodeForToken, sto
 const log = require('../utils/logger');
 
 const router = Router();
+const { ensureAuthenticated } = require('../middleware/auth');
+const { registerWebhook } = require('../services/shopify');
 
 function getBaseUrl(req){
   const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
@@ -38,6 +40,28 @@ router.get('/callback', async (req, res) => {
   }catch(e){
     log.error('shopify.callback.failed', { message: e?.message });
     return res.status(500).send('OAuth callback failed');
+  }
+});
+
+// Admin endpoint to register required webhooks pointing to this app
+router.post('/register-webhooks', ensureAuthenticated, async (req, res) => {
+  try{
+    const base = `${req.protocol}://${req.get('host')}`;
+    const hooks = [
+      { topic: 'orders/create', path: '/webhooks/shopify/orders/create' },
+      { topic: 'orders/updated', path: '/webhooks/shopify/orders/updated' },
+      { topic: 'orders/fulfilled', path: '/webhooks/shopify/orders/fulfilled' },
+      { topic: 'orders/cancelled', path: '/webhooks/shopify/orders/cancelled' },
+    ];
+    const results = [];
+    for (const h of hooks){
+      const addr = base + h.path;
+      const r = await registerWebhook(h.topic, addr, 'json');
+      results.push({ topic: h.topic, addr, result: r });
+    }
+    return res.json({ ok: true, results });
+  }catch(e){
+    return res.status(500).json({ ok: false, error: e?.message || 'Failed' });
   }
 });
 
