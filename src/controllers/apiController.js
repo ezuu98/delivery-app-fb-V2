@@ -3,6 +3,7 @@ const riderModel = require('../models/riderModel');
 const deliveryModel = require('../models/deliveryModel');
 const { getFirestore } = require('../services/firestore');
 const { listOrders, isConfigured, fetchAllOrders } = require('../services/shopify');
+const orderModel = require('../models/orderModel');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
@@ -257,6 +258,8 @@ module.exports = {
             // Prepare refs and prefetch existing docs to avoid overwriting existing riderId
             const refs = slice.map(o => db.collection('orders').doc(String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`)));
             const snaps = await Promise.all(refs.map(r => r.get()));
+            const assigns = await orderModel.listAssignments();
+            const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
 
             const batch = db.batch();
             for (let j = 0; j < slice.length; j++){
@@ -302,7 +305,10 @@ module.exports = {
               };
 
               const existing = snap.exists ? (snap.data() || {}) : {};
-              if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
+              const assigned = aMap.get(id);
+              if (assigned && assigned.riderId) {
+                payload.riderId = String(assigned.riderId);
+              } else if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
                 payload.riderId = null;
               }
 
