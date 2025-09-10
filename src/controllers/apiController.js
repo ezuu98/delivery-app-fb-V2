@@ -86,20 +86,35 @@ module.exports = {
   orders: async (req, res) => {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
-      let cached = await orderModel.getAll();
+
+      // Prefer Firestore as the canonical data source for UI
+      let cached = [];
+      try{
+        const db = getFirestore();
+        if (db) {
+          const snap = await db.collection('orders').get();
+          snap.forEach(doc => { const d = doc.data() || {}; cached.push(d); });
+        }
+      }catch(e){ /* firestore might not be available; fallback below */ }
+
+      // If Firestore empty, fall back to cached in-memory/redis and as last resort fetch from Shopify
       if (!cached.length) {
-        const { orders = [], error } = await listOrders({ limit: 100 });
-        if (error) log.warn('orders.fetch.error', { error });
-        await orderModel.upsertMany(orders);
         cached = await orderModel.getAll();
+        if (!cached.length) {
+          const { orders = [], error } = await listOrders({ limit: 100 });
+          if (error) log.warn('orders.fetch.error', { error });
+          await orderModel.upsertMany(orders);
+          cached = await orderModel.getAll();
+        }
       }
+
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
-        if(o.fulfillment_status === 'fulfilled') return 'delivered';
-        if(o.fulfillment_status === 'partial') return 'in-transit';
+        if(o.order_status === 'delivered' || o.fulfillment_status === 'fulfilled') return 'delivered';
+        if(o.order_status === 'in-transit' || o.fulfillment_status === 'partial') return 'in-transit';
         return 'new';
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
@@ -109,8 +124,8 @@ module.exports = {
         if (status !== 'all' && getOrderStatus(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
-          const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
-          const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
+          const customer = [o.customer?.first_name||'', o.customer?.last_name||'', o.customer?.full_name||''].join(' ').toLowerCase();
+          const addr = [o.shipping_address||'', o.billing_address||''].join(' ').toLowerCase();
           const text = `${name} ${customer} ${addr}`;
           if(!text.includes(ql)) return false;
         }
@@ -140,13 +155,12 @@ module.exports = {
           if (!ev) continue;
           if (ev.type === 'eta' && !etaMap.has(String(orderId))) etaMap.set(String(orderId), ev);
           if (ev.type === 'delivered' && !actualMap.has(String(orderId))) actualMap.set(String(orderId), ev);
-          // if both found we can break early
           if (etaMap.has(String(orderId)) && actualMap.has(String(orderId))) break;
         }
       }
 
       const withAssignments = items.map(o => {
-        const idKey = String(o.id || o.name || o.order_number || '');
+        const idKey = String(o.orderId || o.id || o.name || o.order_number || '');
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
         const delivered = actualMap.get(idKey) || null;
