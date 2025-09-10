@@ -73,6 +73,12 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       }
     }
 
+    // Populate riderId from existing assignment if present; otherwise only ensure field exists when requested
+    try{
+      const assignment = await orderModel.getAssignment(id).catch(()=>null);
+      if (assignment && assignment.riderId) payload.riderId = String(assignment.riderId);
+    }catch(_){}
+
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
 }
