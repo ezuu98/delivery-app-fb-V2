@@ -138,6 +138,13 @@ module.exports = {
         return true;
       });
 
+      // Sort filtered results by created_at descending (latest first)
+      filtered.sort((a, b) => {
+        const ta = a && a.created_at ? Date.parse(a.created_at) : 0;
+        const tb = b && b.created_at ? Date.parse(b.created_at) : 0;
+        return (Number.isFinite(tb) ? tb : 0) - (Number.isFinite(ta) ? ta : 0);
+      });
+
       const { items, meta } = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
 
       const assigns = await orderModel.listAssignments();
