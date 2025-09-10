@@ -54,6 +54,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null)),
       notes: order.note || null,
       created_at: order.created_at || null,
+      order_status: undefined, // set below
     };
 
     // Normalize lat/long to numbers or null
@@ -64,8 +65,9 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     if (order && Object.prototype.hasOwnProperty.call(order, 'riderId')) {
       payload.riderId = order.riderId;
     }
+    let assignment = null;
     try{
-      const assignment = await orderModel.getAssignment(id).catch(()=>null);
+      assignment = await orderModel.getAssignment(id).catch(()=>null);
       if (assignment && assignment.riderId) payload.riderId = String(assignment.riderId);
     }catch(_){}
     if (payload.riderId === undefined && ensureRiderField) {
@@ -73,6 +75,13 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       const existing = snap.exists ? (snap.data() || {}) : {};
       if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
     }
+
+    // Derive order_status
+    const fs = String(order.fulfillment_status || '').toLowerCase();
+    if (fs === 'fulfilled') payload.order_status = 'delivered';
+    else if (fs === 'partial') payload.order_status = 'in-transit';
+    else if (assignment && assignment.riderId) payload.order_status = 'assigned';
+    else payload.order_status = 'new';
 
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
