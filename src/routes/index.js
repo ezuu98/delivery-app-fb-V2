@@ -31,8 +31,6 @@ router.get('/riders', ensureAuthenticated, sendSpa);
 router.get('/riders/:id', ensureAuthenticated, sendSpa);
 router.get('/reports', ensureAuthenticated, sendSpa);
 
-// Customers via SPA
-router.get('/customers', ensureAuthenticated, sendSpa);
 
 // API routes
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
@@ -45,6 +43,7 @@ router.post('/api/orders/:id/assign', ensureAuthenticatedJson, validate({ params
 router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.unassignOrder);
 router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
 router.post('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
+router.post('/api/admin/sync-orders', ensureAuthenticatedJson, apiController.syncOrders);
 router.get('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
 

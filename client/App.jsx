@@ -6,7 +6,7 @@ import Riders from './pages/Riders.jsx';
 import RiderProfile from './pages/RiderProfile.jsx';
 import Orders from './pages/Orders.jsx';
 import Reports from './pages/Reports.jsx';
-import Customers from './pages/Customers.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 export default function App(){
   return (
@@ -18,8 +18,7 @@ export default function App(){
         <Route path="/riders/:id" element={<RiderProfile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/reports" element={<Reports />} />
-        <Route path="/customers" element={<Customers />} />
-        <Route path="/dashboard" element={<Navigate to="/riders" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
     </BrowserRouter>

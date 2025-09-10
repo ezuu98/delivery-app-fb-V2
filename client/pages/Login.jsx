@@ -48,7 +48,7 @@ export default function Login(){
       const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken }) });
       if(!res.ok) throw new Error('Session creation failed');
       setOk('Signed in successfully. Redirecting...');
-      setTimeout(()=> window.location.href = '/riders', 600);
+      setTimeout(()=> window.location.href = '/dashboard', 600);
     }catch(e){ setError(mapError(e)); }
     finally{ setLoading(false); }
   }

@@ -1,11 +1,34 @@
-const { listOrders, isConfigured } = require('../services/shopify');
 const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
 const deliveryModel = require('../models/deliveryModel');
 const { getFirestore } = require('../services/firestore');
+const { listOrders, isConfigured, fetchAllOrders } = require('../services/shopify');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
+
+async function findOrderByAnyId(id){
+  const raw = String(id || '');
+  const tried = [];
+  const candidates = [];
+  // try exact
+  candidates.push(raw);
+  // try stripped
+  candidates.push(raw.replace(/^#+/, ''));
+  // try with single leading #
+  if(!raw.startsWith('#')) candidates.push('#' + raw);
+  // try with double leading #
+  if(!raw.startsWith('##')) candidates.push('##' + raw);
+  for(const k of candidates){
+    if(!k) continue;
+    tried.push(k);
+    try{
+      const o = await orderModel.getById(String(k));
+      if(o) return { key: String(k), order: o };
+    }catch(_){ }
+  }
+  return { key: null, order: null, tried };
+}
 
 module.exports = {
   riders: async (req, res) => {
@@ -154,11 +177,11 @@ module.exports = {
   },
 
   getOrder: async (req, res) => {
-    const id = String(req.params.id);
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
-    const assignment = await orderModel.getAssignment(id);
-    return res.json(ok({ order: { ...order, assignment: assignment || null } }));
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const assignment = await orderModel.getAssignment(found.key);
+    return res.json(ok({ order: { ...found.order, assignment: assignment || null } }));
   },
 
   addDeliveryEvent: async (req, res) => {
@@ -206,22 +229,105 @@ module.exports = {
     }
   },
 
+  // Admin: fetch all orders from Shopify starting at a given ISO date and persist to local store and Firestore
+  syncOrders: async (req, res) => {
+    try{
+      const { startDate } = req.body || {};
+      const year = new Date().getFullYear();
+      const defaultStart = `${year}-09-01T00:00:00Z`;
+      const created_at_min = startDate ? String(startDate) : defaultStart;
+
+      const { orders = [], error } = await fetchAllOrders({ created_at_min, maxPages: 1000 });
+      if (error) {
+        log.error('admin.syncOrders.fetch.failed', { message: error });
+        return res.status(500).json(fail('Failed to fetch orders from Shopify'));
+      }
+
+      // Persist to local cache (redis/in-memory)
+      await orderModel.upsertMany(orders);
+
+      // Persist to Firestore in chunks of 500
+      try{
+        const db = getFirestore();
+        if (db && Array.isArray(orders) && orders.length){
+          const chunkSize = 500;
+          for (let i = 0; i < orders.length; i += chunkSize){
+            const batch = db.batch();
+            const slice = orders.slice(i, i + chunkSize);
+            for (const o of slice){
+              const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
+              const ref = db.collection('orders').doc(id);
+
+              // Transform order to only include requested fields
+              const billing = o.billing_address || o.shipping_address || {};
+              const client = o.client_details || {};
+              const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
+              const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
+
+              const payload = {
+                orderId: id,
+                name: o.name || null,
+                order_number: o.order_number || null,
+                created_at: o.created_at || null,
+                // billing address
+                billing_address: {
+                  address1: billing.address1 || null,
+                  address2: billing.address2 || null,
+                  city: billing.city || null,
+                  name: billing.name || null,
+                  phone: billing.phone || null,
+                  latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
+                  longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
+                },
+                cancel_reason: o.cancel_reason || null,
+                cancelled_at: o.cancelled_at || null,
+                // client details
+                client_details: {
+                  confirmed: client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null),
+                  contact_email: client.contact_email || null,
+                  created_at: client.created_at || null,
+                },
+                closed_at: o.closed_at || null,
+                confirmed: o.confirmed !== undefined ? o.confirmed : null,
+                presentment_money_amount: presentmentAmt,
+                shop_money_amount: shopAmt,
+                current_total_price: o.current_total_price || null,
+              };
+
+              batch.set(ref, payload, { merge: true });
+            }
+            await batch.commit();
+          }
+        }
+      }catch(e){
+        log.warn('admin.syncOrders.firestore.failed', { message: e?.message });
+      }
+
+      return res.json(ok({ count: Array.isArray(orders) ? orders.length : 0 }));
+    }catch(e){
+      log.error('admin.syncOrders.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to sync orders'));
+    }
+  },
+
   assignOrder: async (req, res) => {
-    const id = String(req.params.id);
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const id = found.key;
     const { riderId } = req.body || {};
-    const rider = riderModel.getById(riderId);
+    const rider = await riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
     const assignment = await orderModel.assign(id, riderId);
     log.info('order.assigned', { orderId: id, riderId });
     return res.json(ok({ assignment }));
   },
 
   unassignOrder: async (req, res) => {
-    const id = String(req.params.id);
-    const order = await orderModel.getById(id);
-    if (!order) return res.status(404).json(fail('Order not found'));
+    const rawId = String(req.params.id);
+    const found = await findOrderByAnyId(rawId);
+    if (!found.order) return res.status(404).json(fail('Order not found'));
+    const id = found.key;
     await orderModel.unassign(id);
     log.info('order.unassigned', { orderId: id });
     return res.json(ok({ ok: true }));

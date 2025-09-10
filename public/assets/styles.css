@@ -46,10 +46,76 @@
 .rc-subtitle{margin:0;color:#6b7280}
 .rc-toolbar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:12px 0 18px}
 .rc-search{flex:1;position:relative}
+
+/* Dashboard specific */
+.dashboard-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .riders-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .riders-header-right{display:flex;align-items:center;gap:8px}
+.dashboard-header-left{flex:1}
+.dashboard-header-right{display:flex;align-items:center;gap:12px}
+.stat-card{background:#fff;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;text-align:center;min-width:88px}
+.stat-value{font-size:18px;font-weight:700}
+.stat-label{font-size:12px;color:#6b7280}
+.btn-primary{background:#0070f3;color:#fff;border:0;padding:10px 14px;border-radius:10px;cursor:pointer}
+
+.dashboard-table thead th.col-order{width:16%}
+.dashboard-table thead th.col-customer{width:16%}
+.dashboard-table thead th.col-address{width:28%}
+.dashboard-table thead th.col-status{width:10%}
+.dashboard-table thead th.col-date{width:8%}
+.dashboard-table thead th.col-time{width:8%}
+.dashboard-table thead th.col-action{width:8%}
+
+/* Responsive adjustments */
+@media (max-width:880px){
+  .dashboard-header{flex-direction:column;align-items:flex-start}
+  .dashboard-header-right{width:100%;display:flex;justify-content:space-between}
+  .dashboard-table thead th.col-address{display:none}
+  .dashboard-table tbody td.rc-col-address{display:none}
+}
+
+/* Manage action */
+.order-action{background:transparent;border:0;color:#6b7280;cursor:pointer;padding:6px 10px;border-radius:8px}
+.order-action.btn-manage{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;padding:8px 12px;font-weight:600}
+.order-action.btn-manage:hover{background:#e8eaf0}
+
+/* Assign modal */
+.assign-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:2000}
+.assign-modal{background:#fff;border-radius:12px;max-width:760px;width:96%;box-shadow:0 18px 60px rgba(0,0,0,0.2);overflow:hidden}
+.assign-modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f7}
+.assign-modal-title{margin:0;font-size:18px}
+.assign-modal-close{background:transparent;border:0;font-size:18px;cursor:pointer}
+.assign-modal-body{padding:12px 16px;max-height:60vh;overflow:auto}
+.assign-table{width:100%;border-collapse:collapse}
+.assign-table th{background:#f9fafb;padding:10px;text-align:left;border-bottom:1px solid #eef2f7}
+.assign-table td{padding:10px;border-bottom:1px solid #f3f4f6}
+.btn-assign{background:#0070f3;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn-assign:disabled{opacity:0.6;cursor:not-allowed}
+
+    /* Secondary button */
+    .btn-secondary{background:#fff;color:#374151;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn-secondary:hover{background:#f8fafc}
+
+    /* Create rider button specific */
+    .btn-create-rider{padding:10px 14px}
+
+    /* Create Rider modal */
+    .create-rider-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .create-rider-modal{background:#fff;border-radius:12px;max-width:520px;width:96%;box-shadow:0 18px 60px rgba(0,0,0,0.12);overflow:hidden}
+    .create-rider-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f7}
+    .create-rider-title{margin:0;font-size:18px}
+    .create-rider-close{background:transparent;border:0;font-size:18px;cursor:pointer}
+    .create-rider-body{padding:12px 16px;max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+    .field-label{display:flex;flex-direction:column;gap:8px}
+    .field-input{padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px}
+    .create-rider-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
 .rc-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:currentColor;opacity:.45;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat center/contain}
 .rc-search-input{width:100%;padding:12px 14px 12px 40px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}
-.rc-filters{display:flex;gap:10px}
-.rc-select{padding:8px 32px 8px 12px;border:1px solid #e5e7eb;border-radius:9999px;background:#F7FAFC;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:18px}
+.rc-filters{display:flex;gap:10px;margin-left:0;padding-left:0;align-items:center}
+.rc-filters .rc-chip{margin-left:0}
+.rc-select{padding:8px 12px;border:1px solid #e5e7eb;border-radius:9999px;background:#F7FAFC;appearance:none}
+/* Opt-in arrow for real select elements */
+.rc-select.rc-select-arrow{padding:8px 32px 8px 12px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:18px}
 .rc-chip{box-shadow:0 1px 1px rgba(0,0,0,.02)}
 .rc-table-wrapper{background:#F7FAFC;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .rc-table{width:100%;border-collapse:separate;border-spacing:0}

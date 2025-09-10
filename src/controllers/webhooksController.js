@@ -24,7 +24,41 @@ async function upsertFirestore(order){
     if (!db) return;
     const id = String(order?.id || order?.name || order?.order_number || '');
     if (!id) return;
-    await db.collection('orders').doc(id).set(order, { merge: true });
+
+    const billing = order.billing_address || order.shipping_address || {};
+    const client = order.client_details || {};
+    const presentmentAmt = (order.presentment_money && (order.presentment_money.amount || order.presentment_money.total)) || null;
+    const shopAmt = (order.shop_money && (order.shop_money.amount || order.shop_money.total)) || null;
+
+    const payload = {
+      orderId: id,
+      name: order.name || null,
+      order_number: order.order_number || null,
+      created_at: order.created_at || null,
+      billing_address: {
+        address1: billing.address1 || null,
+        address2: billing.address2 || null,
+        city: billing.city || null,
+        name: billing.name || null,
+        phone: billing.phone || null,
+        latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
+        longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
+      },
+      cancel_reason: order.cancel_reason || null,
+      cancelled_at: order.cancelled_at || null,
+      client_details: {
+        confirmed: client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null),
+        contact_email: client.contact_email || null,
+        created_at: client.created_at || null,
+      },
+      closed_at: order.closed_at || null,
+      confirmed: order.confirmed !== undefined ? order.confirmed : null,
+      presentment_money_amount: presentmentAmt,
+      shop_money_amount: shopAmt,
+      current_total_price: order.current_total_price || null,
+    };
+
+    await db.collection('orders').doc(id).set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
 }
 

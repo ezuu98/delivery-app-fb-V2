@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import AssignModal from '../components/AssignModal.jsx';
 
 function getOrderStatus(o){
   const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
@@ -23,6 +24,9 @@ export default function Orders(){
   const [error, setError] = useState('');
   const [shopifyErr, setShopifyErr] = useState('');
   const [shopifyConfigured, setShopifyConfigured] = useState(true);
+
+  const [showAssign, setShowAssign] = useState(false);
+  const [activeOrder, setActiveOrder] = useState(null);
 
   useEffect(()=>{
     let alive = true;
@@ -54,6 +58,24 @@ export default function Orders(){
 
   const filtered = useMemo(()=> orders, [orders]);
 
+  // visible respects tab: when tab==='all' hide assigned orders; otherwise filter by status
+  const visible = useMemo(()=>{
+    if(!Array.isArray(orders)) return [];
+    if(tab === 'all') return orders.filter(o => getOrderStatus(o) !== 'assigned');
+    return orders.filter(o => getOrderStatus(o) === tab);
+  }, [orders, tab]);
+
+  function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
+  function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function onAssigned(payload){
+    try{
+      const { orderId } = payload || {};
+      if(!orderId) return;
+      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id) !== String(orderId)));
+      setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
+    }catch(e){}
+  }
+
   return (
     <SiteLayout>
       <section className="rider-commissions">
@@ -73,9 +95,9 @@ export default function Orders(){
                 {k==='all'?'All':k.replace('-',' ')}
               </button>
             ))}
-            <input className="rc-select rc-chip" type="date" value={from} onChange={e=>{ setFrom(e.target.value); setPage(1); }} />
-            <input className="rc-select rc-chip" type="date" value={to} onChange={e=>{ setTo(e.target.value); setPage(1); }} />
-            <select className="rc-select rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
+            <input className="rc-chip" type="date" value={from} onChange={e=>{ setFrom(e.target.value); setPage(1); }} />
+            <input className="rc-chip" type="date" value={to} onChange={e=>{ setTo(e.target.value); setPage(1); }} />
+            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
           </div>
@@ -105,21 +127,21 @@ export default function Orders(){
               {!loading && error && (
                 <tr><td colSpan={6} className="auth-error">{error}</td></tr>
               )}
-              {!loading && !error && filtered.map((o,i)=>{
+              {!loading && !error && visible.map((o,i)=>{
                 const status = getOrderStatus(o);
                 const fname = o.customer?.first_name || '';
                 const lname = o.customer?.last_name || '';
                 const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
-                const action = status === 'new' ? 'Assign' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
+                const action = status === 'new' ? 'Assign Rider' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
                   <tr key={orderId||i} data-status={status}>
-                    <td className="rc-col-name">#{orderId}</td>
+                    <td className="rc-col-name">{orderId}</td>
                     <td className="rc-col-km">{fname} {lname}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-commission"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                     <td className="rc-col-commission">{o.created_at ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-commission"><a href="#" className="order-action" data-action={action.toLowerCase()}>{action}</a></td>
+                    <td className="rc-col-commission"><button className="order-action" onClick={(e)=>{ e.preventDefault(); if(status==='new') openAssign(String(orderId).replace(/^#+/, '')); }}>{action}</button></td>
                   </tr>
                 );
               })}
@@ -130,6 +152,10 @@ export default function Orders(){
           </table>
         </div>
         <div className="rc-toolbar" aria-label="pagination">
+        {showAssign && activeOrder && (
+          <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
+        )
+        }
           <div className="rc-filters">
             <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
             <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
