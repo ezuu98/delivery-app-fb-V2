@@ -111,27 +111,34 @@ module.exports = {
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
 
-      // Merge delivery events (expected times) into orders
+      // Merge delivery events (expected times and actual delivered time) into orders
       const evAll = await deliveryModel.listAll();
-      const eMap = new Map();
+      const etaMap = new Map();
+      const actualMap = new Map();
       for (const { orderId, events } of evAll){
         if (!orderId || !Array.isArray(events)) continue;
-        // find last 'eta' event
+        // find last 'eta' event and last 'delivered' event
         for (let i = events.length - 1; i >= 0; i--){
           const ev = events[i];
-          if (ev && ev.type === 'eta') { eMap.set(String(orderId), ev); break; }
+          if (!ev) continue;
+          if (ev.type === 'eta' && !etaMap.has(String(orderId))) etaMap.set(String(orderId), ev);
+          if (ev.type === 'delivered' && !actualMap.has(String(orderId))) actualMap.set(String(orderId), ev);
+          // if both found we can break early
+          if (etaMap.has(String(orderId)) && actualMap.has(String(orderId))) break;
         }
       }
 
       const withAssignments = items.map(o => {
         const idKey = String(o.id || o.name || o.order_number || '');
         const assignment = amap.get(idKey) || null;
-        const eta = eMap.get(idKey) || null;
+        const eta = etaMap.get(idKey) || null;
+        const delivered = actualMap.get(idKey) || null;
         return {
           ...o,
           assignment,
           rider: assignment?.riderId || (eta?.riderId || null),
-          expected_delivery_time: eta?.expectedAt || null,
+          expected_delivery_time: eta?.expectedAt || (o.expected_delivery_time || null),
+          actual_delivery_time: delivered?.at || (o.actual_delivery_time || null),
         };
       });
 
