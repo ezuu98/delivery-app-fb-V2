@@ -220,7 +220,38 @@ module.exports = {
       await orderModel.upsertMany([order]);
       try{
         const db = getFirestore();
-        if (db) await db.collection('orders').doc(String(order.id)).set(order, { merge: true });
+        if (db) {
+          const id = String(order.id);
+          const ref = db.collection('orders').doc(id);
+          const shipping = order.shipping_address || {};
+          const billing = order.billing_address || {};
+          const client = order.client_details || {};
+          const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+          const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+          const payload = {
+            orderId: id,
+            order_number: order.order_number || null,
+            name: order.name || null,
+            phone: order.phone || billing.phone || shipping.phone || null,
+            email: order.email || client.contact_email || null,
+            riderId: null,
+            shipping_address: shippingStr,
+            billing_address: billingStr,
+            latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+            longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
+            cancel_reason: order.cancel_reason || null,
+            cancelled_at: order.cancelled_at || null,
+            client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null)),
+            notes: order.note || null,
+            created_at: order.created_at || null,
+            order_status: 'new',
+          };
+          payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+          payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
+          await ref.set(payload, { merge: true });
+        }
       }catch(_){}
       return res.json(ok({ order }));
     }catch(e){
