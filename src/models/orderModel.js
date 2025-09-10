@@ -56,10 +56,27 @@ async function upsertMany(list){
           const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
             .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
+          // Derive customer name: prefer Shopify customer object, fallback to billing/shipping name
+          const customerFirst = (o.customer && o.customer.first_name) ? String(o.customer.first_name) : null;
+          const customerLast = (o.customer && o.customer.last_name) ? String(o.customer.last_name) : null;
+          const fallbackName = billing.name || shipping.name || null;
+          let fallbackFirst = null, fallbackLast = null;
+          if (!customerFirst && fallbackName) {
+            const parts = String(fallbackName).trim().split(/\s+/);
+            fallbackFirst = parts.shift() || null;
+            fallbackLast = parts.length ? parts.join(' ') : null;
+          }
+
           const payload = {
             orderId: id,
             order_number: o.order_number || null,
             name: o.name || null,
+            // customer object stored for UI use
+            customer: {
+              first_name: customerFirst || fallbackFirst || null,
+              last_name: customerLast || fallbackLast || null,
+              full_name: (customerFirst || fallbackFirst || '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
+            },
             phone: o.phone || billing.phone || shipping.phone || null,
             email: o.email || client.contact_email || null,
             riderId: undefined,
