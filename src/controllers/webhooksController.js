@@ -53,11 +53,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       orderId: id,
       order_number: order.order_number || null,
       name: order.name || null,
-      customer: {
-        first_name: customerFirst || fallbackFirst || null,
-        last_name: customerLast || fallbackLast || null,
-        full_name: (customerFirst || fallbackFirst || '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
-      },
+      full_name: ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
       phone: order.phone || billing.phone || shipping.phone || null,
       email: order.email || client.contact_email || null,
       riderId: undefined, // set below according to logic
