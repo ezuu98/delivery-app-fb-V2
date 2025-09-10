@@ -124,8 +124,8 @@ module.exports = {
         if (status !== 'all' && getOrderStatus(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
-          const customer = [o.customer?.first_name||'', o.customer?.last_name||'', o.customer?.full_name||''].join(' ').toLowerCase();
-          const addr = [o.shipping_address||'', o.billing_address||''].join(' ').toLowerCase();
+          const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
+          const addr = String((typeof o.shipping_address === 'string' ? o.shipping_address : (o.shipping_address?.address1 ? `${o.shipping_address.address1} ${o.shipping_address.city||''}` : JSON.stringify(o.shipping_address || o.billing_address || {}))) || '').toLowerCase();
           const text = `${name} ${customer} ${addr}`;
           if(!text.includes(ql)) return false;
         }
@@ -271,7 +271,7 @@ module.exports = {
         order_number: id,
         created_at: new Date().toISOString(),
         fulfillment_status: 'open',
-        customer: { first_name: 'Test', last_name: 'Customer' },
+        full_name: 'Test Customer',
         shipping_address: { address1: '123 Demo St', city: 'Demo City', province: 'DC', country: 'US' },
         tags: ['seed'],
       };
@@ -379,16 +379,13 @@ module.exports = {
                 fallbackFirst = parts.shift() || null;
                 fallbackLast = parts.length ? parts.join(' ') : null;
               }
+              const fullName = ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null;
 
               const payload = {
                 orderId: id,
                 order_number: o.order_number || null,
                 name: o.name || null,
-                customer: {
-                  first_name: customerFirst || fallbackFirst || null,
-                  last_name: customerLast || fallbackLast || null,
-                  full_name: (customerFirst || fallbackFirst || '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
-                },
+                full_name: fullName,
                 phone: o.phone || billing.phone || shipping.phone || null,
                 email: o.email || client.contact_email || null,
                 riderId: undefined, // determine below
