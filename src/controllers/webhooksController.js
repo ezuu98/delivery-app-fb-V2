@@ -83,6 +83,8 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     else if (assignment && assignment.riderId) payload.order_status = 'assigned';
     else payload.order_status = 'new';
 
+    if (payload.riderId === undefined) delete payload.riderId;
+
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
 }
