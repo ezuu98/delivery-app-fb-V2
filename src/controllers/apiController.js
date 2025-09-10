@@ -266,42 +266,39 @@ module.exports = {
               const ref = refs[j];
               const snap = snaps[j];
 
-              // Transform order to only include requested fields
-              const billing = o.billing_address || o.shipping_address || {};
+              // Build flattened payload with required fields and order
+              const shipping = o.shipping_address || {};
+              const billing = o.billing_address || {};
               const client = o.client_details || {};
-              const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
-              const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
+
+              const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+                .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+              const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+                .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
               const id = ref.id;
               const payload = {
                 orderId: id,
-                name: o.name || null,
                 order_number: o.order_number || null,
-                created_at: o.created_at || null,
-                // billing address
-                billing_address: {
-                  address1: billing.address1 || null,
-                  address2: billing.address2 || null,
-                  city: billing.city || null,
-                  name: billing.name || null,
-                  phone: billing.phone || null,
-                  latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
-                  longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
-                },
+                name: o.name || null,
+                phone: o.phone || billing.phone || shipping.phone || null,
+                email: o.email || client.contact_email || null,
+                riderId: undefined, // determine below
+                shipping_address: shippingStr,
+                billing_address: billingStr,
+                latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+                longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
                 cancel_reason: o.cancel_reason || null,
                 cancelled_at: o.cancelled_at || null,
-                // client details
-                client_details: {
-                  confirmed: client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null),
-                  contact_email: client.contact_email || null,
-                  created_at: client.created_at || null,
-                },
-                closed_at: o.closed_at || null,
-                confirmed: o.confirmed !== undefined ? o.confirmed : null,
-                presentment_money_amount: presentmentAmt,
-                shop_money_amount: shopAmt,
-                current_total_price: o.current_total_price || null,
+                client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
+                notes: o.note || null,
+                created_at: o.created_at || null,
+                order_status: undefined, // determine below
               };
+
+              // Normalize lat/long
+              payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+              payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
 
               const existing = snap.exists ? (snap.data() || {}) : {};
               const assigned = aMap.get(id);
@@ -310,6 +307,13 @@ module.exports = {
               } else if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
                 payload.riderId = null;
               }
+
+              // Derive order_status
+              const fs = String(o.fulfillment_status || '').toLowerCase();
+              if (fs === 'fulfilled') payload.order_status = 'delivered';
+              else if (fs === 'partial') payload.order_status = 'in-transit';
+              else if (assigned && assigned.riderId) payload.order_status = 'assigned';
+              else payload.order_status = 'new';
 
               batch.set(ref, payload, { merge: true });
             }
