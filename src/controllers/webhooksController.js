@@ -37,11 +37,27 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
       .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
+    // Derive customer name: prefer Shopify customer object, fallback to billing/shipping name
+    const customerFirst = (order.customer && order.customer.first_name) ? String(order.customer.first_name) : null;
+    const customerLast = (order.customer && order.customer.last_name) ? String(order.customer.last_name) : null;
+    const fallbackName = billing.name || shipping.name || null;
+    let fallbackFirst = null, fallbackLast = null;
+    if (!customerFirst && fallbackName) {
+      const parts = String(fallbackName).trim().split(/\s+/);
+      fallbackFirst = parts.shift() || null;
+      fallbackLast = parts.length ? parts.join(' ') : null;
+    }
+
     // Build payload in requested order
     const payload = {
       orderId: id,
       order_number: order.order_number || null,
       name: order.name || null,
+      customer: {
+        first_name: customerFirst || fallbackFirst || null,
+        last_name: customerLast || fallbackLast || null,
+        full_name: (customerFirst || fallbackFirst || '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
+      },
       phone: order.phone || billing.phone || shipping.phone || null,
       email: order.email || client.contact_email || null,
       riderId: undefined, // set below according to logic
