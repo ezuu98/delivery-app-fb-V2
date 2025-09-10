@@ -120,13 +120,17 @@
 .rc-table-wrapper{background:#F7FAFC;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .rc-table{width:100%;border-collapse:separate;border-spacing:0}
 .rc-table thead th{background:#f9fafb;text-align:left;padding:14px;border-bottom:1px solid #eef2f7;font-weight:600;color:#374151}
-.rc-table thead th.col-name{width:28%}
-.rc-table thead th.col-km{width:14%}
-.rc-table thead th.col-perf{width:20%}
+.rc-table thead th.col-name{width:16%}
+.rc-table thead th.col-km{width:12%}
+.rc-table thead th.col-perf{width:30%}
 .rc-table thead th.col-rider{width:12%}
-.rc-table thead th.col-expected{width:12%}
+.rc-table thead th.col-expected{width:14%}
 .rc-table thead th.col-actual{width:8%}
-.rc-table thead th.col-status{width:6%}
+.rc-table thead th.col-status{width:8%}
+
+/* Reduce cell padding for tighter layout between first columns */
+.rc-table tbody td{padding:10px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.rc-col-name, .rc-col-km { padding-left:8px; padding-right:8px }
 .rc-table tbody td{padding:14px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
 .rc-col-km .rc-km-unit{color:#9ca3af;margin-left:4px}
 .rc-progress{display:flex;align-items:center;gap:10px}
