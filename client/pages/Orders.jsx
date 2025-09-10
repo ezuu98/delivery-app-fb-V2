@@ -139,9 +139,9 @@ export default function Orders(){
                     <td className="rc-col-name">{orderId}</td>
                     <td className="rc-col-km">{fname} {lname}</td>
                     <td className="rc-col-perf">{addr}</td>
+                    <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
                     <td className="rc-col-commission"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
-                    <td className="rc-col-commission">{o.created_at ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-commission"><button className="order-action" onClick={(e)=>{ e.preventDefault(); if(status==='new') openAssign(String(orderId).replace(/^#+/, '')); }}>{action}</button></td>
+                    <td className="rc-col-commission">{o.expected_delivery_time ? new Date(o.expected_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
                   </tr>
                 );
               })}
