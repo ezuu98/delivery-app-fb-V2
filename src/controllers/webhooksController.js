@@ -18,12 +18,14 @@ function verifyShopify(req) {
   }
 }
 
-async function upsertFirestore(order){
+async function upsertFirestore(order, { ensureRiderField = false } = {}){
   try{
     const db = getFirestore();
     if (!db) return;
     const id = String(order?.id || order?.name || order?.order_number || '');
     if (!id) return;
+
+    const ref = db.collection('orders').doc(id);
 
     const billing = order.billing_address || order.shipping_address || {};
     const client = order.client_details || {};
@@ -58,7 +60,20 @@ async function upsertFirestore(order){
       current_total_price: order.current_total_price || null,
     };
 
-    await db.collection('orders').doc(id).set(payload, { merge: true });
+    // Include riderId only when safe:
+    // - If Shopify payload includes it (rare), propagate it
+    // - If ensureRiderField is true, set riderId: null only when the field does not exist yet
+    if (order && Object.prototype.hasOwnProperty.call(order, 'riderId')) {
+      payload.riderId = order.riderId;
+    } else if (ensureRiderField) {
+      const snap = await ref.get();
+      const existing = snap.exists ? (snap.data() || {}) : {};
+      if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
+        payload.riderId = null;
+      }
+    }
+
+    await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
 }
 
@@ -81,7 +96,8 @@ module.exports = {
     const order = payload && (payload.order || payload);
     if (order) {
       await orderModel.upsertMany([order]);
-      await upsertFirestore(order);
+      // Ensure riderId field exists on initial create without overwriting any existing value
+      await upsertFirestore(order, { ensureRiderField: true });
       log.info('webhook.orders.create', { id: order.id });
     }
     return res.status(200).end();
