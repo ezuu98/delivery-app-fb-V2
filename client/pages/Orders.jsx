@@ -34,8 +34,6 @@ export default function Orders(){
         const params = new URLSearchParams();
         if(q) params.set('q', q);
         if(tab && tab !== 'all') params.set('status', tab);
-        if(from) params.set('created_at_min', from);
-        if(to) params.set('created_at_max', to);
         params.set('page', String(page));
         params.set('limit', String(limit));
         const res = await fetch(`/api/orders?${params.toString()}`, { credentials:'include' });
