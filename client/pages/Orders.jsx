@@ -116,8 +116,9 @@ export default function Orders(){
                 <th className="col-km">Customer</th>
                 <th className="col-perf">Address</th>
                 <th className="col-rider">Rider</th>
-                <th className="col-comm">Status</th>
-                <th className="col-comm">Expected Time</th>
+                <th className="col-expected">Expected Time</th>
+                <th className="col-actual">Actual Time</th>
+                <th className="col-status">Status</th>
               </tr>
             </thead>
             <tbody>
