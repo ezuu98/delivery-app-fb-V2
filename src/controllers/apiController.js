@@ -315,6 +315,9 @@ module.exports = {
               else if (assigned && assigned.riderId) payload.order_status = 'assigned';
               else payload.order_status = 'new';
 
+              // Firestore: remove undefined fields
+              if (payload.riderId === undefined) delete payload.riderId;
+
               batch.set(ref, payload, { merge: true });
             }
             await batch.commit();
