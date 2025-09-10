@@ -247,6 +247,9 @@ module.exports = {
             notes: order.note || null,
             created_at: order.created_at || null,
             order_status: 'new',
+            // Custom delivery time fields for seeded orders
+            expected_delivery_time: null,
+            actual_delivery_time: null,
           };
           payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
           payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
@@ -325,6 +328,9 @@ module.exports = {
                 notes: o.note || null,
                 created_at: o.created_at || null,
                 order_status: undefined, // determine below
+                // Custom delivery time fields: added on sync if not present in Firestore
+                expected_delivery_time: undefined,
+                actual_delivery_time: undefined,
               };
 
               // Normalize lat/long
@@ -339,6 +345,14 @@ module.exports = {
                 payload.riderId = null;
               }
 
+              // Ensure custom delivery time fields exist in Firestore documents without overwriting existing values
+              if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) {
+                payload.expected_delivery_time = null;
+              }
+              if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) {
+                payload.actual_delivery_time = null;
+              }
+
               // Derive order_status
               const fs = String(o.fulfillment_status || '').toLowerCase();
               if (fs === 'fulfilled') payload.order_status = 'delivered';
@@ -348,6 +362,8 @@ module.exports = {
 
               // Firestore: remove undefined fields
               if (payload.riderId === undefined) delete payload.riderId;
+              if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
+              if (payload.actual_delivery_time === undefined) delete payload.actual_delivery_time;
 
               batch.set(ref, payload, { merge: true });
             }
