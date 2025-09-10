@@ -210,7 +210,7 @@ module.exports = {
         if (status !== 'all' && statusOf(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
-          const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
+          const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
           const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
           const text = `${name} ${customer} ${addr}`;
           if(!text.includes(ql)) return false;
