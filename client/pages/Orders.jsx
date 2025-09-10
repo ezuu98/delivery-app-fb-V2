@@ -18,8 +18,6 @@ export default function Orders(){
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [shopifyErr, setShopifyErr] = useState('');
