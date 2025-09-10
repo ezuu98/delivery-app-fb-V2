@@ -158,7 +158,7 @@ export default function Orders(){
                 );
               })}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={6} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={7} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>
