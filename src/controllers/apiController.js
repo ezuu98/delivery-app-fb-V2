@@ -220,7 +220,38 @@ module.exports = {
       await orderModel.upsertMany([order]);
       try{
         const db = getFirestore();
-        if (db) await db.collection('orders').doc(String(order.id)).set(order, { merge: true });
+        if (db) {
+          const id = String(order.id);
+          const ref = db.collection('orders').doc(id);
+          const shipping = order.shipping_address || {};
+          const billing = order.billing_address || {};
+          const client = order.client_details || {};
+          const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+          const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+          const payload = {
+            orderId: id,
+            order_number: order.order_number || null,
+            name: order.name || null,
+            phone: order.phone || billing.phone || shipping.phone || null,
+            email: order.email || client.contact_email || null,
+            riderId: null,
+            shipping_address: shippingStr,
+            billing_address: billingStr,
+            latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+            longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
+            cancel_reason: order.cancel_reason || null,
+            cancelled_at: order.cancelled_at || null,
+            client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null)),
+            notes: order.note || null,
+            created_at: order.created_at || null,
+            order_status: 'new',
+          };
+          payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+          payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
+          await ref.set(payload, { merge: true });
+        }
       }catch(_){}
       return res.json(ok({ order }));
     }catch(e){
@@ -237,7 +268,7 @@ module.exports = {
       const defaultStart = `${year}-09-01T00:00:00Z`;
       const created_at_min = startDate ? String(startDate) : defaultStart;
 
-      const { orders = [], error } = await fetchAllOrders({ created_at_min, maxPages: 1000 });
+      const { orders = [], error } = await fetchAllOrders({ created_at_min, status: 'any', fulfillment_status: 'any', financial_status: 'any', limit: 250, maxPages: 1000 });
       if (error) {
         log.error('admin.syncOrders.fetch.failed', { message: error });
         return res.status(500).json(fail('Failed to fetch orders from Shopify'));
@@ -246,53 +277,77 @@ module.exports = {
       // Persist to local cache (redis/in-memory)
       await orderModel.upsertMany(orders);
 
-      // Persist to Firestore in chunks of 500
+      // Persist to Firestore ensuring riderId exists (set to null only if missing)
       try{
         const db = getFirestore();
         if (db && Array.isArray(orders) && orders.length){
-          const chunkSize = 500;
+          const chunkSize = 250;
           for (let i = 0; i < orders.length; i += chunkSize){
-            const batch = db.batch();
             const slice = orders.slice(i, i + chunkSize);
-            for (const o of slice){
-              const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
-              const ref = db.collection('orders').doc(id);
 
-              // Transform order to only include requested fields
-              const billing = o.billing_address || o.shipping_address || {};
+            // Prepare refs and prefetch existing docs to avoid overwriting existing riderId
+            const refs = slice.map(o => db.collection('orders').doc(String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`)));
+            const snaps = await Promise.all(refs.map(r => r.get()));
+            const assigns = await orderModel.listAssignments();
+            const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
+
+            const batch = db.batch();
+            for (let j = 0; j < slice.length; j++){
+              const o = slice[j];
+              const ref = refs[j];
+              const snap = snaps[j];
+
+              // Build flattened payload with required fields and order
+              const shipping = o.shipping_address || {};
+              const billing = o.billing_address || {};
               const client = o.client_details || {};
-              const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
-              const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
 
+              const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+                .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+              const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+                .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+
+              const id = ref.id;
               const payload = {
                 orderId: id,
-                name: o.name || null,
                 order_number: o.order_number || null,
-                created_at: o.created_at || null,
-                // billing address
-                billing_address: {
-                  address1: billing.address1 || null,
-                  address2: billing.address2 || null,
-                  city: billing.city || null,
-                  name: billing.name || null,
-                  phone: billing.phone || null,
-                  latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
-                  longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
-                },
+                name: o.name || null,
+                phone: o.phone || billing.phone || shipping.phone || null,
+                email: o.email || client.contact_email || null,
+                riderId: undefined, // determine below
+                shipping_address: shippingStr,
+                billing_address: billingStr,
+                latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+                longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
                 cancel_reason: o.cancel_reason || null,
                 cancelled_at: o.cancelled_at || null,
-                // client details
-                client_details: {
-                  confirmed: client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null),
-                  contact_email: client.contact_email || null,
-                  created_at: client.created_at || null,
-                },
-                closed_at: o.closed_at || null,
-                confirmed: o.confirmed !== undefined ? o.confirmed : null,
-                presentment_money_amount: presentmentAmt,
-                shop_money_amount: shopAmt,
-                current_total_price: o.current_total_price || null,
+                client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
+                notes: o.note || null,
+                created_at: o.created_at || null,
+                order_status: undefined, // determine below
               };
+
+              // Normalize lat/long
+              payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+              payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
+
+              const existing = snap.exists ? (snap.data() || {}) : {};
+              const assigned = aMap.get(id);
+              if (assigned && assigned.riderId) {
+                payload.riderId = String(assigned.riderId);
+              } else if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
+                payload.riderId = null;
+              }
+
+              // Derive order_status
+              const fs = String(o.fulfillment_status || '').toLowerCase();
+              if (fs === 'fulfilled') payload.order_status = 'delivered';
+              else if (fs === 'partial') payload.order_status = 'in-transit';
+              else if (assigned && assigned.riderId) payload.order_status = 'assigned';
+              else payload.order_status = 'new';
+
+              // Firestore: remove undefined fields
+              if (payload.riderId === undefined) delete payload.riderId;
 
               batch.set(ref, payload, { merge: true });
             }
