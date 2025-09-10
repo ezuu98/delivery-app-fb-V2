@@ -237,7 +237,7 @@ module.exports = {
       const defaultStart = `${year}-09-01T00:00:00Z`;
       const created_at_min = startDate ? String(startDate) : defaultStart;
 
-      const { orders = [], error } = await fetchAllOrders({ created_at_min, maxPages: 1000 });
+      const { orders = [], error } = await fetchAllOrders({ created_at_min, status: 'any', fulfillment_status: 'any', financial_status: 'any', limit: 250, maxPages: 1000 });
       if (error) {
         log.error('admin.syncOrders.fetch.failed', { message: error });
         return res.status(500).json(fail('Failed to fetch orders from Shopify'));
