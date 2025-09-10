@@ -91,8 +91,6 @@ export default function Orders(){
                 {k==='all'?'All':k.replace('-',' ')}
               </button>
             ))}
-            <input className="rc-chip" type="date" value={from} onChange={e=>{ setFrom(e.target.value); setPage(1); }} />
-            <input className="rc-chip" type="date" value={to} onChange={e=>{ setTo(e.target.value); setPage(1); }} />
             <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
