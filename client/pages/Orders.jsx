@@ -115,9 +115,9 @@ export default function Orders(){
                 <th className="col-name">Order #</th>
                 <th className="col-km">Customer</th>
                 <th className="col-perf">Address</th>
+                <th className="col-rider">Rider</th>
                 <th className="col-comm">Status</th>
-                <th className="col-comm">Time Placed</th>
-                <th className="col-comm">Action</th>
+                <th className="col-comm">Expected Time</th>
               </tr>
             </thead>
             <tbody>
