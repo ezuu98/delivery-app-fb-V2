@@ -19,9 +19,26 @@ async function findOrderByAnyId(id){
   if(!raw.startsWith('#')) candidates.push('#' + raw);
   // try with double leading #
   if(!raw.startsWith('##')) candidates.push('##' + raw);
+
+  // Prefer Firestore lookup first (so UI reads from Firestore)
+  try{
+    const db = getFirestore();
+    if (db) {
+      for (const k of candidates) {
+        if (!k) continue;
+        tried.push(k);
+        try{
+          const snap = await db.collection('orders').doc(String(k)).get();
+          if (snap && snap.exists) return { key: String(k), order: snap.data() || {} };
+        }catch(_){ /* ignore per-candidate errors */ }
+      }
+    }
+  }catch(_){ /* ignore firestore errors */ }
+
+  // Fallback to cache (redis/in-memory)
   for(const k of candidates){
     if(!k) continue;
-    tried.push(k);
+    if (!tried.includes(k)) tried.push(k);
     try{
       const o = await orderModel.getById(String(k));
       if(o) return { key: String(k), order: o };
