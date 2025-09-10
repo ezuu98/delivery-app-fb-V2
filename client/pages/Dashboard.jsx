@@ -109,7 +109,7 @@ export default function Dashboard(){
                   return (
                     <tr key={canonicalId} data-status={status}>
                       <td className="rc-col-order">{displayId}</td>
-                      <td className="rc-col-customer">{fname} {lname}</td>
+                      <td className="rc-col-customer">{fullName || '-'}</td>
                       <td className="rc-col-address">{addr}</td>
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                       <td className="rc-col-date">{dateStr}</td>
