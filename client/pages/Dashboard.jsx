@@ -99,8 +99,7 @@ export default function Dashboard(){
                 const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
                 return visible.map((o,i)=>{
                   const status = getOrderStatus(o);
-                  const fname = o.customer?.first_name || '';
-                  const lname = o.customer?.last_name || '';
+                  const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
                   const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
                   const displayId = o.name || o.order_number || o.id || i;
                   const canonicalId = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
