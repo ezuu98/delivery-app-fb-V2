@@ -110,10 +110,30 @@ module.exports = {
 
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
-      const withAssignments = items.map(o => ({
-        ...o,
-        assignment: amap.get(String(o.id) || String(o.name) || String(o.order_number)) || null,
-      }));
+
+      // Merge delivery events (expected times) into orders
+      const evAll = await deliveryModel.listAll();
+      const eMap = new Map();
+      for (const { orderId, events } of evAll){
+        if (!orderId || !Array.isArray(events)) continue;
+        // find last 'eta' event
+        for (let i = events.length - 1; i >= 0; i--){
+          const ev = events[i];
+          if (ev && ev.type === 'eta') { eMap.set(String(orderId), ev); break; }
+        }
+      }
+
+      const withAssignments = items.map(o => {
+        const idKey = String(o.id || o.name || o.order_number || '');
+        const assignment = amap.get(idKey) || null;
+        const eta = eMap.get(idKey) || null;
+        return {
+          ...o,
+          assignment,
+          rider: assignment?.riderId || (eta?.riderId || null),
+          expected_delivery_time: eta?.expectedAt || null,
+        };
+      });
 
       return res.json(ok({ orders: withAssignments, shopifyError: null, shopifyConfigured: isConfigured() }, meta));
     }catch(e){
