@@ -56,10 +56,24 @@ async function upsertMany(list){
           const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
             .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
+          // Derive customer full_name: prefer Shopify customer object, fallback to billing/shipping name
+          const customerFirst = (o.customer && o.customer.first_name) ? String(o.customer.first_name) : null;
+          const customerLast = (o.customer && o.customer.last_name) ? String(o.customer.last_name) : null;
+          const fallbackName = billing.name || shipping.name || null;
+          let fallbackFirst = null, fallbackLast = null;
+          if (!customerFirst && fallbackName) {
+            const parts = String(fallbackName).trim().split(/\s+/);
+            fallbackFirst = parts.shift() || null;
+            fallbackLast = parts.length ? parts.join(' ') : null;
+          }
+          const fullName = ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '');
+
           const payload = {
             orderId: id,
             order_number: o.order_number || null,
             name: o.name || null,
+            // flat full_name field for UI
+            full_name: fullName || null,
             phone: o.phone || billing.phone || shipping.phone || null,
             email: o.email || client.contact_email || null,
             riderId: undefined,

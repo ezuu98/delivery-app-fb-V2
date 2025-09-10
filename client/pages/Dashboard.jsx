@@ -94,14 +94,24 @@ export default function Dashboard(){
             </thead>
             <tbody>
               {loading && (<tr><td colSpan={7} className="section-note">Loading…</td></tr>)}
-              {!loading && error && (<tr><td colSpan={7} className="auth-error">{error}</td></tr>)}
-              {!loading && !error && (()=>{
-                const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
-                return visible.map((o,i)=>{
-                  const status = getOrderStatus(o);
-                  const fname = o.customer?.first_name || '';
-                  const lname = o.customer?.last_name || '';
-                  const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
+    {!loading && error && (<tr><td colSpan={7} className="auth-error">{error}</td></tr>)}
+    {!loading && !error && (()=>{
+      const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
+      return visible.map((o,i)=>{
+        const status = getOrderStatus(o);
+        const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
+        let addr = '-';
+        if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) {
+          addr = String(o.shipping_address).trim();
+        } else if (o.shipping_address && typeof o.shipping_address === 'object') {
+          addr = [o.shipping_address.address1 || '', o.shipping_address.city || '', o.shipping_address.province || '', o.shipping_address.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+        } else if (typeof o.billing_address === 'string' && String(o.billing_address).trim()) {
+          addr = String(o.billing_address).trim();
+        } else if (o.billing_address && typeof o.billing_address === 'object') {
+          addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+        }
                   const displayId = o.name || o.order_number || o.id || i;
                   const canonicalId = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
                   const dt = o.created_at ? new Date(o.created_at) : null;
@@ -110,7 +120,7 @@ export default function Dashboard(){
                   return (
                     <tr key={canonicalId} data-status={status}>
                       <td className="rc-col-order">{displayId}</td>
-                      <td className="rc-col-customer">{fname} {lname}</td>
+                      <td className="rc-col-customer">{fullName || '-'}</td>
                       <td className="rc-col-address">{addr}</td>
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                       <td className="rc-col-date">{dateStr}</td>

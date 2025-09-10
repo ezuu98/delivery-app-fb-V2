@@ -19,9 +19,26 @@ async function findOrderByAnyId(id){
   if(!raw.startsWith('#')) candidates.push('#' + raw);
   // try with double leading #
   if(!raw.startsWith('##')) candidates.push('##' + raw);
+
+  // Prefer Firestore lookup first (so UI reads from Firestore)
+  try{
+    const db = getFirestore();
+    if (db) {
+      for (const k of candidates) {
+        if (!k) continue;
+        tried.push(k);
+        try{
+          const snap = await db.collection('orders').doc(String(k)).get();
+          if (snap && snap.exists) return { key: String(k), order: snap.data() || {} };
+        }catch(_){ /* ignore per-candidate errors */ }
+      }
+    }
+  }catch(_){ /* ignore firestore errors */ }
+
+  // Fallback to cache (redis/in-memory)
   for(const k of candidates){
     if(!k) continue;
-    tried.push(k);
+    if (!tried.includes(k)) tried.push(k);
     try{
       const o = await orderModel.getById(String(k));
       if(o) return { key: String(k), order: o };
@@ -69,20 +86,35 @@ module.exports = {
   orders: async (req, res) => {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
-      let cached = await orderModel.getAll();
+
+      // Prefer Firestore as the canonical data source for UI
+      let cached = [];
+      try{
+        const db = getFirestore();
+        if (db) {
+          const snap = await db.collection('orders').get();
+          snap.forEach(doc => { const d = doc.data() || {}; cached.push(d); });
+        }
+      }catch(e){ /* firestore might not be available; fallback below */ }
+
+      // If Firestore empty, fall back to cached in-memory/redis and as last resort fetch from Shopify
       if (!cached.length) {
-        const { orders = [], error } = await listOrders({ limit: 100 });
-        if (error) log.warn('orders.fetch.error', { error });
-        await orderModel.upsertMany(orders);
         cached = await orderModel.getAll();
+        if (!cached.length) {
+          const { orders = [], error } = await listOrders({ limit: 100 });
+          if (error) log.warn('orders.fetch.error', { error });
+          await orderModel.upsertMany(orders);
+          cached = await orderModel.getAll();
+        }
       }
+
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
-        if(o.fulfillment_status === 'fulfilled') return 'delivered';
-        if(o.fulfillment_status === 'partial') return 'in-transit';
+        if(o.order_status === 'delivered' || o.fulfillment_status === 'fulfilled') return 'delivered';
+        if(o.order_status === 'in-transit' || o.fulfillment_status === 'partial') return 'in-transit';
         return 'new';
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
@@ -92,8 +124,8 @@ module.exports = {
         if (status !== 'all' && getOrderStatus(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
-          const customer = [o.customer?.first_name||'', o.customer?.last_name||''].join(' ').toLowerCase();
-          const addr = [o.shipping_address?.address1||'', o.shipping_address?.city||'', o.shipping_address?.province||'', o.shipping_address?.country||''].join(' ').toLowerCase();
+          const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
+          const addr = String((typeof o.shipping_address === 'string' ? o.shipping_address : (o.shipping_address?.address1 ? `${o.shipping_address.address1} ${o.shipping_address.city||''}` : JSON.stringify(o.shipping_address || o.billing_address || {}))) || '').toLowerCase();
           const text = `${name} ${customer} ${addr}`;
           if(!text.includes(ql)) return false;
         }
@@ -106,14 +138,47 @@ module.exports = {
         return true;
       });
 
+      // Sort filtered results by created_at descending (latest first)
+      filtered.sort((a, b) => {
+        const ta = a && a.created_at ? Date.parse(a.created_at) : 0;
+        const tb = b && b.created_at ? Date.parse(b.created_at) : 0;
+        return (Number.isFinite(tb) ? tb : 0) - (Number.isFinite(ta) ? ta : 0);
+      });
+
       const { items, meta } = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
 
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
-      const withAssignments = items.map(o => ({
-        ...o,
-        assignment: amap.get(String(o.id) || String(o.name) || String(o.order_number)) || null,
-      }));
+
+      // Merge delivery events (expected times and actual delivered time) into orders
+      const evAll = await deliveryModel.listAll();
+      const etaMap = new Map();
+      const actualMap = new Map();
+      for (const { orderId, events } of evAll){
+        if (!orderId || !Array.isArray(events)) continue;
+        // find last 'eta' event and last 'delivered' event
+        for (let i = events.length - 1; i >= 0; i--){
+          const ev = events[i];
+          if (!ev) continue;
+          if (ev.type === 'eta' && !etaMap.has(String(orderId))) etaMap.set(String(orderId), ev);
+          if (ev.type === 'delivered' && !actualMap.has(String(orderId))) actualMap.set(String(orderId), ev);
+          if (etaMap.has(String(orderId)) && actualMap.has(String(orderId))) break;
+        }
+      }
+
+      const withAssignments = items.map(o => {
+        const idKey = String(o.orderId || o.id || o.name || o.order_number || '');
+        const assignment = amap.get(idKey) || null;
+        const eta = etaMap.get(idKey) || null;
+        const delivered = actualMap.get(idKey) || null;
+        return {
+          ...o,
+          assignment,
+          rider: assignment?.riderId || (eta?.riderId || null),
+          expected_delivery_time: eta?.expectedAt || (o.expected_delivery_time || null),
+          actual_delivery_time: delivered?.at || (o.actual_delivery_time || null),
+        };
+      });
 
       return res.json(ok({ orders: withAssignments, shopifyError: null, shopifyConfigured: isConfigured() }, meta));
     }catch(e){
@@ -213,7 +278,7 @@ module.exports = {
         order_number: id,
         created_at: new Date().toISOString(),
         fulfillment_status: 'open',
-        customer: { first_name: 'Test', last_name: 'Customer' },
+        full_name: 'Test Customer',
         shipping_address: { address1: '123 Demo St', city: 'Demo City', province: 'DC', country: 'US' },
         tags: ['seed'],
       };
@@ -247,6 +312,9 @@ module.exports = {
             notes: order.note || null,
             created_at: order.created_at || null,
             order_status: 'new',
+            // Custom delivery time fields for seeded orders
+            expected_delivery_time: null,
+            actual_delivery_time: null,
           };
           payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
           payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
@@ -308,10 +376,23 @@ module.exports = {
                 .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
               const id = ref.id;
+              // Derive customer name: prefer Shopify customer object, fallback to billing/shipping name
+              const customerFirst = (o.customer && o.customer.first_name) ? String(o.customer.first_name) : null;
+              const customerLast = (o.customer && o.customer.last_name) ? String(o.customer.last_name) : null;
+              const fallbackName = billing.name || shipping.name || null;
+              let fallbackFirst = null, fallbackLast = null;
+              if (!customerFirst && fallbackName) {
+                const parts = String(fallbackName).trim().split(/\s+/);
+                fallbackFirst = parts.shift() || null;
+                fallbackLast = parts.length ? parts.join(' ') : null;
+              }
+              const fullName = ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null;
+
               const payload = {
                 orderId: id,
                 order_number: o.order_number || null,
                 name: o.name || null,
+                full_name: fullName,
                 phone: o.phone || billing.phone || shipping.phone || null,
                 email: o.email || client.contact_email || null,
                 riderId: undefined, // determine below
@@ -325,6 +406,9 @@ module.exports = {
                 notes: o.note || null,
                 created_at: o.created_at || null,
                 order_status: undefined, // determine below
+                // Custom delivery time fields: added on sync if not present in Firestore
+                expected_delivery_time: undefined,
+                actual_delivery_time: undefined,
               };
 
               // Normalize lat/long
@@ -339,6 +423,14 @@ module.exports = {
                 payload.riderId = null;
               }
 
+              // Ensure custom delivery time fields exist in Firestore documents without overwriting existing values
+              if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) {
+                payload.expected_delivery_time = null;
+              }
+              if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) {
+                payload.actual_delivery_time = null;
+              }
+
               // Derive order_status
               const fs = String(o.fulfillment_status || '').toLowerCase();
               if (fs === 'fulfilled') payload.order_status = 'delivered';
@@ -348,6 +440,8 @@ module.exports = {
 
               // Firestore: remove undefined fields
               if (payload.riderId === undefined) delete payload.riderId;
+              if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
+              if (payload.actual_delivery_time === undefined) delete payload.actual_delivery_time;
 
               batch.set(ref, payload, { merge: true });
             }

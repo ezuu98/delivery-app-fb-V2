@@ -37,11 +37,23 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
       .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
 
+    // Derive customer name: prefer Shopify customer object, fallback to billing/shipping name
+    const customerFirst = (order.customer && order.customer.first_name) ? String(order.customer.first_name) : null;
+    const customerLast = (order.customer && order.customer.last_name) ? String(order.customer.last_name) : null;
+    const fallbackName = billing.name || shipping.name || null;
+    let fallbackFirst = null, fallbackLast = null;
+    if (!customerFirst && fallbackName) {
+      const parts = String(fallbackName).trim().split(/\s+/);
+      fallbackFirst = parts.shift() || null;
+      fallbackLast = parts.length ? parts.join(' ') : null;
+    }
+
     // Build payload in requested order
     const payload = {
       orderId: id,
       order_number: order.order_number || null,
       name: order.name || null,
+      full_name: ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '') || null,
       phone: order.phone || billing.phone || shipping.phone || null,
       email: order.email || client.contact_email || null,
       riderId: undefined, // set below according to logic
@@ -55,6 +67,9 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       notes: order.note || null,
       created_at: order.created_at || null,
       order_status: undefined, // set below
+      // Custom delivery time fields: only set to null when ensureRiderField is requested (created)
+      expected_delivery_time: undefined,
+      actual_delivery_time: undefined,
     };
 
     // Normalize lat/long to numbers or null
@@ -74,6 +89,9 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       const snap = await ref.get();
       const existing = snap.exists ? (snap.data() || {}) : {};
       if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
+      // Also ensure delivery time fields exist on initial create without overwriting existing values
+      if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) payload.expected_delivery_time = null;
+      if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
     }
 
     // Derive order_status
@@ -84,6 +102,8 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     else payload.order_status = 'new';
 
     if (payload.riderId === undefined) delete payload.riderId;
+    if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
+    if (payload.actual_delivery_time === undefined) delete payload.actual_delivery_time;
 
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
