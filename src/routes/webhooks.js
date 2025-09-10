@@ -8,8 +8,8 @@ const router = Router();
 const rawJson = express.raw({ type: 'application/json' });
 
 router.post('/shopify/orders/create', rawJson, ctrl.shopifyOrderCreate);
-router.post('/shopify/orders/updated', rawJson, ctrl.shopifyOrderUpdated);
-router.post('/shopify/orders/fulfilled', rawJson, ctrl.shopifyOrderFulfilled);
+// router.post('/shopify/orders/updated', rawJson, ctrl.shopifyOrderUpdated);
+// router.post('/shopify/orders/fulfilled', rawJson, ctrl.shopifyOrderFulfilled);
 router.post('/shopify/orders/cancelled', rawJson, ctrl.shopifyOrderCancelled);
 
 module.exports = router;
