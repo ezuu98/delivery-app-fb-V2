@@ -27,57 +27,52 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
 
     const ref = db.collection('orders').doc(id);
 
-    const billing = order.billing_address || order.shipping_address || {};
+    // Extract top-level simple fields per spec (flat, no nested objects)
+    const shipping = order.shipping_address || {};
+    const billing = order.billing_address || {};
     const client = order.client_details || {};
-    const presentmentAmt = (order.presentment_money && (order.presentment_money.amount || order.presentment_money.total)) || null;
-    const shopAmt = (order.shop_money && (order.shop_money.amount || order.shop_money.total)) || null;
 
+    const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+      .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+    const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+      .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+
+    // Build payload in requested order
     const payload = {
       orderId: id,
-      name: order.name || null,
       order_number: order.order_number || null,
-      created_at: order.created_at || null,
-      billing_address: {
-        address1: billing.address1 || null,
-        address2: billing.address2 || null,
-        city: billing.city || null,
-        name: billing.name || null,
-        phone: billing.phone || null,
-        latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
-        longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
-      },
+      name: order.name || null,
+      phone: order.phone || billing.phone || shipping.phone || null,
+      email: order.email || client.contact_email || null,
+      riderId: undefined, // set below according to logic
+      shipping_address: shippingStr,
+      billing_address: billingStr,
+      latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+      longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
       cancel_reason: order.cancel_reason || null,
       cancelled_at: order.cancelled_at || null,
-      client_details: {
-        confirmed: client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null),
-        contact_email: client.contact_email || null,
-        created_at: client.created_at || null,
-      },
-      closed_at: order.closed_at || null,
-      confirmed: order.confirmed !== undefined ? order.confirmed : null,
-      presentment_money_amount: presentmentAmt,
-      shop_money_amount: shopAmt,
-      current_total_price: order.current_total_price || null,
+      client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null)),
+      notes: order.note || null,
+      created_at: order.created_at || null,
     };
 
-    // Include riderId only when safe:
-    // - If Shopify payload includes it (rare), propagate it
-    // - If ensureRiderField is true, set riderId: null only when the field does not exist yet
+    // Normalize lat/long to numbers or null
+    payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+    payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
+
+    // riderId population rules
     if (order && Object.prototype.hasOwnProperty.call(order, 'riderId')) {
       payload.riderId = order.riderId;
-    } else if (ensureRiderField) {
-      const snap = await ref.get();
-      const existing = snap.exists ? (snap.data() || {}) : {};
-      if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
-        payload.riderId = null;
-      }
     }
-
-    // Populate riderId from existing assignment if present; otherwise only ensure field exists when requested
     try{
       const assignment = await orderModel.getAssignment(id).catch(()=>null);
       if (assignment && assignment.riderId) payload.riderId = String(assignment.riderId);
     }catch(_){}
+    if (payload.riderId === undefined && ensureRiderField) {
+      const snap = await ref.get();
+      const existing = snap.exists ? (snap.data() || {}) : {};
+      if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
+    }
 
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }
