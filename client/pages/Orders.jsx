@@ -123,15 +123,26 @@ export default function Orders(){
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={6} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={7} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={6} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={7} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const status = getOrderStatus(o);
                 const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
-                const addr = (o.shipping_address && `${o.shipping_address.address1||''} ${o.shipping_address.city||''}${o.shipping_address.province?`, ${o.shipping_address.province}`:''}${o.shipping_address.country?`, ${o.shipping_address.country}`:''}`) || '-';
+                let addr = '-';
+                if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) {
+                  addr = String(o.shipping_address).trim();
+                } else if (o.shipping_address && typeof o.shipping_address === 'object') {
+                  addr = [o.shipping_address.address1 || '', o.shipping_address.city || '', o.shipping_address.province || '', o.shipping_address.country || '']
+                    .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+                } else if (typeof o.billing_address === 'string' && String(o.billing_address).trim()) {
+                  addr = String(o.billing_address).trim();
+                } else if (o.billing_address && typeof o.billing_address === 'object') {
+                  addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
+                    .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+                }
                 const action = status === 'new' ? 'Assign Rider' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
