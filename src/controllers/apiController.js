@@ -246,17 +246,23 @@ module.exports = {
       // Persist to local cache (redis/in-memory)
       await orderModel.upsertMany(orders);
 
-      // Persist to Firestore in chunks of 500
+      // Persist to Firestore ensuring riderId exists (set to null only if missing)
       try{
         const db = getFirestore();
         if (db && Array.isArray(orders) && orders.length){
-          const chunkSize = 500;
+          const chunkSize = 250;
           for (let i = 0; i < orders.length; i += chunkSize){
-            const batch = db.batch();
             const slice = orders.slice(i, i + chunkSize);
-            for (const o of slice){
-              const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
-              const ref = db.collection('orders').doc(id);
+
+            // Prepare refs and prefetch existing docs to avoid overwriting existing riderId
+            const refs = slice.map(o => db.collection('orders').doc(String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`)));
+            const snaps = await Promise.all(refs.map(r => r.get()));
+
+            const batch = db.batch();
+            for (let j = 0; j < slice.length; j++){
+              const o = slice[j];
+              const ref = refs[j];
+              const snap = snaps[j];
 
               // Transform order to only include requested fields
               const billing = o.billing_address || o.shipping_address || {};
@@ -264,6 +270,7 @@ module.exports = {
               const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
               const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
 
+              const id = ref.id;
               const payload = {
                 orderId: id,
                 name: o.name || null,
@@ -293,6 +300,11 @@ module.exports = {
                 shop_money_amount: shopAmt,
                 current_total_price: o.current_total_price || null,
               };
+
+              const existing = snap.exists ? (snap.data() || {}) : {};
+              if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) {
+                payload.riderId = null;
+              }
 
               batch.set(ref, payload, { merge: true });
             }
