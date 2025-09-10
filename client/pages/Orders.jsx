@@ -137,7 +137,7 @@ export default function Orders(){
                 return (
                   <tr key={orderId||i} data-status={status}>
                     <td className="rc-col-name">{orderId}</td>
-                    <td className="rc-col-km">{fname} {lname}</td>
+                    <td className="rc-col-km">{fullName || '-'}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
                     <td className="rc-col-expected">{o.expected_delivery_time ? new Date(o.expected_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
