@@ -42,42 +42,66 @@ async function upsertMany(list){
       for (let i = 0; i < list.length; i += chunkSize){
         const batch = db.batch();
         const slice = list.slice(i, i + chunkSize);
+        const assigns = await listAssignments().catch(()=>[]);
+        const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
         for (const o of slice){
           const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
           const ref = db.collection('orders').doc(id);
-          const billing = o.billing_address || o.shipping_address || {};
+
+          const shipping = o.shipping_address || {};
+          const billing = o.billing_address || {};
           const client = o.client_details || {};
-          const presentmentAmt = (o.presentment_money && (o.presentment_money.amount || o.presentment_money.total)) || null;
-          const shopAmt = (o.shop_money && (o.shop_money.amount || o.shop_money.total)) || null;
+          const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+          const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+
+          // Derive customer full_name: prefer Shopify customer object, fallback to billing/shipping name
+          const customerFirst = (o.customer && o.customer.first_name) ? String(o.customer.first_name) : null;
+          const customerLast = (o.customer && o.customer.last_name) ? String(o.customer.last_name) : null;
+          const fallbackName = billing.name || shipping.name || null;
+          let fallbackFirst = null, fallbackLast = null;
+          if (!customerFirst && fallbackName) {
+            const parts = String(fallbackName).trim().split(/\s+/);
+            fallbackFirst = parts.shift() || null;
+            fallbackLast = parts.length ? parts.join(' ') : null;
+          }
+          const fullName = ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '');
+
           const payload = {
             orderId: id,
-            name: o.name || null,
             order_number: o.order_number || null,
-            created_at: o.created_at || null,
-            billing_address: {
-              address1: billing.address1 || null,
-              address2: billing.address2 || null,
-              city: billing.city || null,
-              name: billing.name || null,
-              phone: billing.phone || null,
-              latitude: billing.latitude !== undefined ? (Number.isFinite(Number(billing.latitude)) ? Number(billing.latitude) : null) : null,
-              longitude: billing.longitude !== undefined ? (Number.isFinite(Number(billing.longitude)) ? Number(billing.longitude) : null) : null,
-            },
+            name: o.name || null,
+            // flat full_name field for UI
+            full_name: fullName || null,
+            phone: o.phone || billing.phone || shipping.phone || null,
+            email: o.email || client.contact_email || null,
+            riderId: undefined,
+            shipping_address: shippingStr,
+            billing_address: billingStr,
+            latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
+            longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
             cancel_reason: o.cancel_reason || null,
             cancelled_at: o.cancelled_at || null,
-            client_details: {
-              confirmed: client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null),
-              contact_email: client.contact_email || null,
-              created_at: client.created_at || null,
-            },
-            closed_at: o.closed_at || null,
-            confirmed: o.confirmed !== undefined ? o.confirmed : null,
-            presentment_money_amount: presentmentAmt,
-            shop_money_amount: shopAmt,
-            current_total_price: o.current_total_price || null,
-            tags: o.tags || null,
-            shipping_address: o.shipping_address || null,
+            client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
+            notes: o.note || null,
+            created_at: o.created_at || null,
+            order_status: undefined,
           };
+          payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
+          payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
+
+          const assigned = aMap.get(id);
+          if (assigned && assigned.riderId) payload.riderId = String(assigned.riderId);
+
+          const fs = String(o.fulfillment_status || '').toLowerCase();
+          if (fs === 'fulfilled') payload.order_status = 'delivered';
+          else if (fs === 'partial') payload.order_status = 'in-transit';
+          else if (assigned && assigned.riderId) payload.order_status = 'assigned';
+          else payload.order_status = 'new';
+
+          if (payload.riderId === undefined) delete payload.riderId;
+
           batch.set(ref, payload, { merge: true });
         }
         await batch.commit();
