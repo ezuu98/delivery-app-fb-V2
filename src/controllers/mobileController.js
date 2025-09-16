@@ -44,11 +44,16 @@ module.exports = {
     try{
       const { email, password, fullName = null, contactNumber = null } = req.body || {};
       if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
+      const fn = String(fullName || '').trim();
+      const cn = String(contactNumber || '').trim();
+      const digits = cn.replace(/\D+/g,'');
+      if (!fn || !cn) return res.status(400).json(stdFail('Missing fullName/contactNumber', 400));
+      if (digits.length < 7) return res.status(400).json(stdFail('Invalid contact number', 400));
       const key = getApiKey();
       if (!key) return res.status(500).json(stdFail('Firebase not configured', 500));
       const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, displayName: fullName || undefined, returnSecureToken: true })
+        body: JSON.stringify({ email, password, displayName: fn || undefined, returnSecureToken: true })
       });
       const data = await resp.json().catch(()=>({}));
       if (!resp.ok || !data.idToken || !data.localId) {
@@ -59,11 +64,11 @@ module.exports = {
       try{
         const admin = initFirebaseAdmin();
         if (admin) {
-          if (fullName) await admin.auth().updateUser(data.localId, { displayName: String(fullName).trim().slice(0,120) });
-          if (contactNumber) await admin.auth().setCustomUserClaims(data.localId, { contactNumber: String(contactNumber).trim().slice(0,40) });
+          if (fn) await admin.auth().updateUser(data.localId, { displayName: fn.slice(0,120) });
+          if (cn) await admin.auth().setCustomUserClaims(data.localId, { contactNumber: cn.slice(0,40) });
         }
-      }catch(_){}
-      await upsertRider({ uid: data.localId, email, displayName: fullName, contactNumber, photoURL: null });
+      }catch(_){ }
+      await upsertRider({ uid: data.localId, email, displayName: fn, contactNumber: cn, photoURL: null });
       return res.status(200).json(stdOk({ registered: true }, 'Registered successfully', 200));
     }catch(e){ return res.status(500).json(stdFail('Registration failed', 500)); }
   },

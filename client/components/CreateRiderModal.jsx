@@ -11,14 +11,20 @@ export default function CreateRiderModal({ onClose, onCreated }){
 
   async function create(){
     setError(''); setOk('');
-    if(!email || !password) { setError('Email and password are required'); return; }
+    const em = String(email).trim();
+    const pw = String(password);
+    const fn = String(fullName).trim();
+    const cn = String(contactNumber).trim();
+    const digits = cn.replace(/\D+/g, '');
+    if(!fn || !cn || !em || !pw){ setError('Full name, mobile, email and password are required'); return; }
+    if(digits.length < 7){ setError('Please enter a valid mobile number'); return; }
     setLoading(true);
     try{
       const res = await fetch('/api/mobile/register', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: String(email).trim(), password: String(password), fullName: String(fullName).trim() || null, contactNumber: String(contactNumber).trim() || null }),
+        body: JSON.stringify({ email: em, password: pw, fullName: fn, contactNumber: cn }),
       });
       const json = await res.json().catch(()=>null);
       if(!res.ok) throw new Error((json && json.error) ? json.error : (json && json.message) ? json.message : 'Failed to create rider');
@@ -40,7 +46,7 @@ export default function CreateRiderModal({ onClose, onCreated }){
           {error && <div className="auth-error">{error}</div>}
           {ok && <div className="auth-success">{ok}</div>}
           <label className="field-label">Full name
-            <input className="field-input" value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="Optional" />
+            <input className="field-input" value={fullName} onChange={e=>setFullName(e.target.value)} required />
           </label>
           <label className="field-label">Email
             <input className="field-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
@@ -49,7 +55,7 @@ export default function CreateRiderModal({ onClose, onCreated }){
             <input className="field-input" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
           </label>
           <label className="field-label">Contact number
-            <input className="field-input" value={contactNumber} onChange={e=>setContactNumber(e.target.value)} placeholder="Optional" />
+            <input className="field-input" type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>setContactNumber(e.target.value)} required />
           </label>
           <div className="create-rider-actions">
             <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>

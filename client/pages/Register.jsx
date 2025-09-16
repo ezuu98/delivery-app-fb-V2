@@ -37,6 +37,11 @@ export default function Register(){
   async function onSubmit(e){
     e.preventDefault(); setError(''); setOk(''); setLoading(true);
     try{
+      const fn = String(fullName).trim();
+      const cn = String(contactNumber).trim();
+      const digits = cn.replace(/\D+/g,'');
+      if(!fn || !cn) throw new Error('Full name and mobile are required');
+      if(digits.length < 7) throw new Error('Please enter a valid mobile number');
       if(password !== confirm) throw new Error('Passwords do not match');
       if(!cfg?.apiKey) throw new Error('Firebase not configured');
       const app = (await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js')).initializeApp(cfg);
@@ -44,7 +49,7 @@ export default function Register(){
       const auth = getAuth();
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
       const idToken = await cred.user.getIdToken();
-      const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile:{ fullName, contactNumber } }) });
+      const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile:{ fullName: fn, contactNumber: cn } }) });
       if(!res.ok) throw new Error('Session creation failed');
       setOk('Account created successfully. Redirecting...');
       setTimeout(()=> window.location.href = '/riders', 700);
@@ -62,7 +67,7 @@ export default function Register(){
           <input className="auth-input" value={fullName} onChange={e=>setFullName(e.target.value)} required />
         </label>
         <label className="auth-label">Contact number
-          <input className="auth-input" value={contactNumber} onChange={e=>setContactNumber(e.target.value)} inputMode="tel" placeholder="e.g. +1 555 123 4567" />
+          <input className="auth-input" type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>setContactNumber(e.target.value)} placeholder="e.g. +1 555 123 4567" required />
         </label>
         <label className="auth-label">Email
           <input className="auth-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
