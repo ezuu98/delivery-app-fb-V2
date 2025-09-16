@@ -11,6 +11,8 @@ export default function Register(){
   const [ok, setOk] = useState('');
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
+  const [nameErr, setNameErr] = useState(false);
+  const [phoneErr, setPhoneErr] = useState(false);
 
   useEffect(()=>{
     const w = typeof window !== 'undefined' ? window : undefined;
@@ -37,6 +39,14 @@ export default function Register(){
   async function onSubmit(e){
     e.preventDefault(); setError(''); setOk(''); setLoading(true);
     try{
+      const fn = String(fullName).trim();
+      const cn = String(contactNumber).trim();
+      const digits = cn.replace(/\D+/g,'');
+      const missing = { fn: !fn, cn: !cn };
+      setNameErr(missing.fn);
+      setPhoneErr(missing.cn || digits.length < 7);
+      if(missing.fn || missing.cn){ setError('Please fill in required fields'); return; }
+      if(digits.length < 7){ setError('Please enter a valid mobile number'); return; }
       if(password !== confirm) throw new Error('Passwords do not match');
       if(!cfg?.apiKey) throw new Error('Firebase not configured');
       const app = (await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js')).initializeApp(cfg);
@@ -44,7 +54,7 @@ export default function Register(){
       const auth = getAuth();
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
       const idToken = await cred.user.getIdToken();
-      const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile:{ fullName, contactNumber } }) });
+      const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken, profile:{ fullName: fn, contactNumber: cn } }) });
       if(!res.ok) throw new Error('Session creation failed');
       setOk('Account created successfully. Redirecting...');
       setTimeout(()=> window.location.href = '/riders', 700);
@@ -59,10 +69,10 @@ export default function Register(){
       {ok && <div className="auth-success">{ok}</div>}
       <form className="auth-form" onSubmit={onSubmit}>
         <label className="auth-label">Full name
-          <input className="auth-input" value={fullName} onChange={e=>setFullName(e.target.value)} required />
+          <input className={"auth-input" + (nameErr && !String(fullName).trim() ? ' input-error' : '')} value={fullName} onChange={e=>{ setFullName(e.target.value); if(nameErr) setNameErr(!String(e.target.value).trim()); }} onBlur={()=> setNameErr(!String(fullName).trim())} required />
         </label>
         <label className="auth-label">Contact number
-          <input className="auth-input" value={contactNumber} onChange={e=>setContactNumber(e.target.value)} inputMode="tel" placeholder="e.g. +1 555 123 4567" />
+          <input className={"auth-input" + (phoneErr ? ' input-error' : '')} type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>{ setContactNumber(e.target.value); if(phoneErr){ const digits = String(e.target.value).trim().replace(/\D+/g,''); setPhoneErr(!(digits.length >= 7)); } }} onBlur={()=>{ const digits = String(contactNumber).trim().replace(/\D+/g,''); setPhoneErr(!(digits.length >= 7)); }} placeholder="e.g. +1 555 123 4567" required />
         </label>
         <label className="auth-label">Email
           <input className="auth-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
