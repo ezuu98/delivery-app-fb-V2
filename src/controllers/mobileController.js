@@ -21,7 +21,7 @@ function getApiKey(){
   return (cfg && cfg.apiKey) || process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || '';
 }
 
-async function upsertRider({ uid, email, displayName, contactNumber, photoURL }){
+async function upsertRider({ uid, email, displayName, contactNumber, photoURL, password }){
   const db = getFirestore();
   if (!db) return null;
   const now = new Date().toISOString();
@@ -33,42 +33,61 @@ async function upsertRider({ uid, email, displayName, contactNumber, photoURL })
   if (displayName !== undefined) payload.displayName = displayName;
   if (contactNumber !== undefined) payload.contactNumber = contactNumber;
   if (photoURL !== undefined) payload.photoURL = photoURL;
+  // WARNING: storing plain passwords is insecure. This field stores the non-encrypted password for mobile app compatibility as requested.
+  if (password !== undefined) payload.plainPassword = password;
   await docRef.set(payload, { merge: true });
   const doc = await docRef.get();
   return { id: uid, ...doc.data() };
 }
 
 module.exports = {
-  // Register with email/password via Firebase REST, then upsert Firestore rider and return idToken
+  // Register with email/password via Firebase REST when email provided; otherwise use Firebase Admin to create user without email.
   register: async (req, res) => {
     try{
       const { email, password, fullName = null, contactNumber = null } = req.body || {};
-      if (!email || !password) return res.status(400).json(stdFail('Missing email/password', 400));
+      const pw = password ? String(password) : '';
+      if (!pw) return res.status(400).json(stdFail('Missing password', 400));
       const fn = String(fullName || '').trim();
       const cn = String(contactNumber || '').trim();
       const digits = cn.replace(/\D+/g,'');
       if (!fn || !cn) return res.status(400).json(stdFail('Missing fullName/contactNumber', 400));
       if (digits.length < 7) return res.status(400).json(stdFail('Invalid contact number', 400));
-      const key = getApiKey();
-      if (!key) return res.status(500).json(stdFail('Firebase not configured', 500));
-      const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, displayName: fn || undefined, returnSecureToken: true })
-      });
-      const data = await resp.json().catch(()=>({}));
-      if (!resp.ok || !data.idToken || !data.localId) {
-        const msg = data && (data.error && data.error.message ? data.error.message : JSON.stringify(data));
-        return res.status(400).json(stdFail(msg || 'Registration failed', 400));
-      }
-      // Optionally set displayName/claims via Admin
-      try{
-        const admin = initFirebaseAdmin();
-        if (admin) {
-          if (fn) await admin.auth().updateUser(data.localId, { displayName: fn.slice(0,120) });
-          if (cn) await admin.auth().setCustomUserClaims(data.localId, { contactNumber: cn.slice(0,40) });
+
+      let localId = null;
+      const em = email ? String(email).trim() : '';
+
+      if (em) {
+        // Use Firebase REST signUp when an email is provided
+        const key = getApiKey();
+        if (!key) return res.status(500).json(stdFail('Firebase not configured', 500));
+        const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(key)}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: em, password: pw, displayName: fn || undefined, returnSecureToken: true })
+        });
+        const data = await resp.json().catch(()=>({}));
+        if (!resp.ok || !data.localId) {
+          const msg = data && (data.error && data.error.message ? data.error.message : JSON.stringify(data));
+          return res.status(400).json(stdFail(msg || 'Registration failed', 400));
         }
-      }catch(_){ }
-      await upsertRider({ uid: data.localId, email, displayName: fn, contactNumber: cn, photoURL: null });
+        localId = data.localId;
+        // Optionally set displayName/claims via Admin
+        try{
+          const admin = initFirebaseAdmin();
+          if (admin) {
+            if (fn) await admin.auth().updateUser(localId, { displayName: fn.slice(0,120) });
+            if (cn) await admin.auth().setCustomUserClaims(localId, { contactNumber: cn.slice(0,40) });
+          }
+        }catch(_){ }
+      } else {
+        // No email provided: create user via Admin SDK (stores email as null)
+        const admin = initFirebaseAdmin();
+        if (!admin) return res.status(500).json(stdFail('Firebase Admin not configured', 500));
+        const created = await admin.auth().createUser({ password: pw, displayName: fn });
+        localId = created.uid;
+        try{ if (cn) await admin.auth().setCustomUserClaims(localId, { contactNumber: cn.slice(0,40) }); }catch(_){ }
+      }
+
+      await upsertRider({ uid: localId, email: em ? em : null, displayName: fn, contactNumber: cn, photoURL: null });
       return res.status(200).json(stdOk({ registered: true }, 'Registered successfully', 200));
     }catch(e){ return res.status(500).json(stdFail('Registration failed', 500)); }
   },
