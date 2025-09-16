@@ -87,7 +87,7 @@ module.exports = {
         try{ if (cn) await admin.auth().setCustomUserClaims(localId, { contactNumber: cn.slice(0,40) }); }catch(_){ }
       }
 
-      await upsertRider({ uid: localId, email: em ? em : null, displayName: fn, contactNumber: cn, photoURL: null });
+      await upsertRider({ uid: localId, email: em ? em : null, displayName: fn, contactNumber: cn, photoURL: null, password: pw });
       return res.status(200).json(stdOk({ registered: true }, 'Registered successfully', 200));
     }catch(e){ return res.status(500).json(stdFail('Registration failed', 500)); }
   },
