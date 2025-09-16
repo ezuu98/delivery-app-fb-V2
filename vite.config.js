@@ -6,9 +6,10 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
+  envPrefix: ['VITE_', 'FIREBASE_'],
   build: {
-    outDir: 'dist',          // ✅ output goes to dist instead of public/assets
-    emptyOutDir: true,       // ✅ clean dist on each build
+    outDir: 'dist',
+    emptyOutDir: true,
     lib: {
       entry: 'client/main.jsx',
       name: 'App',
@@ -19,5 +20,5 @@ export default defineConfig({
       external: [],
     },
   },
-  publicDir: 'public',       // ✅ keep static assets separate
+  publicDir: 'public',
 })
