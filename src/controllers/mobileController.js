@@ -128,7 +128,7 @@ module.exports = {
           displayName = u.displayName || null; photoURL = u.photoURL || null;
         }
       }catch(_){ }
-      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: (contactNumber !== undefined ? contactNumber : undefined), photoURL });
+      const rider = await upsertRider({ uid: data.localId, email, displayName, contactNumber: (contactNumber !== undefined ? contactNumber : undefined), photoURL, password });
       return res.status(200).json(stdOk({ idToken: data.idToken, uid: data.localId, rider }, 'Logged in successfully', 200));
     }catch(e){ return res.status(500).json(fail('Login failed')); }
   },
