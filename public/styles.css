@@ -167,3 +167,7 @@
 .reports-stat-value{font-size:26px;font-weight:700}
 .reports-toolbar-center{align-items:center}
 .toggle-data-label{display:inline-flex;align-items:center;gap:8px}
+
+/* Riders table: make rider name link look like plain text */
+.rc-col-name .rider-name-link{color:inherit;text-decoration:none}
+.rc-col-name .rider-name-link:hover,.rc-col-name .rider-name-link:focus,.rc-col-name .rider-name-link:visited{color:inherit;text-decoration:none}
