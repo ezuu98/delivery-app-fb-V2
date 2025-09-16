@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
@@ -7,8 +7,8 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
   build: {
-    outDir: 'public/assets',
-    emptyOutDir: false,
+    outDir: 'dist',          // ✅ output goes to dist instead of public/assets
+    emptyOutDir: true,       // ✅ clean dist on each build
     lib: {
       entry: 'client/main.jsx',
       name: 'App',
@@ -19,4 +19,5 @@ export default defineConfig({
       external: [],
     },
   },
-});
+  publicDir: 'public',       // ✅ keep static assets separate
+})
