@@ -11,14 +11,16 @@ export default function Login(){
   const [show, setShow] = useState(false);
 
   useEffect(()=>{
-    // config is embedded by server via env; fallback to window.__FIREBASE__ if present
+    // Prefer runtime config injected by server, fall back to env at build time
+    const w = typeof window !== 'undefined' ? window : undefined;
+    const wc = w && w.__FIREBASE__ ? w.__FIREBASE__ : null;
     setCfg({
-      apiKey: import.meta.env.FIREBASE_API_KEY,
-      authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN,
-      projectId: import.meta.env.FIREBASE_PROJECT_ID,
-      appId: import.meta.env.FIREBASE_APP_ID,
-      messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID,
-      measurementId: import.meta.env.FIREBASE_MEASUREMENT_ID,
+      apiKey: (wc && wc.apiKey) || import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.FIREBASE_API_KEY,
+      authDomain: (wc && wc.authDomain) || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || import.meta.env.FIREBASE_AUTH_DOMAIN,
+      projectId: (wc && wc.projectId) || import.meta.env.VITE_FIREBASE_PROJECT_ID || import.meta.env.FIREBASE_PROJECT_ID,
+      appId: (wc && wc.appId) || import.meta.env.VITE_FIREBASE_APP_ID || import.meta.env.FIREBASE_APP_ID,
+      messagingSenderId: (wc && wc.messagingSenderId) || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || import.meta.env.FIREBASE_MESSAGING_SENDER_ID,
+      measurementId: (wc && wc.measurementId) || import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || import.meta.env.FIREBASE_MEASUREMENT_ID,
     });
   },[]);
 
