@@ -62,7 +62,6 @@ export default function CreateRiderModal({ onClose, onCreated }){
           <button className="create-rider-close" onClick={onClose} aria-label="Close">✕</button>
         </header>
         <div className="create-rider-body">
-          {error && <div className="auth-error">{error}</div>}
           {ok && <div className="auth-success">{ok}</div>}
           <label className="field-label">Full name
             <input className={"field-input" + (fullNameErr && !String(fullName).trim() ? ' input-error' : '')} value={fullName} onChange={e=>{ setFullName(e.target.value); if(fullNameErr) setFullNameErr(!String(e.target.value).trim()); }} onBlur={()=> setFullNameErr(!String(fullName).trim())} required />
@@ -76,6 +75,7 @@ export default function CreateRiderModal({ onClose, onCreated }){
           <label className="field-label">Contact number
             <input className={"field-input" + (contactErr ? ' input-error' : '')} type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>{ setContactNumber(e.target.value); if(contactErr){ const digits = String(e.target.value).trim().replace(/\D+/g,''); setContactErr(!(digits.length >= 7)); } }} onBlur={()=>{ const digits = String(contactNumber).trim().replace(/\D+/g,''); setContactErr(!(digits.length >= 7)); }} required />
           </label>
+          {error && <div className="auth-error">{error}</div>}
           <div className="create-rider-actions">
             <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>
             <button className="btn-primary" onClick={create} disabled={loading}>{loading ? 'Creating…' : 'Create'}</button>
