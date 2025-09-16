@@ -115,7 +115,7 @@ export default function Riders(){
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
-                  <td className="rc-col-name"><a href={`/riders/${r.id}`}>{r.name}</a></td>
+                  <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
                   <td className="rc-col-km">{r.totalKm} <span className="rc-km-unit">km</span></td>
                   <td className="rc-col-perf">
                     <div className="rc-progress">
