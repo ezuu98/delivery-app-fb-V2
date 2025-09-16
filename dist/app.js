@@ -17504,14 +17504,9 @@ function d_({ onClose: s, onCreated: m }) {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ d.jsxDEV("div", { className: "create-rider-body", children: [
-      M && /* @__PURE__ */ d.jsxDEV("div", { className: "auth-error", children: M }, void 0, !1, {
-        fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 65,
-        columnNumber: 21
-      }, this),
       K && /* @__PURE__ */ d.jsxDEV("div", { className: "auth-success", children: K }, void 0, !1, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 66,
+        lineNumber: 65,
         columnNumber: 18
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
@@ -17520,12 +17515,12 @@ function d_({ onClose: s, onCreated: m }) {
           A(ce.target.value), Z && ve(!String(ce.target.value).trim());
         }, onBlur: () => ve(!String(f).trim()), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
-          lineNumber: 68,
+          lineNumber: 67,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 67,
+        lineNumber: 66,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
@@ -17534,12 +17529,12 @@ function d_({ onClose: s, onCreated: m }) {
           y(ce.target.value), I && B(!String(ce.target.value).trim());
         }, onBlur: () => B(!String(h).trim()), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
-          lineNumber: 71,
+          lineNumber: 70,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 70,
+        lineNumber: 69,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
@@ -17548,12 +17543,12 @@ function d_({ onClose: s, onCreated: m }) {
           C(ce.target.value), he && $(!String(ce.target.value));
         }, onBlur: () => $(!String(b)), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
-          lineNumber: 74,
+          lineNumber: 73,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 73,
+        lineNumber: 72,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
@@ -17568,13 +17563,18 @@ function d_({ onClose: s, onCreated: m }) {
           G(!(ce.length >= 7));
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
-          lineNumber: 77,
+          lineNumber: 76,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
-        lineNumber: 76,
+        lineNumber: 75,
         columnNumber: 11
+      }, this),
+      M && /* @__PURE__ */ d.jsxDEV("div", { className: "auth-error", children: M }, void 0, !1, {
+        fileName: "/app/code/client/components/CreateRiderModal.jsx",
+        lineNumber: 78,
+        columnNumber: 21
       }, this),
       /* @__PURE__ */ d.jsxDEV("div", { className: "create-rider-actions", children: [
         /* @__PURE__ */ d.jsxDEV("button", { className: "btn-secondary", onClick: s, disabled: _, children: "Cancel" }, void 0, !1, {
