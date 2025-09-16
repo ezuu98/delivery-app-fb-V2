@@ -167,3 +167,26 @@
 .reports-stat-value{font-size:26px;font-weight:700}
 .reports-toolbar-center{align-items:center}
 .toggle-data-label{display:inline-flex;align-items:center;gap:8px}
+
+/* Riders table: make rider name link look like plain text */
+.rc-table .rc-col-name > .rider-name-link,
+.rc-table .rc-col-name > .rider-name-link:link,
+.rc-table .rc-col-name > .rider-name-link:visited,
+.rc-table .rc-col-name > .rider-name-link:hover,
+.rc-table .rc-col-name > .rider-name-link:focus,
+.rc-table .rc-col-name > .rider-name-link:active{
+  color: #111827 !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+}
+/* fallback: target any anchor inside rc-col-name */
+.rc-table .rc-col-name a,
+.rc-table .rc-col-name a:link,
+.rc-table .rc-col-name a:visited,
+.rc-table .rc-col-name a:hover,
+.rc-table .rc-col-name a:focus,
+.rc-table .rc-col-name a:active{
+  color: #111827 !important;
+  text-decoration: none !important;
+}
