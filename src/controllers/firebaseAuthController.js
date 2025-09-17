@@ -77,16 +77,20 @@ module.exports = {
         }
       } catch (_) { /* ignore firestore write errors */ }
 
-      // Always set Secure + SameSite=None + Partitioned to support third-party iframe previews
+      // Relax cookie flags on insecure (local) HTTP to avoid browsers dropping the cookie
+      const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+      const isSecure = !!(req.secure || proto === 'https');
       const cookieParts = [
         `${SESSION_COOKIE_NAME}=${sessionCookie}`,
         `Max-Age=${Math.floor(expiresIn / 1000)}`,
         'Path=/',
         'HttpOnly',
-        'Secure',
-        'SameSite=None',
-        'Partitioned',
       ];
+      if (isSecure) {
+        cookieParts.push('Secure', 'SameSite=None', 'Partitioned');
+      } else {
+        cookieParts.push('SameSite=Lax');
+      }
       const { ok } = require('../utils/response');
       res.setHeader('Set-Cookie', cookieParts.join('; '));
       return res.status(200).json(ok());
