@@ -77,16 +77,30 @@ module.exports = {
         }
       } catch (_) { /* ignore firestore write errors */ }
 
-      // Always set Secure + SameSite=None + Partitioned to support third-party iframe previews
+      // Relax cookie flags on insecure (local) HTTP to avoid browsers dropping the cookie
+      const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+      const isSecure = !!(req.secure || proto === 'https');
       const cookieParts = [
         `${SESSION_COOKIE_NAME}=${sessionCookie}`,
         `Max-Age=${Math.floor(expiresIn / 1000)}`,
         'Path=/',
         'HttpOnly',
-        'Secure',
-        'SameSite=None',
-        'Partitioned',
       ];
+
+      // Scope cookie to parent domain when applicable (handles www/apex changes)
+      const host = (req.hostname || '').toLowerCase();
+      const isIp = /^((\d{1,3}\.){3}\d{1,3}|\[[0-9a-f:]+\])$/.test(host) || host === 'localhost';
+      if (!isIp && host.includes('.')) {
+        const parts = host.split('.');
+        if (parts.length >= 2) cookieParts.push(`Domain=.${parts.slice(-2).join('.')}`);
+      }
+
+      if (isSecure) {
+        cookieParts.push('Secure', 'SameSite=None');
+        if (String(process.env.COOKIE_PARTITIONED || '').trim() === '1') cookieParts.push('Partitioned');
+      } else {
+        cookieParts.push('SameSite=Lax');
+      }
       const { ok } = require('../utils/response');
       res.setHeader('Set-Cookie', cookieParts.join('; '));
       return res.status(200).json(ok());
