@@ -96,17 +96,28 @@ module.exports = {
   },
   logout: async (req, res) => {
     try {
-      const expireParts = [
-        `${SESSION_COOKIE_NAME}=`,
-        'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
-        'Max-Age=0',
-        'Path=/',
-        'HttpOnly',
-        'Secure',
-        'SameSite=None',
-        'Partitioned',
-      ];
-      res.setHeader('Set-Cookie', expireParts.join('; '));
+      const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
+      const base = [`${SESSION_COOKIE_NAME}=`, `Expires=${expired}`, 'Max-Age=0', 'Path=/', 'HttpOnly', 'Secure', 'SameSite=None'];
+
+      const host = (req.hostname || '').toLowerCase();
+      const isIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(host) || host === 'localhost';
+      let domain = null;
+      if (!isIp && host.includes('.')) {
+        const parts = host.split('.');
+        if (parts.length >= 2) domain = '.' + parts.slice(-2).join('.');
+      }
+
+      const variants = [];
+      // Host-only cookies (with and without Partitioned)
+      variants.push([...base, 'Partitioned'].join('; '));
+      variants.push(base.join('; '));
+      // Domain-scoped cookies if available (with and without Partitioned)
+      if (domain) {
+        variants.push([...base, `Domain=${domain}`, 'Partitioned'].join('; '));
+        variants.push([...base, `Domain=${domain}`].join('; '));
+      }
+
+      res.setHeader('Set-Cookie', variants);
     } catch (_) { /* ignore */ }
     return res.redirect('/');
   },
