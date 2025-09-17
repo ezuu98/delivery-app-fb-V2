@@ -1,2 +1,54 @@
-.env
+# Node
 node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Logs
+logs
+*.log
+*.out
+*.err
+
+# Runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output
+dist/
+build/
+.cache/
+.tmp/
+.eslintcache
+
+# Vite specific
+.vite
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.swo
+*.swp
+.DS_Store
+Thumbs.db
+
+# AWS Elastic Beanstalk
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

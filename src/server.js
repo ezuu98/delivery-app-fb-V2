@@ -2,9 +2,7 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-// EJS removed; SPA only
 const { currentUserMiddleware } = require('./middleware/currentUser');
-
 const routes = require('./routes');
 const { config } = require('./config/env');
 
@@ -25,10 +23,12 @@ app.use('/webhooks', require('./routes/webhooks'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Populate req.user from Firebase session cookie
 app.use(currentUserMiddleware());
+
+// Routes
+app.use('/api', routes);
 
 // Set template locals
 app.use((req, res, next) => {
@@ -38,11 +38,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.use('/', routes);
 
 // Global error handler
 app.use(require('./middleware/validate').errorHandler);
+
+// Serve React build
+app.use(express.static(path.join(__dirname, "../dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
+});
 
 // 404 handler -> serve SPA and let React Router handle
 app.use((req, res) => {
