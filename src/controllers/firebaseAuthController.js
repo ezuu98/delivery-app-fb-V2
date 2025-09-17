@@ -86,8 +86,18 @@ module.exports = {
         'Path=/',
         'HttpOnly',
       ];
+
+      // Scope cookie to parent domain when applicable (handles www/apex changes)
+      const host = (req.hostname || '').toLowerCase();
+      const isIp = /^((\d{1,3}\.){3}\d{1,3}|\[[0-9a-f:]+\])$/.test(host) || host === 'localhost';
+      if (!isIp && host.includes('.')) {
+        const parts = host.split('.');
+        if (parts.length >= 2) cookieParts.push(`Domain=.${parts.slice(-2).join('.')}`);
+      }
+
       if (isSecure) {
-        cookieParts.push('Secure', 'SameSite=None', 'Partitioned');
+        cookieParts.push('Secure', 'SameSite=None');
+        if (String(process.env.COOKIE_PARTITIONED || '').trim() === '1') cookieParts.push('Partitioned');
       } else {
         cookieParts.push('SameSite=Lax');
       }
