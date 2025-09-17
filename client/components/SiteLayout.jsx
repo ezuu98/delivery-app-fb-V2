@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Toaster from './Toaster.jsx';
 
 export default function SiteLayout({ children }){
   const navigate = useNavigate();
