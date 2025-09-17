@@ -42,16 +42,13 @@ app.use((req, res, next) => {
 // Global error handler
 app.use(require('./middleware/validate').errorHandler);
 
-// Serve React build
+// Serve static assets
 app.use(express.static(path.join(__dirname, "../dist")));
+app.use(express.static(path.join(__dirname, "../public")));
 
+// SPA fallback
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist/index.html"));
-});
-
-// 404 handler -> serve SPA and let React Router handle
-app.use((req, res) => {
-  res.status(200).sendFile(require('path').join(__dirname, '..', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 module.exports = app;
