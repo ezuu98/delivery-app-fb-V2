@@ -1,18 +1,22 @@
 const admin = require('firebase-admin');
+const log = require('../utils/logger');
 let initialized = false;
 
 function initFirebaseAdmin() {
   if (initialized) return admin;
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const projectId = (process.env.FIREBASE_PROJECT_ID || '').trim();
+  const clientEmail = (process.env.FIREBASE_CLIENT_EMAIL || '').trim();
 
   // Prefer BASE64 if provided (more reliable on hosts that mangle newlines)
-  const privateKeyB64 = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
+  const privateKeyB64Raw = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
   let privateKey = '';
-  if (privateKeyB64) {
+  if (privateKeyB64Raw) {
     try {
+      const privateKeyB64 = String(privateKeyB64Raw).trim().replace(/\s+/g, '');
       privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
-    } catch (_) { /* ignore */ }
+    } catch (e) {
+      log.warn('firebaseAdmin.base64.decodeFailed', { message: e && e.message });
+    }
   }
   if (!privateKey) {
     privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
@@ -25,9 +29,11 @@ function initFirebaseAdmin() {
   }
 
   if (!projectId || !clientEmail || !privateKey) {
-    // Do not throw to allow app to start; protected routes will fail with 401
-    // eslint-disable-next-line no-console
-    console.warn('Firebase Admin not fully configured. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY or FIREBASE_PRIVATE_KEY_BASE64');
+    const missing = [];
+    if (!projectId) missing.push('FIREBASE_PROJECT_ID');
+    if (!clientEmail) missing.push('FIREBASE_CLIENT_EMAIL');
+    if (!privateKey) missing.push('FIREBASE_PRIVATE_KEY[_BASE64]');
+    log.warn('firebaseAdmin.config.missing', { missing });
     return null;
   }
 
@@ -37,8 +43,7 @@ function initFirebaseAdmin() {
     });
     initialized = true;
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('Failed to initialize Firebase Admin:', err && err.message ? err.message : err);
+    log.warn('firebaseAdmin.init.failed', { message: err && err.message ? err.message : String(err) });
     return null;
   }
   return admin;
