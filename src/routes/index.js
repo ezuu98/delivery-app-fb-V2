@@ -58,6 +58,7 @@ router.get('/api/diag/firebase', (req, res) => {
     clientEmail: !!(process.env.FIREBASE_CLIENT_EMAIL && String(process.env.FIREBASE_CLIENT_EMAIL).trim()),
     hasPrivateKeyBase64: !!b64,
     hasPrivateKey: !!plain,
+    usingBase64Only: true,
     base64Length: b64 ? String(b64).length : 0,
     initialized: adminInit,
   });
