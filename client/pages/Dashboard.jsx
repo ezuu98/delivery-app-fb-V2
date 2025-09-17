@@ -59,6 +59,9 @@ export default function Dashboard(){
       }));
       // decrement total count to reflect removal
       setMeta(prev => ({ ...(prev || {}), total: Math.max(0, (prev?.total || 0) - 1) }));
+
+      // show toast notification
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){ /* ignore */ }
   }
 
