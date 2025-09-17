@@ -67,7 +67,8 @@ export default function Orders(){
     try{
       const { orderId } = payload || {};
       if(!orderId) return;
-      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id) !== String(orderId)));
+      const normalizedAssigned = String(orderId).replace(/^#+/, '');
+      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id).replace(/^#+/, '') !== String(normalizedAssigned)));
       setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
     }catch(e){}
   }
