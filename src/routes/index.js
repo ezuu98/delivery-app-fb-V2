@@ -47,6 +47,22 @@ router.post('/api/admin/sync-orders', ensureAuthenticatedJson, apiController.syn
 router.get('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);
 router.get('/api/openapi.json', (req, res)=> res.type('application/json').sendFile(path.join(__dirname, '..', 'contracts', 'openapi.json')));
 
+// Lightweight diagnostics (no secrets)
+router.get('/api/diag/firebase', (req, res) => {
+  const b64 = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
+  const plain = process.env.FIREBASE_PRIVATE_KEY || '';
+  let adminInit = false;
+  try { adminInit = !!(require('../services/firebaseAdmin').initFirebaseAdmin()); } catch (_) { adminInit = false; }
+  res.json({
+    projectId: !!(process.env.FIREBASE_PROJECT_ID && String(process.env.FIREBASE_PROJECT_ID).trim()),
+    clientEmail: !!(process.env.FIREBASE_CLIENT_EMAIL && String(process.env.FIREBASE_CLIENT_EMAIL).trim()),
+    hasPrivateKeyBase64: !!b64,
+    hasPrivateKey: !!plain,
+    base64Length: b64 ? String(b64).length : 0,
+    initialized: adminInit,
+  });
+});
+
 // Mobile API
 router.post('/api/mobile/register', mobileController.register);
 router.post('/api/mobile/login', mobileController.login);
