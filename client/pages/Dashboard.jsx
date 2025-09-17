@@ -52,9 +52,10 @@ export default function Dashboard(){
     try{
       const { orderId } = payload || {};
       if (!orderId) return;
+      const normalizedAssigned = String(orderId).replace(/^#+/, '');
       setOrders(prev => prev.filter((o, i) => {
         const key = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
-        return String(key) !== String(orderId);
+        return String(key) !== String(normalizedAssigned);
       }));
       // decrement total count to reflect removal
       setMeta(prev => ({ ...(prev || {}), total: Math.max(0, (prev?.total || 0) - 1) }));
