@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(currentUserMiddleware());
 
 // Routes
-app.use('/api', routes);
+app.use('/', routes);
 
 // Set template locals
 app.use((req, res, next) => {
