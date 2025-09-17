@@ -10,6 +10,21 @@
   <body>
     <main class="content"><div id="react-root"></div></main>
     <script src="/firebase-config.js"></script>
+    <script>
+      // Ensure a global toast API is available even before React mounts; pending toasts are flushed by the Toaster component.
+      window.__pendingToasts = window.__pendingToasts || [];
+      if (typeof window.showToast !== 'function') {
+        window.showToast = function(message, opts) {
+          window.__pendingToasts.push({ message, opts: opts || {} });
+          return null;
+        };
+      }
+      if (typeof window.hideToast !== 'function') {
+        window.hideToast = function(id) {
+          try{ if (window.__pendingToasts) window.__pendingToasts = window.__pendingToasts.filter(t=>t.id!==id); }catch(_){ }
+        };
+      }
+    </script>
     <script type="module" src="/assets/app.js?v=4"></script>
     <script>
       // Intercept same-origin link clicks to trigger client-side navigation (for static build)
