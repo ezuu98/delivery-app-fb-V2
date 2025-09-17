@@ -97,6 +97,7 @@ export default function SiteLayout({ children }){
 
       <main className="content">{children}</main>
       <footer className="site-footer">&copy; {new Date().getFullYear()} FreshBasket</footer>
+      <Toaster />
     </>
   );
 }
