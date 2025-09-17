@@ -3,7 +3,6 @@ const riderModel = require('../models/riderModel');
 const deliveryModel = require('../models/deliveryModel');
 const { getFirestore } = require('../services/firestore');
 const { listOrders, isConfigured, fetchAllOrders } = require('../services/shopify');
-const orderModel = require('../models/orderModel');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
