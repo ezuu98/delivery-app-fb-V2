@@ -70,6 +70,7 @@ export default function Orders(){
       const normalizedAssigned = String(orderId).replace(/^#+/, '');
       setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id).replace(/^#+/, '') !== String(normalizedAssigned)));
       setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){}
   }
 
