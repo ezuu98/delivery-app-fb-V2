@@ -10,16 +10,16 @@ function initFirebaseAdmin() {
   // Prefer BASE64 if provided (more reliable on hosts that mangle newlines)
   const privateKeyB64Raw = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
   let privateKey = '';
-  if (privateKeyB64Raw) {
-    try {
-      const privateKeyB64 = String(privateKeyB64Raw).trim().replace(/\s+/g, '');
-      privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
-    } catch (e) {
-      log.warn('firebaseAdmin.base64.decodeFailed', { message: e && e.message });
-    }
+  if (!privateKeyB64Raw) {
+    log.warn('firebaseAdmin.config.missingBase64');
+    return null;
   }
-  if (!privateKey) {
-    privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  try {
+    const privateKeyB64 = String(privateKeyB64Raw).trim().replace(/\s+/g, '');
+    privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
+  } catch (e) {
+    log.warn('firebaseAdmin.base64.decodeFailed', { message: e && e.message });
+    return null;
   }
   if (privateKey) {
     privateKey = privateKey.replace(/\\n/g, '\n').replace(/\\r/g, '').trim();
@@ -27,12 +27,16 @@ function initFirebaseAdmin() {
       privateKey = privateKey.slice(1, -1);
     }
   }
+  // Validate decoded PEM
+  if (!privateKey || !privateKey.includes('BEGIN PRIVATE KEY') || !privateKey.includes('END PRIVATE KEY')) {
+    log.warn('firebaseAdmin.base64.invalidPem');
+    return null;
+  }
 
-  if (!projectId || !clientEmail || !privateKey) {
+  if (!projectId || !clientEmail) {
     const missing = [];
     if (!projectId) missing.push('FIREBASE_PROJECT_ID');
     if (!clientEmail) missing.push('FIREBASE_CLIENT_EMAIL');
-    if (!privateKey) missing.push('FIREBASE_PRIVATE_KEY[_BASE64]');
     log.warn('firebaseAdmin.config.missing', { missing });
     return null;
   }
