@@ -5,10 +5,17 @@ function initFirebaseAdmin() {
   if (initialized) return admin;
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+
+  // Prefer BASE64 if provided (more reliable on hosts that mangle newlines)
   const privateKeyB64 = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
-  if (privateKeyB64 && !privateKey) {
-    try { privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8'); } catch (_) { /* ignore */ }
+  let privateKey = '';
+  if (privateKeyB64) {
+    try {
+      privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
+    } catch (_) { /* ignore */ }
+  }
+  if (!privateKey) {
+    privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
   }
   if (privateKey) {
     privateKey = privateKey.replace(/\\n/g, '\n').replace(/\\r/g, '').trim();
@@ -20,7 +27,7 @@ function initFirebaseAdmin() {
   if (!projectId || !clientEmail || !privateKey) {
     // Do not throw to allow app to start; protected routes will fail with 401
     // eslint-disable-next-line no-console
-    console.warn('Firebase Admin not fully configured. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
+    console.warn('Firebase Admin not fully configured. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY or FIREBASE_PRIVATE_KEY_BASE64');
     return null;
   }
 
