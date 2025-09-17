@@ -96,10 +96,18 @@ module.exports = {
   },
   logout: async (req, res) => {
     try {
-      res.clearCookie(SESSION_COOKIE_NAME);
-      return res.redirect('/');
-    } catch (_) {
-      return res.redirect('/');
-    }
+      const expireParts = [
+        `${SESSION_COOKIE_NAME}=`,
+        'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+        'Max-Age=0',
+        'Path=/',
+        'HttpOnly',
+        'Secure',
+        'SameSite=None',
+        'Partitioned',
+      ];
+      res.setHeader('Set-Cookie', expireParts.join('; '));
+    } catch (_) { /* ignore */ }
+    return res.redirect('/');
   },
 };
