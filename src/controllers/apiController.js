@@ -13,7 +13,7 @@ async function findOrderByAnyId(id){
   const candidates = [];
   // try exact
   candidates.push(raw);
-  // try stripped
+  // try stripped (# removed)
   candidates.push(raw.replace(/^#+/, ''));
   // try with single leading #
   if(!raw.startsWith('#')) candidates.push('#' + raw);
@@ -24,6 +24,7 @@ async function findOrderByAnyId(id){
   try{
     const db = getFirestore();
     if (db) {
+      // Try direct document id lookups
       for (const k of candidates) {
         if (!k) continue;
         tried.push(k);
@@ -31,6 +32,30 @@ async function findOrderByAnyId(id){
           const snap = await db.collection('orders').doc(String(k)).get();
           if (snap && snap.exists) return { key: String(k), order: snap.data() || {} };
         }catch(_){ /* ignore per-candidate errors */ }
+      }
+
+      // If direct doc lookups failed, try querying common fields (orderId, order_number, name)
+      const queryFields = ['orderId','order_number','name','order_number'];
+      for (const k of candidates) {
+        if (!k) continue;
+        for (const field of queryFields) {
+          try{
+            const q = await db.collection('orders').where(field, '==', k).limit(1).get();
+            if (q && !q.empty) {
+              const doc = q.docs[0];
+              return { key: String(doc.id), order: doc.data() || {} };
+            }
+          }catch(_){ /* ignore query errors */ }
+        }
+      }
+
+      // Also try numeric equality for order_number (as number)
+      if (/^\d+$/.test(raw)){
+        const num = raw;
+        try{
+          const q = await db.collection('orders').where('order_number', '==', num).limit(1).get();
+          if (q && !q.empty) { const doc = q.docs[0]; return { key: String(doc.id), order: doc.data() || {} }; }
+        }catch(_){ }
       }
     }
   }catch(_){ /* ignore firestore errors */ }
@@ -44,6 +69,16 @@ async function findOrderByAnyId(id){
       if(o) return { key: String(k), order: o };
     }catch(_){ }
   }
+
+  // As last resort, try scanning assignments/cache keys for matching order_number/name
+  try{
+    const all = await orderModel.getAll();
+    for(const o of all){
+      const keys = [String(o.id||''), String(o.name||''), String(o.order_number||'')].map(s=>s.replace(/^#+/,''));
+      if(keys.includes(raw.replace(/^#+/,''))) return { key: String(o.id||o.name||o.order_number||''), order: o };
+    }
+  }catch(_){ }
+
   return { key: null, order: null, tried };
 }
 

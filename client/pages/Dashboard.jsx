@@ -52,12 +52,16 @@ export default function Dashboard(){
     try{
       const { orderId } = payload || {};
       if (!orderId) return;
+      const normalizedAssigned = String(orderId).replace(/^#+/, '');
       setOrders(prev => prev.filter((o, i) => {
         const key = String(o.id || o.name || o.order_number || i).replace(/^#+/, '');
-        return String(key) !== String(orderId);
+        return String(key) !== String(normalizedAssigned);
       }));
       // decrement total count to reflect removal
       setMeta(prev => ({ ...(prev || {}), total: Math.max(0, (prev?.total || 0) - 1) }));
+
+      // show toast notification
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){ /* ignore */ }
   }
 
@@ -125,7 +129,7 @@ export default function Dashboard(){
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                       <td className="rc-col-date">{dateStr}</td>
                       <td className="rc-col-time">{timeStr}</td>
-                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(canonicalId)}>Assign Rider</button></td>
+                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(String(o.id || o.name || o.order_number || i))}>Assign Rider</button></td>
                     </tr>
                   );
                 });

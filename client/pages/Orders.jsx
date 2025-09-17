@@ -67,8 +67,10 @@ export default function Orders(){
     try{
       const { orderId } = payload || {};
       if(!orderId) return;
-      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id) !== String(orderId)));
+      const normalizedAssigned = String(orderId).replace(/^#+/, '');
+      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id).replace(/^#+/, '') !== String(normalizedAssigned)));
       setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){}
   }
 

@@ -1,7 +1,26 @@
 import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Toaster from './Toaster.jsx';
 
 export default function SiteLayout({ children }){
+  // Ensure a safe global showToast is available immediately so callers before Toaster mount won't fail
+  useEffect(()=>{
+    if (typeof window === 'undefined') return;
+    window.__pendingToasts = window.__pendingToasts || [];
+    if (typeof window.showToast !== 'function'){
+      window.showToast = function(message, opts){
+        window.__pendingToasts.push({ message, opts: opts || {} });
+        return null;
+      };
+    }
+    if (typeof window.hideToast !== 'function'){
+      window.hideToast = function(id){
+        // no-op until Toaster mounts
+        try{ if (window.__pendingToasts) window.__pendingToasts = window.__pendingToasts.filter(t=>t.id!==id); }catch(_){}
+      };
+    }
+  },[]);
   const navigate = useNavigate();
   useEffect(()=>{
     const notifBtn = document.getElementById('notifBtn');
@@ -96,6 +115,7 @@ export default function SiteLayout({ children }){
 
       <main className="content">{children}</main>
       <footer className="site-footer">&copy; {new Date().getFullYear()} FreshBasket</footer>
+      <Toaster />
     </>
   );
 }

@@ -26,6 +26,8 @@ export default function CreateRiderModal({ onClose, onCreated }){
     setPasswordErr(missing.pw);
     if(missing.fn || missing.cn || missing.pw){ setError('Full name, mobile and password are required'); return; }
     if(digits.length < 7){ setError('Please enter a valid mobile number'); setContactErr(true); return; }
+    if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ setError('Please enter a valid email'); return; }
+    if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
     setLoading(true);
     try{
       const res = await fetch('/api/mobile/register', {
@@ -36,21 +38,51 @@ export default function CreateRiderModal({ onClose, onCreated }){
       });
       const json = await res.json().catch(()=>null);
       if(!res.ok){
-        const msg = (json && (json.error || json.message)) || '';
-        if(/Missing\s*fullName\/contactNumber/i.test(String(msg)) || /Missing\s*email\/password/i.test(String(msg))){
+        const raw = String((json && (json.error || json.message)) || '');
+        const msg = raw.toUpperCase();
+        if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*EMAIL\/PASSWORD/i.test(raw)){
           setError('Full name, mobile and password are required');
           setFullNameErr(!fn);
           setContactErr(!cn || digits.length < 7);
           setPasswordErr(!pw);
+        } else if (msg.includes('EMAIL_EXISTS')) {
+          setError('An account with this email already exists. Use a different email or leave email blank.');
+        } else if (msg.includes('INVALID_EMAIL')) {
+          setError('Please enter a valid email');
+        } else if (msg.includes('WEAK_PASSWORD') || /AT LEAST 6 CHARACTERS/i.test(raw)) {
+          setPasswordErr(true);
+          setError('Password must be at least 6 characters');
+        } else if (/INVALID CONTACT NUMBER/i.test(raw)) {
+          setContactErr(true);
+          setError('Please enter a valid mobile number');
+        } else if (/FIREBASE NOT CONFIGURED/i.test(raw)) {
+          setError('Service temporarily unavailable. Please try again later.');
         } else {
-          throw new Error(msg || 'Failed to create rider');
+          throw new Error(raw || 'Failed to create rider');
         }
         return;
       }
       setOk('Rider created successfully');
       if(onCreated) onCreated();
       setTimeout(()=>{ if(onClose) onClose(); }, 600);
-    }catch(e){ if(!/Missing\s*(fullName\/contactNumber|email\/password)/i.test(String(e?.message||''))) setError(e.message || 'Failed to create rider'); }
+    }catch(e){
+      const m = String(e?.message||'');
+      if(/Missing\s*(fullName\/contactNumber|email\/password)/i.test(m)){
+        setError('Full name, mobile and password are required');
+      } else if(/EMAIL_EXISTS/i.test(m)){
+        setError('An account with this email already exists. Use a different email or leave email blank.');
+      } else if(/INVALID_EMAIL/i.test(m)){
+        setError('Please enter a valid email');
+      } else if(/WEAK_PASSWORD/i.test(m) || /AT LEAST 6 CHARACTERS/i.test(m)){
+        setPasswordErr(true);
+        setError('Password must be at least 6 characters');
+      } else if(/INVALID CONTACT NUMBER/i.test(m)){
+        setContactErr(true);
+        setError('Please enter a valid mobile number');
+      } else {
+        setError(m || 'Failed to create rider');
+      }
+    }
     finally{ setLoading(false); }
   }
 
