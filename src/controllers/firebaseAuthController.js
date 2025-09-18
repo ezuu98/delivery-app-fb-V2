@@ -87,13 +87,10 @@ module.exports = {
         'HttpOnly',
       ];
 
-      // Scope cookie to parent domain when applicable (handles www/apex changes)
-      const host = (req.hostname || '').toLowerCase();
-      const isIp = /^((\d{1,3}\.){3}\d{1,3}|\[[0-9a-f:]+\])$/.test(host) || host === 'localhost';
-      if (!isIp && host.includes('.')) {
-        const parts = host.split('.');
-        if (parts.length >= 2) cookieParts.push(`Domain=.${parts.slice(-2).join('.')}`);
-      }
+      // Use host-only cookies by default to avoid public-suffix rejection (e.g., *.vercel.app, *.netlify.app, *.pages.dev, *.fly.dev)
+      // Optionally allow explicit domain scoping via env when serving on a custom apex
+      const cookieDomain = String(process.env.COOKIE_DOMAIN || '').trim();
+      if (cookieDomain) cookieParts.push(`Domain=${cookieDomain}`);
 
       if (isSecure) {
         cookieParts.push('Secure', 'SameSite=None');
@@ -113,22 +110,16 @@ module.exports = {
       const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
       const base = [`${SESSION_COOKIE_NAME}=`, `Expires=${expired}`, 'Max-Age=0', 'Path=/', 'HttpOnly', 'Secure', 'SameSite=None'];
 
-      const host = (req.hostname || '').toLowerCase();
-      const isIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(host) || host === 'localhost';
-      let domain = null;
-      if (!isIp && host.includes('.')) {
-        const parts = host.split('.');
-        if (parts.length >= 2) domain = '.' + parts.slice(-2).join('.');
-      }
+      const cookieDomain = String(process.env.COOKIE_DOMAIN || '').trim();
 
       const variants = [];
       // Host-only cookies (with and without Partitioned)
       variants.push([...base, 'Partitioned'].join('; '));
       variants.push(base.join('; '));
-      // Domain-scoped cookies if available (with and without Partitioned)
-      if (domain) {
-        variants.push([...base, `Domain=${domain}`, 'Partitioned'].join('; '));
-        variants.push([...base, `Domain=${domain}`].join('; '));
+      // Domain-scoped cookies if explicitly configured (with and without Partitioned)
+      if (cookieDomain) {
+        variants.push([...base, `Domain=${cookieDomain}`, 'Partitioned'].join('; '));
+        variants.push([...base, `Domain=${cookieDomain}`].join('; '));
       }
 
       res.setHeader('Set-Cookie', variants);
