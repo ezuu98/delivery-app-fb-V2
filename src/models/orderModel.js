@@ -83,6 +83,7 @@ async function assign(orderId, riderId){
           ord.tags = tags;
           ord.riderId = String(riderId);
           ord.assignedAt = rec.assignedAt;
+          ord.order_status = 'assigned';
           await cli.hSet('orders', id, JSON.stringify(ord));
         }catch(e){ /* ignore JSON parse errors */ }
       }
@@ -94,6 +95,7 @@ async function assign(orderId, riderId){
         ord.tags = tags;
         ord.riderId = String(riderId);
         ord.assignedAt = rec.assignedAt;
+        ord.order_status = 'assigned';
         ordersById.set(id, ord);
       }
     }
@@ -127,6 +129,7 @@ async function unassign(orderId){
             ord.riderId = null;
             ord.assignedAt = null;
             ord.unassignedAt = new Date().toISOString();
+            ord.order_status = 'new';
             await cli.hSet('orders', id, JSON.stringify(ord));
           }catch(e){}
         }
@@ -139,6 +142,7 @@ async function unassign(orderId){
           ord.riderId = null;
           ord.assignedAt = null;
           ord.unassignedAt = new Date().toISOString();
+          ord.order_status = 'new';
           ordersById.set(id, ord);
         }
       }
