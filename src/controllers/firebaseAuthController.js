@@ -95,7 +95,9 @@ module.exports = {
 
       if (isSecure) {
         cookieParts.push('Secure', 'SameSite=None');
-        if (String(process.env.COOKIE_PARTITIONED || '').trim() === '1') cookieParts.push('Partitioned');
+        // Default to Partitioned cookies in secure contexts to support third-party iframe usage (CHIPS)
+        const partFlag = String(process.env.COOKIE_PARTITIONED || '1').trim();
+        if (partFlag !== '0') cookieParts.push('Partitioned');
       } else {
         cookieParts.push('SameSite=Lax');
       }
