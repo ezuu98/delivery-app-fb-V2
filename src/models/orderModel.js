@@ -177,7 +177,7 @@ async function assign(orderId, riderId){
       await db.collection('assignments').doc(id).set({ orderId: id, ...rec }, { merge: true });
       // also persist riderId directly on the order document so downstream consumers can read it from orders collection
       try{
-        await db.collection('orders').doc(id).set({ riderId: String(riderId), assignedAt: rec.assignedAt }, { merge: true });
+        await db.collection('orders').doc(id).set({ riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned' }, { merge: true });
       }catch(e){ log.warn('firestore.orders.assign.failed', { message: e?.message }); }
     }
   }catch(e){ log.warn('firestore.assignments.set.failed', { message: e?.message }); }
