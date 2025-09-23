@@ -101,6 +101,14 @@ async function assign(orderId, riderId){
     }
   }catch(e){ log.warn('order.cache.update.assign.failed', { message: e?.message }); }
 
+  // Persist assignment status to Firestore orders document
+  try{
+    const db = getFirestore();
+    if (db) {
+      await db.collection('orders').doc(id).set({ orderId: id, riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned' }, { merge: true });
+    }
+  }catch(e){ log.warn('firestore.orders.assign.status.failed', { message: e?.message }); }
+
   return rec;
 }
 
