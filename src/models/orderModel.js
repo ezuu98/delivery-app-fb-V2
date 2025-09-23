@@ -155,6 +155,14 @@ async function unassign(orderId){
         }
       }
     }catch(e){ log.warn('order.cache.update.unassign.failed', { message: e?.message }); }
+
+    // Persist unassignment status to Firestore orders document
+    try{
+      const db = getFirestore();
+      if (db) {
+        await db.collection('orders').doc(id).set({ orderId: id, riderId: null, assignedAt: null, unassignedAt: new Date().toISOString(), order_status: 'new' }, { merge: true });
+      }
+    }catch(e){ log.warn('firestore.orders.unassign.status.failed', { message: e?.message }); }
   }catch(e){ log.warn('firestore.assignments.unassign.failed', { message: e?.message }); }
 }
 
