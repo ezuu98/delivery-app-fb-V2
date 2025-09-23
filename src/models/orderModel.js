@@ -86,7 +86,7 @@ async function upsertMany(list){
             client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
             notes: o.note || null,
             created_at: o.created_at || null,
-            order_status: undefined,
+            order_status: 'new',
           };
           payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
           payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
@@ -94,11 +94,7 @@ async function upsertMany(list){
           const assigned = aMap.get(id);
           if (assigned && assigned.riderId) payload.riderId = String(assigned.riderId);
 
-          const fs = String(o.fulfillment_status || '').toLowerCase();
-          if (fs === 'fulfilled') payload.order_status = 'delivered';
-          else if (fs === 'partial') payload.order_status = 'in-transit';
-          else if (assigned && assigned.riderId) payload.order_status = 'assigned';
-          else payload.order_status = 'new';
+          payload.order_status = 'new';
 
           if (payload.riderId === undefined) delete payload.riderId;
 
