@@ -440,7 +440,7 @@ module.exports = {
                 client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
                 notes: o.note || null,
                 created_at: o.created_at || null,
-                order_status: undefined, // determine below
+                order_status: 'new',
                 // Custom delivery time fields: added on sync if not present in Firestore
                 expected_delivery_time: undefined,
                 actual_delivery_time: undefined,
@@ -466,12 +466,8 @@ module.exports = {
                 payload.actual_delivery_time = null;
               }
 
-              // Derive order_status
-              const fs = String(o.fulfillment_status || '').toLowerCase();
-              if (fs === 'fulfilled') payload.order_status = 'delivered';
-              else if (fs === 'partial') payload.order_status = 'in-transit';
-              else if (assigned && assigned.riderId) payload.order_status = 'assigned';
-              else payload.order_status = 'new';
+              // Hardcode order status as 'new' per requirement
+              payload.order_status = 'new';
 
               // Firestore: remove undefined fields
               if (payload.riderId === undefined) delete payload.riderId;
