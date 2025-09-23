@@ -55,19 +55,6 @@ async function addEvent(orderId, event){
     global.__deliveryEvents.set(id, events);
   }
 
-  // Firestore persistence (best-effort)
-  try{
-    const db = getFirestore();
-    if (db) {
-      const ref = db.collection('deliveryEvents').doc(id);
-      const snap = await ref.get();
-      const data = snap.exists ? (snap.data() || {}) : {};
-      const list = Array.isArray(data.events) ? data.events.slice() : [];
-      list.push(ev);
-      await ref.set({ orderId: id, events: list }, { merge: true });
-    }
-  }catch(e){ log.warn('firestore.deliveryEvent.upsert.failed', { message: e?.message }); }
-
   return ev;
 }
 

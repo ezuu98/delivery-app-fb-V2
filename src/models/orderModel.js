@@ -34,76 +34,6 @@ async function upsertMany(list){
     lastSyncAt = new Date().toISOString();
   }
 
-  // Best-effort: persist to Firestore so orders are available in DB for other services
-  try{
-    const db = getFirestore();
-    if (db && Array.isArray(list) && list.length){
-      const chunkSize = 500;
-      for (let i = 0; i < list.length; i += chunkSize){
-        const batch = db.batch();
-        const slice = list.slice(i, i + chunkSize);
-        const assigns = await listAssignments().catch(()=>[]);
-        const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
-        for (const o of slice){
-          const id = String(o?.id || o?.name || o?.order_number || `order-${Date.now()}`);
-          const ref = db.collection('orders').doc(id);
-
-          const shipping = o.shipping_address || {};
-          const billing = o.billing_address || {};
-          const client = o.client_details || {};
-          const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
-            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
-          const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
-            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
-
-          // Derive customer full_name: prefer Shopify customer object, fallback to billing/shipping name
-          const customerFirst = (o.customer && o.customer.first_name) ? String(o.customer.first_name) : null;
-          const customerLast = (o.customer && o.customer.last_name) ? String(o.customer.last_name) : null;
-          const fallbackName = billing.name || shipping.name || null;
-          let fallbackFirst = null, fallbackLast = null;
-          if (!customerFirst && fallbackName) {
-            const parts = String(fallbackName).trim().split(/\s+/);
-            fallbackFirst = parts.shift() || null;
-            fallbackLast = parts.length ? parts.join(' ') : null;
-          }
-          const fullName = ((customerFirst || fallbackFirst) ? (customerFirst || fallbackFirst) : '') + ((customerLast || fallbackLast) ? (' ' + (customerLast || fallbackLast)) : '');
-
-          const payload = {
-            orderId: id,
-            order_number: o.order_number || null,
-            name: o.name || null,
-            // flat full_name field for UI
-            full_name: fullName || null,
-            phone: o.phone || billing.phone || shipping.phone || null,
-            email: o.email || client.contact_email || null,
-            riderId: undefined,
-            shipping_address: shippingStr,
-            billing_address: billingStr,
-            latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
-            longitude: (billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : undefined)),
-            cancel_reason: o.cancel_reason || null,
-            cancelled_at: o.cancelled_at || null,
-            client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (o.confirmed !== undefined ? o.confirmed : null)),
-            notes: o.note || null,
-            created_at: o.created_at || null,
-            order_status: 'new',
-          };
-          payload.latitude = (payload.latitude !== undefined && Number.isFinite(payload.latitude)) ? payload.latitude : null;
-          payload.longitude = (payload.longitude !== undefined && Number.isFinite(payload.longitude)) ? payload.longitude : null;
-
-          const assigned = aMap.get(id);
-          if (assigned && assigned.riderId) payload.riderId = String(assigned.riderId);
-
-          payload.order_status = 'new';
-
-          if (payload.riderId === undefined) delete payload.riderId;
-
-          batch.set(ref, payload, { merge: true });
-        }
-        await batch.commit();
-      }
-    }
-  }catch(e){ log.warn('orders.upsertMany.firestore.failed', { message: e?.message }); }
 }
 
 async function getAll(){
@@ -169,18 +99,6 @@ async function assign(orderId, riderId){
     }
   }catch(e){ log.warn('order.cache.update.assign.failed', { message: e?.message }); }
 
-  // Persist to Firestore (best-effort)
-  try{
-    const db = getFirestore();
-    if (db) {
-      // store assignment record
-      await db.collection('assignments').doc(id).set({ orderId: id, ...rec }, { merge: true });
-      // also persist riderId directly on the order document so downstream consumers can read it from orders collection
-      try{
-        await db.collection('orders').doc(id).set({ riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned' }, { merge: true });
-      }catch(e){ log.warn('firestore.orders.assign.failed', { message: e?.message }); }
-    }
-  }catch(e){ log.warn('firestore.assignments.set.failed', { message: e?.message }); }
   return rec;
 }
 
@@ -225,15 +143,6 @@ async function unassign(orderId){
         }
       }
     }catch(e){ log.warn('order.cache.update.unassign.failed', { message: e?.message }); }
-
-    const db = getFirestore();
-    if (db) {
-      await db.collection('assignments').doc(id).set({ orderId: id, status: 'unassigned', unassignedAt: new Date().toISOString() }, { merge: true });
-      try{
-        // clear riderId from the order document
-        await db.collection('orders').doc(id).set({ riderId: null, assignedAt: null, unassignedAt: new Date().toISOString() }, { merge: true });
-      }catch(e){ log.warn('firestore.orders.unassign.failed', { message: e?.message }); }
-    }
   }catch(e){ log.warn('firestore.assignments.unassign.failed', { message: e?.message }); }
 }
 
