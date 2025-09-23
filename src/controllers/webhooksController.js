@@ -66,7 +66,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       client_details_confirmed: (client.confirmed !== undefined ? client.confirmed : (order.confirmed !== undefined ? order.confirmed : null)),
       notes: order.note || null,
       created_at: order.created_at || null,
-      order_status: undefined, // set below
+      order_status: 'new',
       // Custom delivery time fields: only set to null when ensureRiderField is requested (created)
       expected_delivery_time: undefined,
       actual_delivery_time: undefined,
@@ -94,12 +94,8 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
     }
 
-    // Derive order_status
-    const fs = String(order.fulfillment_status || '').toLowerCase();
-    if (fs === 'fulfilled') payload.order_status = 'delivered';
-    else if (fs === 'partial') payload.order_status = 'in-transit';
-    else if (assignment && assignment.riderId) payload.order_status = 'assigned';
-    else payload.order_status = 'new';
+    // Hardcode order status as 'new' per requirement
+    payload.order_status = 'new';
 
     if (payload.riderId === undefined) delete payload.riderId;
     if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
