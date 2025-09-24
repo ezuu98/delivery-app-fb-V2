@@ -79,8 +79,10 @@ module.exports = {
 
       // Relax cookie flags on insecure (local) HTTP to avoid browsers dropping the cookie
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
-      const forceInsecure = String(process.env.COOKIE_SECURE || '').trim() === '0';
-      const isSecure = !forceInsecure && !!(req.secure || proto === 'https');
+      const cs = String(process.env.COOKIE_SECURE || '').trim();
+      const forceSecure = cs === '1';
+      const forceInsecure = cs === '0';
+      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https'));
       const cookieParts = [
         `${SESSION_COOKIE_NAME}=${sessionCookie}`,
         `Max-Age=${Math.floor(expiresIn / 1000)}`,
@@ -95,7 +97,9 @@ module.exports = {
 
       if (isSecure) {
         cookieParts.push('Secure', 'SameSite=None');
-        if (String(process.env.COOKIE_PARTITIONED || '').trim() === '1') cookieParts.push('Partitioned');
+        // Default to Partitioned cookies in secure contexts to support third-party iframe usage (CHIPS)
+        const partFlag = String(process.env.COOKIE_PARTITIONED || '1').trim();
+        if (partFlag !== '0') cookieParts.push('Partitioned');
       } else {
         cookieParts.push('SameSite=Lax');
       }
@@ -109,8 +113,10 @@ module.exports = {
   logout: async (req, res) => {
     try {
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
-      const forceInsecure = String(process.env.COOKIE_SECURE || '').trim() === '0';
-      const isSecure = !forceInsecure && !!(req.secure || proto === 'https');
+      const cs = String(process.env.COOKIE_SECURE || '').trim();
+      const forceSecure = cs === '1';
+      const forceInsecure = cs === '0';
+      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https'));
       const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
       const base = [`${SESSION_COOKIE_NAME}=`, `Expires=${expired}`, 'Max-Age=0', 'Path=/', 'HttpOnly', isSecure ? 'Secure' : null, isSecure ? 'SameSite=None' : 'SameSite=Lax'].filter(Boolean);
 
