@@ -145,6 +145,8 @@ module.exports = {
 
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
+        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
+        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
