@@ -139,12 +139,32 @@ module.exports = {
           const { orders = [], error } = await listOrders({ limit: 100 });
           if (error) log.warn('orders.fetch.error', { error });
           await orderModel.upsertMany(orders);
+          try{
+            const db = getFirestore();
+            if (db && Array.isArray(orders) && orders.length){
+              for (const o of orders){
+                const id = String(o?.id || o?.name || o?.order_number || '');
+                if (!id) continue;
+                try{
+                  const ref = db.collection('orders').doc(id);
+                  const snap = await ref.get();
+                  const existing = snap.exists ? (snap.data() || {}) : {};
+                  const payload = { orderId: id };
+                  if (!Object.prototype.hasOwnProperty.call(existing, 'current_status')) payload.current_status = 'new';
+                  if (!Object.prototype.hasOwnProperty.call(existing, 'order_status')) payload.order_status = 'new';
+                  if (Object.keys(payload).length > 1) await ref.set(payload, { merge: true });
+                }catch(_){ /* continue next */ }
+              }
+            }
+          }catch(_){ /* ignore */ }
           cached = await orderModel.getAll();
         }
       }
 
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
+        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
+        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
@@ -347,6 +367,7 @@ module.exports = {
             notes: order.note || null,
             created_at: order.created_at || null,
             order_status: 'new',
+            current_status: 'new',
             // Custom delivery time fields for seeded orders
             expected_delivery_time: null,
             actual_delivery_time: null,
@@ -365,7 +386,48 @@ module.exports = {
 
   // Admin sync disabled: only Shopify webhooks write orders to Firestore
   syncOrders: async (req, res) => {
-    return res.status(403).json(fail('Disabled: only Shopify webhooks store orders in Firestore'));
+    try{
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+
+      const snap = await db.collection('orders').get();
+      let processed = 0, updated = 0, errors = 0;
+
+      function deriveStatus(o){
+        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
+        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
+        // fallbacks
+        const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
+        const tagStr = tags.join(',').toLowerCase();
+        if (o.actual_delivery_time) return 'delivered';
+        if (o.order_status === 'delivered' || o.fulfillment_status === 'fulfilled') return 'delivered';
+        if (o.order_status === 'in-transit' || o.fulfillment_status === 'partial') return 'in-transit';
+        if (o.riderId || tagStr.includes('assigned') || o.order_status === 'assigned') return 'assigned';
+        return 'new';
+      }
+
+      for (const doc of snap.docs){
+        processed += 1;
+        try{
+          const data = doc.data() || {};
+          const payload = { orderId: data.orderId || doc.id };
+          // Backfill nullable fields
+          if (!Object.prototype.hasOwnProperty.call(data, 'expected_delivery_time')) payload.expected_delivery_time = null;
+          if (!Object.prototype.hasOwnProperty.call(data, 'actual_delivery_time')) payload.actual_delivery_time = null;
+          if (!Object.prototype.hasOwnProperty.call(data, 'order_status')) payload.order_status = 'new';
+          const nextStatus = deriveStatus(data);
+          if (data.current_status !== nextStatus) payload.current_status = nextStatus;
+          if (Object.keys(payload).length > 1){
+            await doc.ref.set(payload, { merge: true });
+            updated += 1;
+          }
+        }catch(_){ errors += 1; }
+      }
+
+      return res.json(ok({ processed, updated, errors }));
+    }catch(e){
+      return res.status(500).json(fail('Sync failed', null, { message: e?.message }));
+    }
   },
 
   assignOrder: async (req, res) => {

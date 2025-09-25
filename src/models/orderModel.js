@@ -84,6 +84,7 @@ async function assign(orderId, riderId){
           ord.riderId = String(riderId);
           ord.assignedAt = rec.assignedAt;
           ord.order_status = 'assigned';
+          ord.current_status = 'assigned';
           await cli.hSet('orders', id, JSON.stringify(ord));
         }catch(e){ /* ignore JSON parse errors */ }
       }
@@ -96,6 +97,7 @@ async function assign(orderId, riderId){
         ord.riderId = String(riderId);
         ord.assignedAt = rec.assignedAt;
         ord.order_status = 'assigned';
+        ord.current_status = 'assigned';
         ordersById.set(id, ord);
       }
     }
@@ -105,7 +107,7 @@ async function assign(orderId, riderId){
   try{
     const db = getFirestore();
     if (db) {
-      await db.collection('orders').doc(id).set({ orderId: id, riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned' }, { merge: true });
+      await db.collection('orders').doc(id).set({ orderId: id, riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned', current_status: 'assigned' }, { merge: true });
     }
   }catch(e){ log.warn('firestore.orders.assign.status.failed', { message: e?.message }); }
 
@@ -138,6 +140,7 @@ async function unassign(orderId){
             ord.assignedAt = null;
             ord.unassignedAt = new Date().toISOString();
             ord.order_status = 'new';
+            ord.current_status = 'new';
             await cli.hSet('orders', id, JSON.stringify(ord));
           }catch(e){}
         }
@@ -151,6 +154,7 @@ async function unassign(orderId){
           ord.assignedAt = null;
           ord.unassignedAt = new Date().toISOString();
           ord.order_status = 'new';
+          ord.current_status = 'new';
           ordersById.set(id, ord);
         }
       }
@@ -160,7 +164,7 @@ async function unassign(orderId){
     try{
       const db = getFirestore();
       if (db) {
-        await db.collection('orders').doc(id).set({ orderId: id, riderId: null, assignedAt: null, unassignedAt: new Date().toISOString(), order_status: 'new' }, { merge: true });
+        await db.collection('orders').doc(id).set({ orderId: id, riderId: null, assignedAt: null, unassignedAt: new Date().toISOString(), order_status: 'new', current_status: 'new' }, { merge: true });
       }
     }catch(e){ log.warn('firestore.orders.unassign.status.failed', { message: e?.message }); }
   }catch(e){ log.warn('firestore.assignments.unassign.failed', { message: e?.message }); }

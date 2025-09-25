@@ -85,13 +85,15 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       assignment = await orderModel.getAssignment(id).catch(()=>null);
       if (assignment && assignment.riderId) payload.riderId = String(assignment.riderId);
     }catch(_){}
-    if (payload.riderId === undefined && ensureRiderField) {
+    if (ensureRiderField) {
       const snap = await ref.get();
       const existing = snap.exists ? (snap.data() || {}) : {};
-      if (!Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
+      if (payload.riderId === undefined && !Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
       // Also ensure delivery time fields exist on initial create without overwriting existing values
       if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) payload.expected_delivery_time = null;
       if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
+      // Ensure current_status exists on first insert
+      if (!Object.prototype.hasOwnProperty.call(existing, 'current_status')) payload.current_status = 'new';
     }
 
     // Hardcode order status as 'new' per requirement
@@ -100,6 +102,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     if (payload.riderId === undefined) delete payload.riderId;
     if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
     if (payload.actual_delivery_time === undefined) delete payload.actual_delivery_time;
+    if (payload.current_status === undefined) delete payload.current_status;
 
     await ref.set(payload, { merge: true });
   }catch(e){ log.warn('firestore.upsert.order.failed', { message: e?.message }); }

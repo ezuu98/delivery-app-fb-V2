@@ -79,10 +79,13 @@ module.exports = {
 
       // Relax cookie flags on insecure (local) HTTP to avoid browsers dropping the cookie
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+      const origin = String(req.headers['origin'] || '').trim().toLowerCase();
+      const referer = String(req.headers['referer'] || '').trim().toLowerCase();
       const cs = String(process.env.COOKIE_SECURE || '').trim();
       const forceSecure = cs === '1';
       const forceInsecure = cs === '0';
-      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https'));
+      const inferredHttps = origin.startsWith('https://') || referer.startsWith('https://');
+      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https' || inferredHttps));
       const cookieParts = [
         `${SESSION_COOKIE_NAME}=${sessionCookie}`,
         `Max-Age=${Math.floor(expiresIn / 1000)}`,
@@ -113,10 +116,13 @@ module.exports = {
   logout: async (req, res) => {
     try {
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+      const origin = String(req.headers['origin'] || '').trim().toLowerCase();
+      const referer = String(req.headers['referer'] || '').trim().toLowerCase();
       const cs = String(process.env.COOKIE_SECURE || '').trim();
       const forceSecure = cs === '1';
       const forceInsecure = cs === '0';
-      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https'));
+      const inferredHttps = origin.startsWith('https://') || referer.startsWith('https://');
+      const isSecure = forceSecure || (!forceInsecure && !!(req.secure || proto === 'https' || inferredHttps));
       const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
       const base = [`${SESSION_COOKIE_NAME}=`, `Expires=${expired}`, 'Max-Age=0', 'Path=/', 'HttpOnly', isSecure ? 'Secure' : null, isSecure ? 'SameSite=None' : 'SameSite=Lax'].filter(Boolean);
 
