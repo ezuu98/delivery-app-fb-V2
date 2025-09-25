@@ -347,6 +347,7 @@ module.exports = {
             notes: order.note || null,
             created_at: order.created_at || null,
             order_status: 'new',
+            current_status: 'new',
             // Custom delivery time fields for seeded orders
             expected_delivery_time: null,
             actual_delivery_time: null,
