@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const admin = require('firebase-admin');
 const log = require('../utils/logger');
 let initialized = false;
 
