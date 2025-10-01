@@ -2,13 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 
-function getOrderStatus(o){
-  const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
-  const tagStr = tags.join(',').toLowerCase();
-  if(tagStr.includes('assigned')) return 'assigned';
-  if(o.fulfillment_status === 'fulfilled') return 'delivered';
-  if(o.fulfillment_status === 'partial') return 'in-transit';
-  return 'new';
+function getRawStatus(o){
+  return (o && typeof o.current_status === 'string') ? o.current_status : '';
+}
+function getStatusKey(o){
+  const raw = getRawStatus(o);
+  return raw ? raw.toLowerCase().trim() : '';
 }
 
 export default function Orders(){
@@ -25,6 +24,7 @@ export default function Orders(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [tick, setTick] = useState(0);
 
   useEffect(()=>{
     let alive = true;
@@ -50,16 +50,21 @@ export default function Orders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q, tab, page, limit]);
+  },[q, tab, page, limit, tick]);
 
   const filtered = useMemo(()=> orders, [orders]);
 
   // visible respects tab: when tab==='all' hide assigned orders; otherwise filter by status
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
-    if(tab === 'all') return orders.filter(o => getOrderStatus(o) !== 'assigned');
-    return orders.filter(o => getOrderStatus(o) === tab);
+    if(tab === 'all') return orders.filter(o => getStatusKey(o) !== 'assigned');
+    return orders.filter(o => getStatusKey(o) === tab);
   }, [orders, tab]);
+
+  useEffect(()=>{
+    const id = setInterval(()=> setTick(t => t + 1), 10000);
+    return ()=> clearInterval(id);
+  },[]);
 
   function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
@@ -125,7 +130,8 @@ export default function Orders(){
                 <tr><td colSpan={7} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
-                const status = getOrderStatus(o);
+                const statusRaw = getRawStatus(o);
+                const statusKey = getStatusKey(o);
                 const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
                 let addr = '-';
                 if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) {
@@ -139,21 +145,21 @@ export default function Orders(){
                   addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
                     .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
                 }
-                const action = status === 'new' ? 'Assign Rider' : status === 'assigned' ? 'View' : status === 'in-transit' ? 'Track' : 'Details';
+                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in-transit' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
-                  <tr key={orderId||i} data-status={status}>
+                  <tr key={orderId||i} data-status={statusKey}>
                     <td className="rc-col-name">{orderId}</td>
                     <td className="rc-col-km">{fullName || '-'}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
                     <td className="rc-col-expected">{o.expected_delivery_time ? new Date(o.expected_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
                     <td className="rc-col-actual">{o.actual_delivery_time ? new Date(o.actual_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
+                    <td className="rc-col-status"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
                 );
               })}
-              {!loading && !error && filtered.length === 0 && (
+              {!loading && !error && visible.length === 0 && (
                 <tr><td colSpan={7} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>

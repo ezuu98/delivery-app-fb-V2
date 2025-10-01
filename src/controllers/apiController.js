@@ -122,64 +122,62 @@ module.exports = {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
 
-      // Prefer Firestore as the canonical data source for UI
-      let cached = [];
+      // Fetch Firestore docs (authoritative for current_status/time fields)
+      let fsDocs = [];
       try{
         const db = getFirestore();
         if (db) {
           const snap = await db.collection('orders').get();
-          snap.forEach(doc => { const d = doc.data() || {}; cached.push(d); });
+          snap.forEach(doc => { const d = doc.data() || {}; fsDocs.push({ ...d, __docId: String(doc.id) }); });
         }
-      }catch(e){ /* firestore might not be available; fallback below */ }
+      }catch(e){ /* firestore might not be available */ }
+      const fsMap = new Map(fsDocs.map(d => [String(d.orderId || d.id || d.name || d.order_number || d.__docId || ''), d]));
 
-      // If Firestore empty, fall back to cached in-memory/redis and as last resort fetch from Shopify
+      // Base list from cached Shopify orders (redis/in-memory); if empty, fallback to Firestore list
+      let cached = await orderModel.getAll();
+      if (!cached.length && fsDocs.length) cached = fsDocs.slice();
       if (!cached.length) {
+        const { orders = [], error } = await listOrders({ limit: 100 });
+        if (error) log.warn('orders.fetch.error', { error });
+        await orderModel.upsertMany(orders);
         cached = await orderModel.getAll();
-        if (!cached.length) {
-          const { orders = [], error } = await listOrders({ limit: 100 });
-          if (error) log.warn('orders.fetch.error', { error });
-          await orderModel.upsertMany(orders);
-          try{
-            const db = getFirestore();
-            if (db && Array.isArray(orders) && orders.length){
-              for (const o of orders){
-                const id = String(o?.id || o?.name || o?.order_number || '');
-                if (!id) continue;
-                try{
-                  const ref = db.collection('orders').doc(id);
-                  const snap = await ref.get();
-                  const existing = snap.exists ? (snap.data() || {}) : {};
-                  const payload = { orderId: id };
-                  if (!Object.prototype.hasOwnProperty.call(existing, 'current_status')) payload.current_status = 'new';
-                  if (!Object.prototype.hasOwnProperty.call(existing, 'order_status')) payload.order_status = 'new';
-                  if (Object.keys(payload).length > 1) await ref.set(payload, { merge: true });
-                }catch(_){ /* continue next */ }
-              }
-            }
-          }catch(_){ /* ignore */ }
-          cached = await orderModel.getAll();
-        }
       }
+
+      // Overlay Firestore status/time onto cached items when available and include FS-only docs
+      const seen = new Set();
+      const merged = cached.map(o => {
+        const key = String(o.orderId || o.id || o.name || o.order_number || '');
+        seen.add(key);
+        const f = fsMap.get(key);
+        if (!f) return o;
+        return {
+          ...o,
+          current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
+          full_name: (typeof f.full_name === 'string' && f.full_name) ? f.full_name : o.full_name,
+          email: f.email ?? o.email,
+          phone: f.phone ?? o.phone,
+          shipping_address: f.shipping_address ?? o.shipping_address,
+          billing_address: f.billing_address ?? o.billing_address,
+          deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
+          deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
+          riderId: f.riderId ?? o.riderId,
+        };
+      });
+      for (const [key, f] of fsMap.entries()){
+        if (!seen.has(key)) merged.push(f);
+      }
+      cached = merged;
 
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
-        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
-        const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
-        const tagStr = tags.join(',').toLowerCase();
-        if(tagStr.includes('assigned')) return 'assigned';
-        if(o.order_status === 'delivered' || o.fulfillment_status === 'fulfilled') return 'delivered';
-        if(o.order_status === 'in-transit' || o.fulfillment_status === 'partial') return 'in-transit';
-        return 'new';
+        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
+        return cs;
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
 
-      const dashboardStatuses = new Set(['new', 'unassigned']);
 
       const filtered = cached.filter(o => {
-        const currentStatus = (typeof o.current_status === 'string' && o.current_status.trim()) ? o.current_status.trim().toLowerCase() : 'new';
-        if (!dashboardStatuses.has(currentStatus)) return false;
         if (status !== 'all' && getOrderStatus(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
@@ -208,6 +206,8 @@ module.exports = {
 
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const riders = await riderModel.list().catch(()=>[]);
+      const rmap = new Map(riders.map(r => [String(r.id), r.name]));
 
       // Merge delivery events (expected times and actual delivered time) into orders
       const evAll = await deliveryModel.listAll();
@@ -230,12 +230,16 @@ module.exports = {
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
         const delivered = actualMap.get(idKey) || null;
+        const riderId = assignment?.riderId || (eta?.riderId || null);
+        const riderName = riderId ? (rmap.get(String(riderId)) || null) : null;
+        const base = { ...o };
         return {
-          ...o,
+          ...base,
           assignment,
-          rider: assignment?.riderId || (eta?.riderId || null),
-          expected_delivery_time: eta?.expectedAt || (o.expected_delivery_time || null),
-          actual_delivery_time: delivered?.at || (o.actual_delivery_time || null),
+          riderId: riderId || null,
+          rider: riderName || (riderId ? String(riderId) : null),
+          expected_delivery_time: (o.deliveryStartTime || eta?.expectedAt || o.expected_delivery_time || null),
+          actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
       });
 
