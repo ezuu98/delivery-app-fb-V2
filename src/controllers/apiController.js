@@ -122,44 +122,46 @@ module.exports = {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
 
-      // Prefer Firestore as the canonical data source for UI
-      let cached = [];
+      // Fetch Firestore docs (authoritative for current_status/time fields)
+      let fsDocs = [];
       try{
         const db = getFirestore();
         if (db) {
           const snap = await db.collection('orders').get();
-          snap.forEach(doc => { const d = doc.data() || {}; cached.push(d); });
+          snap.forEach(doc => { const d = doc.data() || {}; fsDocs.push({ ...d, __docId: String(doc.id) }); });
         }
-      }catch(e){ /* firestore might not be available; fallback below */ }
+      }catch(e){ /* firestore might not be available */ }
+      const fsMap = new Map(fsDocs.map(d => [String(d.orderId || d.id || d.name || d.order_number || d.__docId || ''), d]));
 
-      // If Firestore empty, fall back to cached in-memory/redis and as last resort fetch from Shopify
+      // Base list from cached Shopify orders (redis/in-memory); if empty, fallback to Firestore list
+      let cached = await orderModel.getAll();
+      if (!cached.length && fsDocs.length) cached = fsDocs.slice();
       if (!cached.length) {
+        const { orders = [], error } = await listOrders({ limit: 100 });
+        if (error) log.warn('orders.fetch.error', { error });
+        await orderModel.upsertMany(orders);
         cached = await orderModel.getAll();
-        if (!cached.length) {
-          const { orders = [], error } = await listOrders({ limit: 100 });
-          if (error) log.warn('orders.fetch.error', { error });
-          await orderModel.upsertMany(orders);
-          try{
-            const db = getFirestore();
-            if (db && Array.isArray(orders) && orders.length){
-              for (const o of orders){
-                const id = String(o?.id || o?.name || o?.order_number || '');
-                if (!id) continue;
-                try{
-                  const ref = db.collection('orders').doc(id);
-                  const snap = await ref.get();
-                  const existing = snap.exists ? (snap.data() || {}) : {};
-                  const payload = { orderId: id };
-                  if (!Object.prototype.hasOwnProperty.call(existing, 'current_status')) payload.current_status = 'new';
-                  if (!Object.prototype.hasOwnProperty.call(existing, 'order_status')) payload.order_status = 'new';
-                  if (Object.keys(payload).length > 1) await ref.set(payload, { merge: true });
-                }catch(_){ /* continue next */ }
-              }
-            }
-          }catch(_){ /* ignore */ }
-          cached = await orderModel.getAll();
-        }
       }
+
+      // Overlay Firestore status/time onto cached items when available and include FS-only docs
+      const seen = new Set();
+      const merged = cached.map(o => {
+        const key = String(o.orderId || o.id || o.name || o.order_number || '');
+        seen.add(key);
+        const f = fsMap.get(key);
+        if (!f) return o;
+        return {
+          ...o,
+          current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
+          deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
+          deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
+          riderId: f.riderId ?? o.riderId,
+        };
+      });
+      for (const [key, f] of fsMap.entries()){
+        if (!seen.has(key)) merged.push(f);
+      }
+      cached = merged;
 
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
