@@ -4,13 +4,7 @@ import AssignModal from '../components/AssignModal.jsx';
 
 function getOrderStatus(o){
   const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
-  if (cs) return cs;
-  const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
-  const tagStr = tags.join(',').toLowerCase();
-  if(tagStr.includes('assigned')) return 'assigned';
-  if(o.fulfillment_status === 'fulfilled') return 'delivered';
-  if(o.fulfillment_status === 'partial') return 'in-transit';
-  return 'new';
+  return cs || 'new';
 }
 
 export default function Orders(){
