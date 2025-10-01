@@ -4,7 +4,7 @@ import AssignModal from '../components/AssignModal.jsx';
 
 function getOrderStatus(o){
   const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
-  return cs || 'new';
+  return cs;
 }
 
 export default function Orders(){
