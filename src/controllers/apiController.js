@@ -164,7 +164,7 @@ module.exports = {
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
         const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
-        return cs || 'new';
+        return cs;
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
