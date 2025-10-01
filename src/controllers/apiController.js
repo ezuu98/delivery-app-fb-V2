@@ -163,7 +163,9 @@ module.exports = {
 
       const ql = String(q).toLowerCase().trim();
       function getOrderStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
+        // If Firestore has end time, consider delivered regardless of stale current_status
+        if (o && o.deliveryEndTime) return 'delivered';
+        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
         if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
@@ -232,8 +234,12 @@ module.exports = {
         const riderId = assignment?.riderId || (eta?.riderId || null);
         const riderName = riderId ? (rmap.get(String(riderId)) || null) : null;
         const base = { ...o };
-        if ((!base.current_status || String(base.current_status).trim() === '') && riderId) base.current_status = 'assigned';
-        if ((!base.current_status || String(base.current_status).trim() === '') && (delivered?.at || o.deliveryEndTime)) base.current_status = 'delivered';
+        // Compute effective status: prioritize deliveryEndTime, else explicit current_status, else assignment
+        let effective = 'new';
+        if (o && o.deliveryEndTime) effective = 'delivered';
+        else if (typeof o.current_status === 'string' && o.current_status.trim()) effective = o.current_status.toLowerCase().trim();
+        else if (riderId) effective = 'assigned';
+        base.current_status = effective;
         return {
           ...base,
           assignment,
