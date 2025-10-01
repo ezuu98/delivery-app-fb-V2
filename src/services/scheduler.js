@@ -10,6 +10,60 @@ function getInterval(){
   return Number.isFinite(v) && v > 10000 ? v : 300000; // min 10s, default 5m
 }
 
+function buildFirestoreOrderPayload(order, id){
+  const shipping = order?.shipping_address || {};
+  const billing = order?.billing_address || {};
+  const client = order?.client_details || {};
+
+  const shippingStr = [shipping.address1 || '', shipping.city || '', shipping.province || '', shipping.country || '']
+    .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+  const billingStr = [billing.address1 || '', billing.city || '', billing.province || '', billing.country || '']
+    .map(s => String(s || '').trim()).filter(Boolean).join(', ') || null;
+
+  const customerFirst = (order?.customer && order.customer.first_name) ? String(order.customer.first_name) : null;
+  const customerLast = (order?.customer && order.customer.last_name) ? String(order.customer.last_name) : null;
+  const fallbackName = billing.name || shipping.name || null;
+  let fallbackFirst = null;
+  let fallbackLast = null;
+  if (!customerFirst && fallbackName) {
+    const parts = String(fallbackName).trim().split(/\s+/);
+    fallbackFirst = parts.shift() || null;
+    fallbackLast = parts.length ? parts.join(' ') : null;
+  }
+  const nameParts = [];
+  if (customerFirst || fallbackFirst) nameParts.push(customerFirst || fallbackFirst);
+  if (customerLast || fallbackLast) nameParts.push(customerLast || fallbackLast);
+  const fullName = nameParts.length ? nameParts.join(' ') : null;
+
+  const latitudeCandidate = billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : NaN);
+  const longitudeCandidate = billing.longitude !== undefined ? Number(billing.longitude) : (shipping.longitude !== undefined ? Number(shipping.longitude) : NaN);
+  const latitude = Number.isFinite(latitudeCandidate) ? latitudeCandidate : null;
+  const longitude = Number.isFinite(longitudeCandidate) ? longitudeCandidate : null;
+
+  return {
+    orderId: id,
+    order_number: order?.order_number || null,
+    name: order?.name || null,
+    full_name: fullName,
+    phone: order?.phone || billing.phone || shipping.phone || null,
+    email: order?.email || client.contact_email || null,
+    riderId: null,
+    shipping_address: shippingStr,
+    billing_address: billingStr,
+    latitude,
+    longitude,
+    cancel_reason: order?.cancel_reason || null,
+    cancelled_at: order?.cancelled_at || null,
+    client_details_confirmed: client.confirmed !== undefined ? client.confirmed : (order?.confirmed !== undefined ? order.confirmed : null),
+    notes: order?.note || null,
+    created_at: order?.created_at || null,
+    order_status: 'new',
+    current_status: 'new',
+    expected_delivery_time: null,
+    actual_delivery_time: null,
+  };
+}
+
 async function ensureFirestoreStatusNew(orders){
   try{
     const db = getFirestore();
@@ -20,10 +74,17 @@ async function ensureFirestoreStatusNew(orders){
       try{
         const ref = db.collection('orders').doc(id);
         const snap = await ref.get();
-        const existing = snap.exists ? (snap.data() || {}) : {};
+        if (!snap.exists) {
+          const docPayload = buildFirestoreOrderPayload(o, id);
+          await ref.set(docPayload, { merge: true });
+          continue;
+        }
+        const existing = snap.data() || {};
         const payload = { orderId: id };
         if (!Object.prototype.hasOwnProperty.call(existing, 'current_status')) payload.current_status = 'new';
         if (!Object.prototype.hasOwnProperty.call(existing, 'order_status')) payload.order_status = 'new';
+        if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) payload.expected_delivery_time = null;
+        if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
         if (Object.keys(payload).length > 1) await ref.set(payload, { merge: true });
       }catch(_){ /* continue next */ }
     }
