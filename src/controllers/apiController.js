@@ -153,6 +153,11 @@ module.exports = {
         return {
           ...o,
           current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
+          full_name: (typeof f.full_name === 'string' && f.full_name) ? f.full_name : o.full_name,
+          email: f.email ?? o.email,
+          phone: f.phone ?? o.phone,
+          shipping_address: f.shipping_address ?? o.shipping_address,
+          billing_address: f.billing_address ?? o.billing_address,
           deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
           deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
           riderId: f.riderId ?? o.riderId,
