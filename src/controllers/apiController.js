@@ -175,11 +175,8 @@ module.exports = {
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
 
-      const dashboardStatuses = new Set(['new', 'unassigned']);
 
       const filtered = cached.filter(o => {
-        const currentStatus = (typeof o.current_status === 'string' && o.current_status.trim()) ? o.current_status.trim().toLowerCase() : 'new';
-        if (!dashboardStatuses.has(currentStatus)) return false;
         if (status !== 'all' && getOrderStatus(o) !== status) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
