@@ -205,6 +205,8 @@ module.exports = {
 
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const riders = await riderModel.list().catch(()=>[]);
+      const rmap = new Map(riders.map(r => [String(r.id), r.name]));
 
       // Merge delivery events (expected times and actual delivered time) into orders
       const evAll = await deliveryModel.listAll();
@@ -227,10 +229,15 @@ module.exports = {
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
         const delivered = actualMap.get(idKey) || null;
+        const riderId = assignment?.riderId || (eta?.riderId || null);
+        const riderName = riderId ? (rmap.get(String(riderId)) || null) : null;
+        const base = { ...o };
+        if ((!base.current_status || String(base.current_status).trim() === '') && riderId) base.current_status = 'assigned';
         return {
-          ...o,
+          ...base,
           assignment,
-          rider: assignment?.riderId || (eta?.riderId || null),
+          riderId: riderId || null,
+          rider: riderName || (riderId ? String(riderId) : null),
           expected_delivery_time: eta?.expectedAt || (o.expected_delivery_time || null),
           actual_delivery_time: delivered?.at || (o.actual_delivery_time || null),
         };
