@@ -233,13 +233,14 @@ module.exports = {
         const riderName = riderId ? (rmap.get(String(riderId)) || null) : null;
         const base = { ...o };
         if ((!base.current_status || String(base.current_status).trim() === '') && riderId) base.current_status = 'assigned';
+        if ((!base.current_status || String(base.current_status).trim() === '') && (delivered?.at || o.deliveryEndTime)) base.current_status = 'delivered';
         return {
           ...base,
           assignment,
           riderId: riderId || null,
           rider: riderName || (riderId ? String(riderId) : null),
-          expected_delivery_time: eta?.expectedAt || (o.expected_delivery_time || null),
-          actual_delivery_time: delivered?.at || (o.actual_delivery_time || null),
+          expected_delivery_time: (o.deliveryStartTime || eta?.expectedAt || o.expected_delivery_time || null),
+          actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
       });
 
