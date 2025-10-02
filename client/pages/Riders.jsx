@@ -102,15 +102,16 @@ export default function Riders(){
               <tr>
                 <th className="col-name">Rider Name</th>
                 <th className="col-perf">Delivery Performance</th>
+                <th className="col-total">Total</th>
                 <th className="col-comm">Commission Earned</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={3} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={4} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={3} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={4} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
@@ -121,11 +122,12 @@ export default function Riders(){
                       <span className="rc-progress-value">{r.performance}</span>
                     </div>
                   </td>
+                  <td className="rc-col-total">{r.assignedOrders ?? 0}</td>
                   <td className="rc-col-commission">${r.commissionUsd}</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={3} className="section-note">No riders found.</td></tr>
+                <tr><td colSpan={4} className="section-note">No riders found.</td></tr>
               )}
             </tbody>
           </table>
