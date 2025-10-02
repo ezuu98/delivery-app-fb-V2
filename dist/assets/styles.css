@@ -123,6 +123,7 @@
 .rc-table thead th.col-name{width:16%}
 .rc-table thead th.col-km{width:12%}
 .rc-table thead th.col-perf{width:30%}
+.rc-table thead th.col-total{width:10%}
 .rc-table thead th.col-rider{width:12%}
 .rc-table thead th.col-expected{width:14%}
 .rc-table thead th.col-actual{width:8%}
@@ -138,6 +139,7 @@
 .rc-progress-bar::-webkit-progress-bar{background:#e5e7eb;border-radius:999px}
 .rc-progress-bar::-webkit-progress-value{background:#0070f3;border-radius:999px}
 .rc-progress-value{font-weight:600;color:#111827}
+.rc-col-total{text-align:center;font-weight:600;color:#111827}
 .status-chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#F7FAFC;text-transform:capitalize;font-size:12px}
 .status-new{background:#f8fafc}
 .status-assigned{background:#eef6ff;border-color:#cfe0ff;color:#1f5fbf}
