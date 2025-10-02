@@ -54,6 +54,21 @@ export default function Riders(){
     });
   },[riders,q,statusFilter,riderFilter,dateFilter]);
 
+  // compute last three months keys and labels (YYYY-MM)
+  const lastThreeMonths = useMemo(()=>{
+    const now = new Date();
+    const keys = [];
+    const labels = [];
+    for(let i=2;i>=0;i--){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toISOString().slice(0,7); // YYYY-MM
+      const label = d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
+      keys.push(key);
+      labels.push(label);
+    }
+    return { keys, labels };
+  },[]);
+
   return (
     <SiteLayout>
       <section className="rider-management">
@@ -101,33 +116,30 @@ export default function Riders(){
             <thead>
               <tr>
                 <th className="col-name">Rider Name</th>
-                <th className="col-perf">Delivery Performance</th>
+                {lastThreeMonths.labels.map((l,idx)=> (
+                  <th key={lastThreeMonths.keys[idx]} className="col-month">{l}</th>
+                ))}
                 <th className="col-total">Total</th>
-                <th className="col-comm">Commission Earned</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={4} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={5} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={4} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={5} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  <td className="rc-col-perf">
-                    <div className="rc-progress">
-                      <progress max="100" value={r.performance} className="rc-progress-bar"></progress>
-                      <span className="rc-progress-value">{r.performance}</span>
-                    </div>
-                  </td>
+                  {lastThreeMonths.keys.map(k=> (
+                    <td key={k} className="rc-col-month">{(r.monthlyCounts && r.monthlyCounts[k]) ? r.monthlyCounts[k] : 0}</td>
+                  ))}
                   <td className="rc-col-total">{r.assignedOrders ?? 0}</td>
-                  <td className="rc-col-commission">${r.commissionUsd}</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={4} className="section-note">No riders found.</td></tr>
+                <tr><td colSpan={5} className="section-note">No riders found.</td></tr>
               )}
             </tbody>
           </table>

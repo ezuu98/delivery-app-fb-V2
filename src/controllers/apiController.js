@@ -102,8 +102,28 @@ function normalizeRiderIdFromOrder(order){
 }
 
 async function computeRiderAssignmentCounts(){
+  // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
   const counts = new Map();
   const seenOrders = new Set();
+
+  // Build month keys for last 3 months (YYYY-MM)
+  const now = new Date();
+  const monthKeys = [];
+  for(let i=2;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.toISOString().slice(0,7); // YYYY-MM
+    monthKeys.push(key);
+  }
+
+  function ensureEntry(riderId){
+    if (!counts.has(riderId)){
+      const m = new Map();
+      for(const k of monthKeys) m.set(k, 0);
+      counts.set(riderId, { total: 0, months: m });
+    }
+    return counts.get(riderId);
+  }
+
   try{
     const db = getFirestore();
     if (db){
@@ -114,7 +134,16 @@ async function computeRiderAssignmentCounts(){
         const orderId = String(data.orderId || data.id || data.name || data.order_number || doc.id || '').trim();
         if (orderId) seenOrders.add(orderId);
         if (!riderId) return;
-        counts.set(riderId, (counts.get(riderId) || 0) + 1);
+        const entry = ensureEntry(riderId);
+        entry.total = (entry.total || 0) + 1;
+        // determine month key from created_at or other date fields
+        const created = data.created_at || data.createdAt || data.created || null;
+        const t = created ? Date.parse(created) : NaN;
+        if (Number.isFinite(t)){
+          const dd = new Date(t);
+          const k = dd.toISOString().slice(0,7);
+          if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+        }
       });
     }
   }catch(e){
@@ -128,8 +157,16 @@ async function computeRiderAssignmentCounts(){
       if (orderId && seenOrders.has(orderId)) continue;
       const riderId = normalizeRiderIdFromOrder(order);
       if (!riderId) continue;
-      counts.set(riderId, (counts.get(riderId) || 0) + 1);
+      const entry = ensureEntry(riderId);
+      entry.total = (entry.total || 0) + 1;
       if (orderId) seenOrders.add(orderId);
+      const created = order?.created_at || order?.createdAt || order?.created || null;
+      const t = created ? Date.parse(created) : NaN;
+      if (Number.isFinite(t)){
+        const dd = new Date(t);
+        const k = dd.toISOString().slice(0,7);
+        if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+      }
     }
   }catch(e){
     log.warn('riders.count.orders.cache.failed', { message: e?.message });
@@ -145,7 +182,13 @@ module.exports = {
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
-      return { ...r, assignedOrders: counts.get(key) || 0 };
+      const entry = counts.get(key) || { total: 0, months: new Map() };
+      // convert months map to plain object { 'YYYY-MM': count }
+      const monthsObj = {};
+      if (entry.months && typeof entry.months.forEach === 'function'){
+        entry.months.forEach((v,k)=>{ monthsObj[k] = v; });
+      }
+      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj };
     });
     const filtered = withTotals.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
