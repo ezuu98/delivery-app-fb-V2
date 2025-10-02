@@ -106,26 +106,19 @@ export default function Riders(){
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={4} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={2} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={4} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={2} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  <td className="rc-col-perf">
-                    <div className="rc-progress">
-                      <progress max="100" value={r.performance} className="rc-progress-bar"></progress>
-                      <span className="rc-progress-value">{r.performance}</span>
-                    </div>
-                  </td>
                   <td className="rc-col-total">{r.assignedOrders ?? 0}</td>
-                  <td className="rc-col-commission">${r.commissionUsd}</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={4} className="section-note">No riders found.</td></tr>
+                <tr><td colSpan={2} className="section-note">No riders found.</td></tr>
               )}
             </tbody>
           </table>
