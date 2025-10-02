@@ -116,10 +116,10 @@ export default function Riders(){
             <thead>
               <tr>
                 <th className="col-name">Rider Name</th>
-                <th className="col-total">Total</th>
                 {lastThreeMonths.labels.map((l,idx)=> (
                   <th key={lastThreeMonths.keys[idx]} className="col-month">{l}</th>
                 ))}
+                <th className="col-total">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -132,10 +132,10 @@ export default function Riders(){
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  <td className="rc-col-total">{r.assignedOrders ?? 0}</td>
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{(r.monthlyCounts && r.monthlyCounts[k]) ? r.monthlyCounts[k] : 0}</td>
                   ))}
+                  <td className="rc-col-total">{r.assignedOrders ?? 0}</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
