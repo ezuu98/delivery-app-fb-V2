@@ -24,7 +24,6 @@ export default function Orders(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
-  const [tick, setTick] = useState(0);
 
   useEffect(()=>{
     let alive = true;
@@ -50,7 +49,7 @@ export default function Orders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q, tab, page, limit, tick]);
+  },[q, tab, page, limit]);
 
   const filtered = useMemo(()=> orders, [orders]);
 
@@ -60,11 +59,6 @@ export default function Orders(){
     if(tab === 'all') return orders.filter(o => getStatusKey(o) !== 'assigned');
     return orders.filter(o => getStatusKey(o) === tab);
   }, [orders, tab]);
-
-  useEffect(()=>{
-    const id = setInterval(()=> setTick(t => t + 1), 10000);
-    return ()=> clearInterval(id);
-  },[]);
 
   function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
