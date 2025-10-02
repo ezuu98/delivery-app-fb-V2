@@ -101,9 +101,7 @@ export default function Riders(){
             <thead>
               <tr>
                 <th className="col-name">Rider Name</th>
-                <th className="col-perf">Delivery Performance</th>
                 <th className="col-total">Total</th>
-                <th className="col-comm">Commission Earned</th>
               </tr>
             </thead>
             <tbody>
