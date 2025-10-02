@@ -60,7 +60,7 @@ export default function Riders(){
         <header className="rc-header riders-header">
           <div className="riders-header-left">
             <h2 className="rc-title">Rider Management</h2>
-            <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+            <p className="rc-subtitle">View and manage riders based on performance.</p>
           </div>
           <div className="riders-header-right">
             <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
