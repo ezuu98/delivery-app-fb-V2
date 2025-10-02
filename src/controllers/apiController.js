@@ -182,7 +182,13 @@ module.exports = {
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
-      return { ...r, assignedOrders: counts.get(key) || 0 };
+      const entry = counts.get(key) || { total: 0, months: new Map() };
+      // convert months map to plain object { 'YYYY-MM': count }
+      const monthsObj = {};
+      if (entry.months && typeof entry.months.forEach === 'function'){
+        entry.months.forEach((v,k)=>{ monthsObj[k] = v; });
+      }
+      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj };
     });
     const filtered = withTotals.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
