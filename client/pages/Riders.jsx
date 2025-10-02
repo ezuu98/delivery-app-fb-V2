@@ -54,6 +54,21 @@ export default function Riders(){
     });
   },[riders,q,statusFilter,riderFilter,dateFilter]);
 
+  // compute last three months keys and labels (YYYY-MM)
+  const lastThreeMonths = useMemo(()=>{
+    const now = new Date();
+    const keys = [];
+    const labels = [];
+    for(let i=2;i>=0;i--){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toISOString().slice(0,7); // YYYY-MM
+      const label = d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
+      keys.push(key);
+      labels.push(label);
+    }
+    return { keys, labels };
+  },[]);
+
   return (
     <SiteLayout>
       <section className="rider-management">
