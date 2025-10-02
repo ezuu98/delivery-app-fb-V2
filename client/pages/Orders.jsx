@@ -10,6 +10,18 @@ function getStatusKey(o){
   return raw ? raw.toLowerCase().trim() : '';
 }
 
+const FILTER_OPTIONS = [
+  { key: 'all', label: 'All' },
+  { key: 'new', label: 'New' },
+  { key: 'assigned', label: 'Assigned' },
+  { key: 'in-transit', label: 'In transit' },
+  { key: 'completed', label: 'Completed' },
+];
+
+const STATUS_PARAM_MAP = {
+  completed: 'delivered',
+};
+
 export default function Orders(){
   const [orders, setOrders] = useState([]);
   const [q, setQ] = useState('');
@@ -24,7 +36,6 @@ export default function Orders(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
-  const [tick, setTick] = useState(0);
 
   useEffect(()=>{
     let alive = true;
@@ -33,7 +44,10 @@ export default function Orders(){
       try{
         const params = new URLSearchParams();
         if(q) params.set('q', q);
-        if(tab && tab !== 'all') params.set('status', tab);
+        if(tab && tab !== 'all'){
+          const statusKey = STATUS_PARAM_MAP[tab] || tab;
+          params.set('status', statusKey);
+        }
         params.set('page', String(page));
         params.set('limit', String(limit));
         const res = await fetch(`/api/orders?${params.toString()}`, { credentials:'include' });
@@ -50,7 +64,7 @@ export default function Orders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q, tab, page, limit, tick]);
+  },[q, tab, page, limit]);
 
   const filtered = useMemo(()=> orders, [orders]);
 
@@ -58,13 +72,9 @@ export default function Orders(){
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
     if(tab === 'all') return orders.filter(o => getStatusKey(o) !== 'assigned');
-    return orders.filter(o => getStatusKey(o) === tab);
+    const targetStatus = STATUS_PARAM_MAP[tab] || tab;
+    return orders.filter(o => getStatusKey(o) === targetStatus);
   }, [orders, tab]);
-
-  useEffect(()=>{
-    const id = setInterval(()=> setTick(t => t + 1), 10000);
-    return ()=> clearInterval(id);
-  },[]);
 
   function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
@@ -93,9 +103,9 @@ export default function Orders(){
             <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
           <div className="rc-filters">
-            {['all','new','assigned','in-transit','delivered'].map(k=> (
-              <button key={k} className={`rc-select rc-chip${tab===k?' active':''}`} onClick={()=>{ setTab(k); setPage(1); }} data-filter={k}>
-                {k==='all'?'All':k.replace('-',' ')}
+            {FILTER_OPTIONS.map(({ key, label }) => (
+              <button key={key} className={`rc-select rc-chip${tab===key?' active':''}`} onClick={()=>{ setTab(key); setPage(1); }} data-filter={key}>
+                {label}
               </button>
             ))}
             <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>

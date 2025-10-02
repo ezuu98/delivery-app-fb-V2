@@ -56,11 +56,11 @@ export default function Riders(){
 
   return (
     <SiteLayout>
-      <section className="rider-commissions">
+      <section className="rider-management">
         <header className="rc-header riders-header">
           <div className="riders-header-left">
-            <h2 className="rc-title">Rider Commissions</h2>
-            <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
+            <h2 className="rc-title">Rider Management</h2>
+            <p className="rc-subtitle">View and manage riders based on performance.</p>
           </div>
           <div className="riders-header-right">
             <button className="btn-secondary btn-create-rider" onClick={()=>setShowCreateRider(true)}>Create Rider</button>
@@ -101,22 +101,20 @@ export default function Riders(){
             <thead>
               <tr>
                 <th className="col-name">Rider Name</th>
-                <th className="col-km">Total KM Traveled</th>
                 <th className="col-perf">Delivery Performance</th>
                 <th className="col-comm">Commission Earned</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={4} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={3} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={4} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={3} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  <td className="rc-col-km">{r.totalKm} <span className="rc-km-unit">km</span></td>
                   <td className="rc-col-perf">
                     <div className="rc-progress">
                       <progress max="100" value={r.performance} className="rc-progress-bar"></progress>
@@ -127,7 +125,7 @@ export default function Riders(){
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={4} className="section-note">No riders found.</td></tr>
+                <tr><td colSpan={3} className="section-note">No riders found.</td></tr>
               )}
             </tbody>
           </table>
