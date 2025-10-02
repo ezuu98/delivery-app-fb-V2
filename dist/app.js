@@ -17739,7 +17739,7 @@ function h_() {
           lineNumber: 62,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("p", { className: "rc-subtitle", children: "View and manage rider commissions based on performance and distance traveled." }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("p", { className: "rc-subtitle", children: "View and manage riders based on performance." }, void 0, !1, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 63,
           columnNumber: 13
