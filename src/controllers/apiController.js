@@ -230,14 +230,52 @@ module.exports = {
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
         const delivered = actualMap.get(idKey) || null;
-        const riderId = assignment?.riderId || (eta?.riderId || null);
-        const riderName = riderId ? (rmap.get(String(riderId)) || null) : null;
+
+        const candidateRiderIds = [
+          assignment?.riderId,
+          eta?.riderId,
+          o.riderId,
+          o.rider_id,
+          o.riderID,
+          o.assigned_to_id,
+          (o.rider && typeof o.rider === 'object' ? o.rider.id : null),
+        ].map(v => {
+          if (v === undefined || v === null) return null;
+          const str = String(v).trim();
+          return str ? str : null;
+        });
+        const normalizedRiderId = candidateRiderIds.find(Boolean) || null;
+
+        const baseRiderText = (() => {
+          if (typeof assignment?.riderName === 'string' && assignment.riderName.trim()) return assignment.riderName.trim();
+          if (typeof o.rider === 'string' && o.rider.trim()) return o.rider.trim();
+          if (o.rider && typeof o.rider === 'object'){
+            const name = o.rider.name || o.rider.full_name || o.rider.fullName || null;
+            if (typeof name === 'string' && name.trim()) return name.trim();
+          }
+          if (typeof o.riderName === 'string' && o.riderName.trim()) return o.riderName.trim();
+          if (typeof o.rider_name === 'string' && o.rider_name.trim()) return o.rider_name.trim();
+          if (typeof o.assigned_to === 'string' && o.assigned_to.trim()) return o.assigned_to.trim();
+          return null;
+        })();
+
+        const resolvedRiderName = (() => {
+          if (typeof assignment?.riderName === 'string' && assignment.riderName.trim()) return assignment.riderName.trim();
+          if (normalizedRiderId){
+            const byMap = rmap.get(String(normalizedRiderId));
+            if (byMap) return byMap;
+          }
+          if (baseRiderText) return baseRiderText;
+          if (normalizedRiderId) return String(normalizedRiderId);
+          return null;
+        })();
+
         const base = { ...o };
         return {
           ...base,
           assignment,
-          riderId: riderId || null,
-          rider: riderName || (riderId ? String(riderId) : null),
+          riderId: normalizedRiderId,
+          rider: resolvedRiderName,
           expected_delivery_time: (o.deliveryStartTime || eta?.expectedAt || o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
