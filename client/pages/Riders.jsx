@@ -56,10 +56,10 @@ export default function Riders(){
 
   return (
     <SiteLayout>
-      <section className="rider-commissions">
+      <section className="rider-management">
         <header className="rc-header riders-header">
           <div className="riders-header-left">
-            <h2 className="rc-title">Rider Commissions</h2>
+            <h2 className="rc-title">Rider Management</h2>
             <p className="rc-subtitle">View and manage rider commissions based on performance and distance traveled.</p>
           </div>
           <div className="riders-header-right">
