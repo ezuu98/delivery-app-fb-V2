@@ -82,11 +82,72 @@ async function findOrderByAnyId(id){
   return { key: null, order: null, tried };
 }
 
+function normalizeRiderIdFromOrder(order){
+  if (!order || typeof order !== 'object') return null;
+  const candidates = [
+    order.riderId,
+    order.rider_id,
+    order.riderID,
+    order.assignment?.riderId,
+    order.assignment?.riderID,
+    order.assigned_to_id,
+    order.assigned_to,
+  ];
+  for (const candidate of candidates){
+    if (candidate === undefined || candidate === null) continue;
+    const value = String(candidate).trim();
+    if (value) return value;
+  }
+  return null;
+}
+
+async function computeRiderAssignmentCounts(){
+  const counts = new Map();
+  const seenOrders = new Set();
+  try{
+    const db = getFirestore();
+    if (db){
+      const snap = await db.collection('orders').get();
+      snap.forEach(doc => {
+        const data = doc.data() || {};
+        const riderId = normalizeRiderIdFromOrder(data);
+        const orderId = String(data.orderId || data.id || data.name || data.order_number || doc.id || '').trim();
+        if (orderId) seenOrders.add(orderId);
+        if (!riderId) return;
+        counts.set(riderId, (counts.get(riderId) || 0) + 1);
+      });
+    }
+  }catch(e){
+    log.warn('riders.count.orders.firestore.failed', { message: e?.message });
+  }
+
+  try{
+    const cachedOrders = await orderModel.getAll();
+    for (const order of cachedOrders){
+      const orderId = String(order?.orderId || order?.id || order?.name || order?.order_number || '').trim();
+      if (orderId && seenOrders.has(orderId)) continue;
+      const riderId = normalizeRiderIdFromOrder(order);
+      if (!riderId) continue;
+      counts.set(riderId, (counts.get(riderId) || 0) + 1);
+      if (orderId) seenOrders.add(orderId);
+    }
+  }catch(e){
+    log.warn('riders.count.orders.cache.failed', { message: e?.message });
+  }
+
+  return counts;
+}
+
 module.exports = {
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
-    const filtered = list.filter(r => {
+    const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
+    const withTotals = list.map(r => {
+      const key = String(r.id || '').trim();
+      return { ...r, assignedOrders: counts.get(key) || 0 };
+    });
+    const filtered = withTotals.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
       if (status !== 'all' && String(r.status) !== String(status)) return false;
       if (lastDays !== 'all') {
