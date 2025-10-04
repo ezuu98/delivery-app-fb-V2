@@ -220,7 +220,19 @@ module.exports = {
     return res.json(ok({ riders: p.items }, p.meta));
   },
   riderProfile: async (req, res) => {
-    const rider = await riderModel.getById(req.params.id);
+    let rider = await riderModel.getById(req.params.id);
+    if (!rider){
+      try{
+        const db = getFirestore();
+        log.warn('rider.profile.lookup_failed', { id: String(req.params.id), dbAvailable: !!db });
+      }catch(_){ }
+      // Fallback: try to find within rider list (in case IDs differ)
+      try{
+        const list = await riderModel.list().catch(()=>[]);
+        const found = list.find(r => String(r.id) === String(req.params.id) || String(r.name).toLowerCase() === String(req.params.id).toLowerCase());
+        if(found) rider = found;
+      }catch(_){ }
+    }
     if (!rider) return res.status(404).json(fail('Not Found'));
 
     try{
