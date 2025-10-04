@@ -100,7 +100,7 @@ export default function Dashboard(){
               {loading && (<tr><td colSpan={7} className="section-note">Loading…</td></tr>)}
     {!loading && error && (<tr><td colSpan={7} className="auth-error">{error}</td></tr>)}
     {!loading && !error && (()=>{
-      const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
+      const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) === 'new') : [];
       return visible.map((o,i)=>{
         const status = getOrderStatus(o);
         const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
