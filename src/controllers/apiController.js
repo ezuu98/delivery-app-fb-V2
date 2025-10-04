@@ -657,13 +657,6 @@ module.exports = {
       function deriveStatus(o){
         const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
         if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
-        // fallbacks
-        const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
-        const tagStr = tags.join(',').toLowerCase();
-        if (o.actual_delivery_time) return 'delivered';
-        if (o.order_status === 'delivered' || o.fulfillment_status === 'fulfilled') return 'delivered';
-        if (o.order_status === 'in-transit' || o.fulfillment_status === 'partial') return 'in-transit';
-        if (o.riderId || tagStr.includes('assigned') || o.order_status === 'assigned') return 'assigned';
         return 'new';
       }
 
