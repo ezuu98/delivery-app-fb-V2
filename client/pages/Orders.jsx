@@ -68,10 +68,10 @@ export default function Orders(){
 
   const filtered = useMemo(()=> orders, [orders]);
 
-  // visible respects tab: when tab==='all' hide assigned orders; otherwise filter by status
+  // visible respects tab: when tab==='all' show all orders; otherwise filter by status
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
-    if(tab === 'all') return orders.filter(o => getStatusKey(o) !== 'assigned');
+    if(tab === 'all') return orders.slice();
     const targetStatus = STATUS_PARAM_MAP[tab] || tab;
     return orders.filter(o => getStatusKey(o) === targetStatus);
   }, [orders, tab]);
