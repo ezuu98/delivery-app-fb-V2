@@ -7,6 +7,24 @@ const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
 
+// Use local timezone year-month keys to align with UI labels (avoids UTC shifting issues)
+function monthKeyLocal(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+// Robustly convert various timestamp representations to a Date or null
+function toDateOrNull(v){
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  if (typeof v?.toDate === 'function') { try { return v.toDate(); } catch(_){ /* noop */ } }
+  if (typeof v === 'object' && v.seconds !== undefined) { try { return new Date(v.seconds * 1000); } catch(_){ /* noop */ } }
+  if (typeof v === 'number') { const ms = v > 1e12 ? v : v * 1000; return new Date(ms); }
+  if (typeof v === 'string') { const t = Date.parse(v); if (Number.isFinite(t)) return new Date(t); }
+  return null;
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
@@ -111,7 +129,7 @@ async function computeRiderAssignmentCounts(){
   const monthKeys = [];
   for(let i=2;i>=0;i--){
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = d.toISOString().slice(0,7); // YYYY-MM
+    const key = monthKeyLocal(d);
     monthKeys.push(key);
   }
 
@@ -138,11 +156,10 @@ async function computeRiderAssignmentCounts(){
         entry.total = (entry.total || 0) + 1;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
-        const t = created ? Date.parse(created) : NaN;
-        if (Number.isFinite(t)){
-          const dd = new Date(t);
-          const k = dd.toISOString().slice(0,7);
-          if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+        const dd = toDateOrNull(created);
+        if (dd){
+          const k = monthKeyLocal(dd);
+          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
         }
       });
     }
@@ -161,11 +178,10 @@ async function computeRiderAssignmentCounts(){
       entry.total = (entry.total || 0) + 1;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
-      const t = created ? Date.parse(created) : NaN;
-      if (Number.isFinite(t)){
-        const dd = new Date(t);
-        const k = dd.toISOString().slice(0,7);
-        if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+      const dd = toDateOrNull(created);
+      if (dd){
+        const k = monthKeyLocal(dd);
+        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
       }
     }
   }catch(e){

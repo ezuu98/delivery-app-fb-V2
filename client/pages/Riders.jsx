@@ -61,7 +61,7 @@ export default function Riders(){
     const labels = [];
     for(let i=2;i>=0;i--){
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = d.toISOString().slice(0,7); // YYYY-MM
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
       const label = d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
       keys.push(key);
       labels.push(label);
