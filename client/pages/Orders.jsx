@@ -68,10 +68,10 @@ export default function Orders(){
 
   const filtered = useMemo(()=> orders, [orders]);
 
-  // visible respects tab: when tab==='all' hide assigned orders; otherwise filter by status
+  // visible respects tab: when tab==='all' show all orders; otherwise filter by status
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
-    if(tab === 'all') return orders.filter(o => getStatusKey(o) !== 'assigned');
+    if(tab === 'all') return orders.slice();
     const targetStatus = STATUS_PARAM_MAP[tab] || tab;
     return orders.filter(o => getStatusKey(o) === targetStatus);
   }, [orders, tab]);
@@ -83,9 +83,8 @@ export default function Orders(){
       const { orderId } = payload || {};
       if(!orderId) return;
       const normalizedAssigned = String(orderId).replace(/^#+/, '');
-      setOrders(prev => prev.filter(o => String(o.name||o.order_number||o.id).replace(/^#+/, '') !== String(normalizedAssigned)));
-      setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
-      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
+      setPage(1); // refresh orders so assignment is reflected in the list
+            try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){}
   }
 

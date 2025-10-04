@@ -17891,16 +17891,16 @@ function h_() {
             lineNumber: 118,
             columnNumber: 17
           }, this),
-          /* @__PURE__ */ d.jsxDEV("th", { className: "col-total", children: "Total" }, void 0, !1, {
-            fileName: "/app/code/client/pages/Riders.jsx",
-            lineNumber: 119,
-            columnNumber: 17
-          }, this),
           ce.labels.map((X, re) => /* @__PURE__ */ d.jsxDEV("th", { className: "col-month", children: X }, ce.keys[re], !1, {
             fileName: "/app/code/client/pages/Riders.jsx",
-            lineNumber: 121,
+            lineNumber: 120,
             columnNumber: 19
-          }, this))
+          }, this)),
+          /* @__PURE__ */ d.jsxDEV("th", { className: "col-total", children: "Total" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Riders.jsx",
+            lineNumber: 122,
+            columnNumber: 17
+          }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 117,
@@ -17939,16 +17939,16 @@ function h_() {
               lineNumber: 134,
               columnNumber: 19
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: X.assignedOrders ?? 0 }, void 0, !1, {
-              fileName: "/app/code/client/pages/Riders.jsx",
-              lineNumber: 135,
-              columnNumber: 19
-            }, this),
             ce.keys.map((re) => /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-month", children: X.monthlyCounts && X.monthlyCounts[re] ? X.monthlyCounts[re] : 0 }, re, !1, {
               fileName: "/app/code/client/pages/Riders.jsx",
-              lineNumber: 137,
+              lineNumber: 136,
               columnNumber: 21
-            }, this))
+            }, this)),
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: X.assignedOrders ?? 0 }, void 0, !1, {
+              fileName: "/app/code/client/pages/Riders.jsx",
+              lineNumber: 138,
+              columnNumber: 19
+            }, this)
           ] }, X.id, !0, {
             fileName: "/app/code/client/pages/Riders.jsx",
             lineNumber: 133,

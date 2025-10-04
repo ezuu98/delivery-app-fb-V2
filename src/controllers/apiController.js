@@ -7,6 +7,24 @@ const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
 const { paginate, parseIntParam } = require('../utils/pagination');
 
+// Use local timezone year-month keys to align with UI labels (avoids UTC shifting issues)
+function monthKeyLocal(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+// Robustly convert various timestamp representations to a Date or null
+function toDateOrNull(v){
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  if (typeof v?.toDate === 'function') { try { return v.toDate(); } catch(_){ /* noop */ } }
+  if (typeof v === 'object' && v.seconds !== undefined) { try { return new Date(v.seconds * 1000); } catch(_){ /* noop */ } }
+  if (typeof v === 'number') { const ms = v > 1e12 ? v : v * 1000; return new Date(ms); }
+  if (typeof v === 'string') { const t = Date.parse(v); if (Number.isFinite(t)) return new Date(t); }
+  return null;
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
@@ -111,7 +129,7 @@ async function computeRiderAssignmentCounts(){
   const monthKeys = [];
   for(let i=2;i>=0;i--){
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = d.toISOString().slice(0,7); // YYYY-MM
+    const key = monthKeyLocal(d);
     monthKeys.push(key);
   }
 
@@ -138,11 +156,10 @@ async function computeRiderAssignmentCounts(){
         entry.total = (entry.total || 0) + 1;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
-        const t = created ? Date.parse(created) : NaN;
-        if (Number.isFinite(t)){
-          const dd = new Date(t);
-          const k = dd.toISOString().slice(0,7);
-          if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+        const dd = toDateOrNull(created);
+        if (dd){
+          const k = monthKeyLocal(dd);
+          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
         }
       });
     }
@@ -161,11 +178,10 @@ async function computeRiderAssignmentCounts(){
       entry.total = (entry.total || 0) + 1;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
-      const t = created ? Date.parse(created) : NaN;
-      if (Number.isFinite(t)){
-        const dd = new Date(t);
-        const k = dd.toISOString().slice(0,7);
-        if (entry.months.has(k)) entry.months.set(k, entry.months.get(k) + 1);
+      const dd = toDateOrNull(created);
+      if (dd){
+        const k = monthKeyLocal(dd);
+        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
       }
     }
   }catch(e){
@@ -204,23 +220,118 @@ module.exports = {
     return res.json(ok({ riders: p.items }, p.meta));
   },
   riderProfile: async (req, res) => {
-    const rider = await riderModel.getById(req.params.id);
+    let rider = await riderModel.getById(req.params.id);
+    if (!rider){
+      try{
+        const db = getFirestore();
+        log.warn('rider.profile.lookup_failed', { id: String(req.params.id), dbAvailable: !!db });
+      }catch(_){ }
+      // Fallback: try to find within rider list (in case IDs differ)
+      try{
+        const list = await riderModel.list().catch(()=>[]);
+        const found = list.find(r => String(r.id) === String(req.params.id) || String(r.name).toLowerCase() === String(req.params.id).toLowerCase());
+        if(found) rider = found;
+      }catch(_){ }
+    }
     if (!rider) return res.status(404).json(fail('Not Found'));
 
-    const totalDeliveries = Math.max(1, Math.round(rider.totalKm * 2));
-    const avgDeliveryMins = Math.max(10, Math.round(60 - (rider.performance / 100) * 30));
-    const onTimeRate = Math.min(99, Math.max(60, rider.performance + 5));
+    try{
+      const orders = await orderModel.getAll();
+      const assigns = await orderModel.listAssignments();
+      const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const evAll = await deliveryModel.listAll();
 
-    const history = Array.from({ length: 10 }).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const deliveries = Math.max(0, Math.round((rider.performance / 10) + (i % 3) * 2));
-      const avg = avgDeliveryMins + ((i % 2) ? 3 : -2);
-      const km = Math.max(1, Math.round(deliveries * (3 + (i % 4))));
-      return { date: date.toISOString().slice(0, 10), deliveries, avgTime: avg, distanceKm: km };
-    }).reverse();
+      function lastOf(list, type){
+        for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
+        return null;
+      }
 
-    return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm: rider.totalKm }, history }));
+      const riderIdStr = String(rider.id);
+      const deliveries = [];
+
+      for (const { orderId, events } of evAll){
+        const id = String(orderId);
+        const order = orders.find(o => String(o.id||o.name||o.order_number) === id) || null;
+        const assignment = aMap.get(id) || null;
+        const etaEv = lastOf(events, 'eta');
+        const ofdEv = lastOf(events, 'out_for_delivery');
+        const pickupEv = lastOf(events, 'pickup');
+        const deliveredEv = lastOf(events, 'delivered');
+
+        // determine which rider this delivery is associated with
+        const candidateRiderIds = [
+          assignment?.riderId,
+          etaEv?.riderId,
+          ofdEv?.riderId,
+          pickupEv?.riderId,
+          deliveredEv?.riderId,
+          order?.riderId,
+          order?.rider_id,
+          order?.assigned_to_id,
+        ].map(v=> v===undefined||v===null?null:String(v).trim()).filter(Boolean);
+        if (!candidateRiderIds.includes(riderIdStr)) continue;
+
+        const startAt = ofdEv?.at || pickupEv?.at || (order?.created_at || null);
+        const deliveredAt = deliveredEv?.at || null;
+        let durationMins = null;
+        if (startAt && deliveredAt){
+          const t1 = Date.parse(startAt); const t2 = Date.parse(deliveredAt);
+          if (Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1) durationMins = Math.round((t2 - t1) / 60000);
+        }
+
+        deliveries.push({
+          orderId: id,
+          orderNumber: order?.name || order?.order_number || id,
+          riderId: riderIdStr,
+          expectedMinutes: etaEv?.expectedMinutes ?? null,
+          expectedAt: etaEv?.expectedAt ?? null,
+          deliveredAt,
+          durationMins,
+          status: deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new')),
+        });
+      }
+
+      const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
+      const totalDeliveries = completed.length;
+      const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
+
+      // on-time rate: if expectedMinutes present, compute actual on-time percentage; otherwise fallback to rider.performance heuristic
+      const withExpected = completed.filter(d => Number.isFinite(d.expectedMinutes));
+      let onTimeRate;
+      if (withExpected.length){
+        const onTimeCount = withExpected.filter(d => Number.isFinite(d.durationMins) && d.durationMins <= d.expectedMinutes).length;
+        onTimeRate = Math.round((onTimeCount / withExpected.length) * 100);
+      } else {
+        const perf = (typeof rider.performance === 'number') ? rider.performance : (Number(rider.performance) || 0);
+        onTimeRate = Math.min(99, Math.max(60, Math.round(perf + 5)));
+      }
+
+      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : 0;
+
+      // Build history for last 10 days using actual delivered dates
+      const historyMap = new Map();
+      for (const d of completed){
+        const day = d.deliveredAt ? (new Date(Date.parse(d.deliveredAt))).toISOString().slice(0,10) : null;
+        if (!day) continue;
+        if (!historyMap.has(day)) historyMap.set(day, { deliveries: 0, totalTime: 0, countTime: 0, distanceKm: 0 });
+        const h = historyMap.get(day);
+        h.deliveries += 1;
+        if (Number.isFinite(d.durationMins)){ h.totalTime += d.durationMins; h.countTime += 1; }
+      }
+
+      const historyDates = Array.from({ length: 10 }).map((_,i)=>{
+        const dt = new Date(); dt.setDate(dt.getDate() - (9 - i)); return dt.toISOString().slice(0,10);
+      });
+      const history = historyDates.map(date => {
+        const h = historyMap.get(date) || { deliveries:0, totalTime:0, countTime:0, distanceKm:0 };
+        return { date, deliveries: h.deliveries, avgTime: h.countTime ? Math.round(h.totalTime / h.countTime) : 0, distanceKm: h.distanceKm };
+      });
+
+      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history }));
+    }catch(e){
+      log.error('rider.profile.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to load rider profile'));
+    }
   },
   orders: async (req, res) => {
     try{
