@@ -84,8 +84,7 @@ export default function Orders(){
       if(!orderId) return;
       const normalizedAssigned = String(orderId).replace(/^#+/, '');
       setPage(1); // refresh orders so assignment is reflected in the list
-      setMeta(prev => ({ ...(prev||{}), total: Math.max(0, (prev?.total || 0) - 1) }));
-      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
+            try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned: ${orderId}`, { type: 'success' }); } }catch(_){}
     }catch(e){}
   }
 
