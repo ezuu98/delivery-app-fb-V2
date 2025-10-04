@@ -223,20 +223,103 @@ module.exports = {
     const rider = await riderModel.getById(req.params.id);
     if (!rider) return res.status(404).json(fail('Not Found'));
 
-    const totalDeliveries = Math.max(1, Math.round(rider.totalKm * 2));
-    const avgDeliveryMins = Math.max(10, Math.round(60 - (rider.performance / 100) * 30));
-    const onTimeRate = Math.min(99, Math.max(60, rider.performance + 5));
+    try{
+      const orders = await orderModel.getAll();
+      const assigns = await orderModel.listAssignments();
+      const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const evAll = await deliveryModel.listAll();
 
-    const history = Array.from({ length: 10 }).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const deliveries = Math.max(0, Math.round((rider.performance / 10) + (i % 3) * 2));
-      const avg = avgDeliveryMins + ((i % 2) ? 3 : -2);
-      const km = Math.max(1, Math.round(deliveries * (3 + (i % 4))));
-      return { date: date.toISOString().slice(0, 10), deliveries, avgTime: avg, distanceKm: km };
-    }).reverse();
+      function lastOf(list, type){
+        for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
+        return null;
+      }
 
-    return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm: rider.totalKm }, history }));
+      const riderIdStr = String(rider.id);
+      const deliveries = [];
+
+      for (const { orderId, events } of evAll){
+        const id = String(orderId);
+        const order = orders.find(o => String(o.id||o.name||o.order_number) === id) || null;
+        const assignment = aMap.get(id) || null;
+        const etaEv = lastOf(events, 'eta');
+        const ofdEv = lastOf(events, 'out_for_delivery');
+        const pickupEv = lastOf(events, 'pickup');
+        const deliveredEv = lastOf(events, 'delivered');
+
+        // determine which rider this delivery is associated with
+        const candidateRiderIds = [
+          assignment?.riderId,
+          etaEv?.riderId,
+          ofdEv?.riderId,
+          pickupEv?.riderId,
+          deliveredEv?.riderId,
+          order?.riderId,
+          order?.rider_id,
+          order?.assigned_to_id,
+        ].map(v=> v===undefined||v===null?null:String(v).trim()).filter(Boolean);
+        if (!candidateRiderIds.includes(riderIdStr)) continue;
+
+        const startAt = ofdEv?.at || pickupEv?.at || (order?.created_at || null);
+        const deliveredAt = deliveredEv?.at || null;
+        let durationMins = null;
+        if (startAt && deliveredAt){
+          const t1 = Date.parse(startAt); const t2 = Date.parse(deliveredAt);
+          if (Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1) durationMins = Math.round((t2 - t1) / 60000);
+        }
+
+        deliveries.push({
+          orderId: id,
+          orderNumber: order?.name || order?.order_number || id,
+          riderId: riderIdStr,
+          expectedMinutes: etaEv?.expectedMinutes ?? null,
+          expectedAt: etaEv?.expectedAt ?? null,
+          deliveredAt,
+          durationMins,
+          status: deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new')),
+        });
+      }
+
+      const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
+      const totalDeliveries = completed.length;
+      const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
+
+      // on-time rate: if expectedMinutes present, compute actual on-time percentage; otherwise fallback to rider.performance heuristic
+      const withExpected = completed.filter(d => Number.isFinite(d.expectedMinutes));
+      let onTimeRate;
+      if (withExpected.length){
+        const onTimeCount = withExpected.filter(d => Number.isFinite(d.durationMins) && d.durationMins <= d.expectedMinutes).length;
+        onTimeRate = Math.round((onTimeCount / withExpected.length) * 100);
+      } else {
+        const perf = (typeof rider.performance === 'number') ? rider.performance : (Number(rider.performance) || 0);
+        onTimeRate = Math.min(99, Math.max(60, Math.round(perf + 5)));
+      }
+
+      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : 0;
+
+      // Build history for last 10 days using actual delivered dates
+      const historyMap = new Map();
+      for (const d of completed){
+        const day = d.deliveredAt ? (new Date(Date.parse(d.deliveredAt))).toISOString().slice(0,10) : null;
+        if (!day) continue;
+        if (!historyMap.has(day)) historyMap.set(day, { deliveries: 0, totalTime: 0, countTime: 0, distanceKm: 0 });
+        const h = historyMap.get(day);
+        h.deliveries += 1;
+        if (Number.isFinite(d.durationMins)){ h.totalTime += d.durationMins; h.countTime += 1; }
+      }
+
+      const historyDates = Array.from({ length: 10 }).map((_,i)=>{
+        const dt = new Date(); dt.setDate(dt.getDate() - (9 - i)); return dt.toISOString().slice(0,10);
+      });
+      const history = historyDates.map(date => {
+        const h = historyMap.get(date) || { deliveries:0, totalTime:0, countTime:0, distanceKm:0 };
+        return { date, deliveries: h.deliveries, avgTime: h.countTime ? Math.round(h.totalTime / h.countTime) : 0, distanceKm: h.distanceKm };
+      });
+
+      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history }));
+    }catch(e){
+      log.error('rider.profile.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to load rider profile'));
+    }
   },
   orders: async (req, res) => {
     try{
