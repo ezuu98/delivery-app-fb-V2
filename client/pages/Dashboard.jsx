@@ -33,12 +33,8 @@ export default function Dashboard(){
   },[page]);
 
   function getOrderStatus(o){
-    if (o && o.assignment) return 'assigned';
-    const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
-    const tagStr = tags.join(',').toLowerCase();
-    if(tagStr.includes('assigned')) return 'assigned';
-    if(o.fulfillment_status === 'fulfilled') return 'delivered';
-    if(o.fulfillment_status === 'partial') return 'in-transit';
+    if (!o || typeof o !== 'object') return 'new';
+    if (typeof o.current_status === 'string' && String(o.current_status).trim()) return String(o.current_status).toLowerCase().trim();
     return 'new';
   }
 
@@ -100,7 +96,7 @@ export default function Dashboard(){
               {loading && (<tr><td colSpan={7} className="section-note">Loading…</td></tr>)}
     {!loading && error && (<tr><td colSpan={7} className="auth-error">{error}</td></tr>)}
     {!loading && !error && (()=>{
-      const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) !== 'assigned') : [];
+      const visible = Array.isArray(orders) ? orders.filter(o => getOrderStatus(o) === 'new') : [];
       return visible.map((o,i)=>{
         const status = getOrderStatus(o);
         const fullName = o.full_name || ((o.customer && o.customer.full_name) ? o.customer.full_name : '');
