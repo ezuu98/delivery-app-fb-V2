@@ -518,6 +518,10 @@ module.exports = {
           deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
           events: Array.isArray(f.events) ? f.events : o.events,
           riderId: f.riderId ?? o.riderId,
+          // Pass-through nested Firestore 'orders' object (e.g., orders.deliveryDuration)
+          orders: (f && typeof f.orders === 'object') ? f.orders : o.orders,
+          // Also expose a top-level convenience field if present in Firestore
+          deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
         };
       });
       for (const [key, f] of fsMap.entries()){
