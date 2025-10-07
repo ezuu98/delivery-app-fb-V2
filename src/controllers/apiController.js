@@ -25,6 +25,21 @@ function toDateOrNull(v){
   return null;
 }
 
+// Parse distance to kilometers; supports strings like '12.81 km' or '500 m'
+function parseKm(v){
+  if (v === null || v === undefined) return 0;
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string'){
+    const s = v.trim().toLowerCase();
+    const num = parseFloat(s.replace(',', '.'));
+    if (!Number.isFinite(num)) return 0;
+    if (s.includes('km')) return num;
+    if (s.includes('m') && !s.includes('km')) return num / 1000;
+    return num;
+  }
+  return 0;
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
@@ -121,6 +136,7 @@ function normalizeRiderIdFromOrder(order){
 
 async function computeRiderAssignmentCounts(){
   // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
+  // Totals represent kilometers traveled (sum of per-order distance)
   const counts = new Map();
   const seenOrders = new Set();
 
@@ -153,13 +169,15 @@ async function computeRiderAssignmentCounts(){
         if (orderId) seenOrders.add(orderId);
         if (!riderId) return;
         const entry = ensureEntry(riderId);
-        entry.total = (entry.total || 0) + 1;
+        const kmRaw = (data.totalDistance ?? data.total_distance ?? data.distanceKm ?? data.distance_km ?? 0);
+        const addKm = parseKm(kmRaw);
+        entry.total = (entry.total || 0) + addKm;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
         const dd = toDateOrNull(created);
         if (dd){
           const k = monthKeyLocal(dd);
-          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
+          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
         }
       });
     }
@@ -175,13 +193,15 @@ async function computeRiderAssignmentCounts(){
       const riderId = normalizeRiderIdFromOrder(order);
       if (!riderId) continue;
       const entry = ensureEntry(riderId);
-      entry.total = (entry.total || 0) + 1;
+      const kmRaw = (order?.totalDistance ?? order?.total_distance ?? order?.distanceKm ?? order?.distance_km ?? 0);
+      const addKm = parseKm(kmRaw);
+      entry.total = (entry.total || 0) + addKm;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
       const dd = toDateOrNull(created);
       if (dd){
         const k = monthKeyLocal(dd);
-        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
+        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
       }
     }
   }catch(e){
@@ -491,7 +511,7 @@ module.exports = {
           assignment,
           riderId: normalizedRiderId,
           rider: resolvedRiderName,
-          expected_delivery_time: (o.deliveryStartTime || eta?.expectedAt || o.expected_delivery_time || null),
+          expected_delivery_time: (o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
       });
