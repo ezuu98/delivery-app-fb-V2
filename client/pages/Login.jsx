@@ -49,7 +49,7 @@ export default function Login(){
       const idToken = await cred.user.getIdToken();
       const res = await fetch('/auth/session', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ idToken }) });
       if(!res.ok) throw new Error('Session creation failed');
-      setOk('Signed in successfully. Redirecting...');
+      setOk('Signed in successfully.');
       setTimeout(()=> window.location.href = '/dashboard', 600);
     }catch(e){ setError(mapError(e)); }
     finally{ setLoading(false); }
