@@ -126,6 +126,26 @@ function formatTimeOfDay(value){
     return '-';
   }
 }
+function formatDurationHM(value){
+  if (value === null || value === undefined) return '-';
+  let minutes = null;
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    minutes = Math.round(value);
+  } else if (typeof value === 'string') {
+    const s = value.trim();
+    if (!s) return '-';
+    const m = s.match(/(\d+(?:\.\d+)?)/);
+    if (m) minutes = Math.round(parseFloat(m[1]));
+    else return s;
+  } else {
+    return '-';
+  }
+  if (!Number.isFinite(minutes)) return '-';
+  if (minutes < 60) return `${minutes} min`;
+  const h = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  return `${h}h ${rem}m`;
+}
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
@@ -282,10 +302,7 @@ export default function Orders(){
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
                 const deliveryDuration = o?.orders?.deliveryDuration;
-                let actualDisplay = '-';
-                if (deliveryDuration !== undefined && deliveryDuration !== null) {
-                  actualDisplay = typeof deliveryDuration === 'string' ? (deliveryDuration.trim() || '-') : String(deliveryDuration);
-                }
+                const actualDisplay = formatDurationHM(deliveryDuration);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
