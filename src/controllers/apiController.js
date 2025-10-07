@@ -40,6 +40,33 @@ function parseKm(v){
   return 0;
 }
 
+function resolveOrderDistanceKm(order, assignment){
+  const candidates = [
+    order?.distance_km,
+    order?.distanceKm,
+    order?.distance,
+    order?.totalDistance,
+    order?.total_distance,
+    order?.distance_meters,
+    order?.distanceMeters,
+    order?.orders?.distance,
+    order?.orders?.distance_km,
+    order?.orders?.distanceKm,
+    order?.orders?.totalDistance,
+    order?.orders?.total_distance,
+    order?.orders?.distance_meters,
+    order?.orders?.distanceMeters,
+    assignment?.distance,
+    assignment?.distance_km,
+    assignment?.distanceKm,
+  ];
+  for (const candidate of candidates){
+    const km = parseKm(candidate);
+    if (km > 0) return km;
+  }
+  return null;
+}
+
 function normalizeStatus(value){
   if (typeof value !== 'string') return '';
   const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
