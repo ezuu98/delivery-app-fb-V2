@@ -144,7 +144,7 @@ All endpoints are JSON.
 
 - GET /api/mobile/orders
   - Headers: Authorization: Bearer <Firebase idToken>
-  - Query: status=all|new|assigned|in-transit|delivered, q?, page?, limit?
+  - Query: status=all|new|assigned|in_progress|delivered, q?, page?, limit?
   - Response: { statusCode: 200, message: "OK", data: { orders: [...] } }
 
 - GET /api/mobile/orders/:id
