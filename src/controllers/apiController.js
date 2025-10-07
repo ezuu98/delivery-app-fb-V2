@@ -40,6 +40,11 @@ function parseKm(v){
   return 0;
 }
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  return value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
