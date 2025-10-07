@@ -42,7 +42,9 @@ function parseKm(v){
 
 function normalizeStatus(value){
   if (typeof value !== 'string') return '';
-  return value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
 }
 
 async function findOrderByAnyId(id){
