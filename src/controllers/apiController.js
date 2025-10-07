@@ -625,7 +625,7 @@ module.exports = {
           assignment,
           riderId: normalizedRiderId,
           rider: resolvedRiderName,
-          expected_delivery_time: (o.expected_delivery_time || null),
+          expected_delivery_time: resolvedExpected !== null ? resolvedExpected : (o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
       });
