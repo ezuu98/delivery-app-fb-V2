@@ -560,7 +560,7 @@ module.exports = {
           const t1 = Date.parse(startAt); const t2 = Date.parse(deliveredAt);
           if (Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1) durationMins = Math.round((t2 - t1) / 60000);
         }
-        const status = deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new'));
+        const status = deliveredAt ? 'delivered' : (ofdEv ? 'in_progress' : (assignment ? 'assigned' : 'new'));
         deliveries.push({
           orderId: id,
           orderNumber: order?.name || order?.order_number || id,
