@@ -314,7 +314,7 @@ module.exports = {
           expectedAt: etaEv?.expectedAt ?? null,
           deliveredAt,
           durationMins,
-          status: deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new')),
+          status: deliveredAt ? 'delivered' : (ofdEv ? 'in_progress' : (assignment ? 'assigned' : 'new')),
         });
       }
 
