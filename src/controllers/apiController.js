@@ -491,7 +491,7 @@ module.exports = {
           assignment,
           riderId: normalizedRiderId,
           rider: resolvedRiderName,
-          expected_delivery_time: (o.deliveryStartTime || eta?.expectedAt || o.expected_delivery_time || null),
+          expected_delivery_time: (o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
       });
