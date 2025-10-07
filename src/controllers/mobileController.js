@@ -229,12 +229,14 @@ module.exports = {
       const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
 
       function statusOf(o){
+        const current = normalizeStatus(o?.current_status);
+        if (current === 'assigned' || current === 'delivered' || current === 'in_progress') return current;
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
         if(o.fulfillment_status === 'fulfilled') return 'delivered';
-        if(o.fulfillment_status === 'partial') return 'in-transit';
-        return 'new';
+        if(o.fulfillment_status === 'partial') return 'in_progress';
+        return current || 'new';
       }
 
       const items = cached.map(o => ({
