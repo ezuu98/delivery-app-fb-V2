@@ -71,10 +71,9 @@ export default function RiderProfile(){
 
         <div className="rc-toolbar rp-stats">
           <div className="rc-filters rp-stats-wrap">
-            <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{metrics.totalDeliveries}</strong></div>
-            <div className="rc-select rc-chip">Avg. Delivery Time&nbsp;<strong>{metrics.avgDeliveryMins} mins</strong></div>
+            <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{Array.isArray(rider.orders) ? rider.orders.length : 0}</strong></div>
             <div className="rc-select rc-chip">On-Time Rate&nbsp;<strong>{metrics.onTimeRate}%</strong></div>
-            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{metrics.totalKm} km</strong></div>
+            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{Number(rider.totalKm || 0)} km</strong></div>
           </div>
         </div>
 
