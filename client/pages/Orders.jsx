@@ -281,7 +281,9 @@ export default function Orders(){
                 const startTime = formatTimeOfDay(deliveryStart);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
-                const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
+                const durationFromOrders = (o.orders && (o.orders.deliveryDuration ?? o.orders.delivery_duration)) ?? null;
+                const deliveryDuration = durationFromOrders ?? o.deliveryDuration ?? o.delivery_duration ?? o.actual_duration ?? null;
+                const actualDisplay = deliveryDuration != null ? formatExpectedTime(deliveryDuration) : formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
@@ -291,7 +293,7 @@ export default function Orders(){
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
-                    <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
                     <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
                 );
