@@ -254,9 +254,10 @@ module.exports = {
       }
 
       const ql = String(q).toLowerCase().trim();
+      const normalizedStatus = normalizeStatus(status) || 'all';
       const filtered = items.filter(o => {
         if (!isMine(o)) return false;
-        if (status !== 'all' && statusOf(o) !== status) return false;
+        if (normalizedStatus !== 'all' && statusOf(o) !== normalizedStatus) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
           const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
