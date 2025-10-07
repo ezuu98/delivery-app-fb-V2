@@ -76,15 +76,31 @@ export default function RiderProfile(){
               </tr>
             </thead>
             <tbody>
-              {(data.riderOrders || []).map((o,i)=> (
-                <tr key={o.orderId || i}>
-                  <td className="rc-col-name">{o.name || o.orderId}</td>
-                  <td className="rc-col-km">{toDateOrNull(o.created_at)?.toISOString().slice(0,10) || '-'}</td>
-                  <td className="rc-col-perf">{formatTime(o.expected_delivery_time)}</td>
-                  <td className="rc-col-perf">{formatTime(o.actual_delivery_time)}</td>
-                  <td className="rc-col-commission">{Number.isFinite(Number(o.distance_km)) ? Number(o.distance_km).toFixed(2) : (o.distance_km || '-')} km</td>
-                </tr>
-              ))}
+              {(data.riderOrders || []).map((o,i)=> {
+                const orderLabel = o.name || o.orderId;
+                const createdDate = toDateOrNull(o.created_at);
+                const dateDisplay = (createdDate instanceof Date && !Number.isNaN(createdDate.getTime())) ? createdDate.toISOString().slice(0,10) : '-';
+                const startValue = resolveStartTime(o);
+                const startDisplay = formatTimeOfDay(startValue);
+                const expectedValue = resolveExpectedValue(o);
+                const expectedDisplay = formatExpectedTime(expectedValue);
+                const actualDuration = resolveActualDuration(o);
+                const actualDisplay = formatDurationHM(actualDuration);
+                const distanceNumber = Number(o.distance_km);
+                const distanceDisplay = Number.isFinite(distanceNumber)
+                  ? `${distanceNumber.toFixed(2)} km`
+                  : (typeof o.distance_km === 'string' && o.distance_km.trim() ? o.distance_km : '-');
+                return (
+                  <tr key={o.orderId || i}>
+                    <td className="rc-col-name order-cell">{orderLabel}</td>
+                    <td className="rc-col-km date-cell">{dateDisplay}</td>
+                    <td className="rc-col-start-time start-cell">{startDisplay}</td>
+                    <td className="rc-col-expected expected-cell">{expectedDisplay}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
+                    <td className="rc-col-commission distance-cell">{distanceDisplay}</td>
+                  </tr>
+                );
+              })}
               {!data.riderOrders?.length && (history||[]).map((row,i)=> (
                 <tr key={`h-${i}`}>
                   <td className="rc-col-name">{row.date}</td>
