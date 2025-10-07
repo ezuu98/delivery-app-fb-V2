@@ -25,6 +25,21 @@ function toDateOrNull(v){
   return null;
 }
 
+// Parse distance to kilometers; supports strings like '12.81 km' or '500 m'
+function parseKm(v){
+  if (v === null || v === undefined) return 0;
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string'){
+    const s = v.trim().toLowerCase();
+    const num = parseFloat(s.replace(',', '.'));
+    if (!Number.isFinite(num)) return 0;
+    if (s.includes('km')) return num;
+    if (s.includes('m') && !s.includes('km')) return num / 1000;
+    return num;
+  }
+  return 0;
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
@@ -155,8 +170,7 @@ async function computeRiderAssignmentCounts(){
         if (!riderId) return;
         const entry = ensureEntry(riderId);
         const kmRaw = (data.totalDistance ?? data.total_distance ?? data.distanceKm ?? data.distance_km ?? 0);
-        const km = Number(kmRaw);
-        const addKm = Number.isFinite(km) ? km : 0;
+        const addKm = parseKm(kmRaw);
         entry.total = (entry.total || 0) + addKm;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
@@ -180,8 +194,7 @@ async function computeRiderAssignmentCounts(){
       if (!riderId) continue;
       const entry = ensureEntry(riderId);
       const kmRaw = (order?.totalDistance ?? order?.total_distance ?? order?.distanceKm ?? order?.distance_km ?? 0);
-      const km = Number(kmRaw);
-      const addKm = Number.isFinite(km) ? km : 0;
+      const addKm = parseKm(kmRaw);
       entry.total = (entry.total || 0) + addKm;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
