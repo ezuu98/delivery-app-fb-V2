@@ -374,6 +374,33 @@ module.exports = {
       const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
       const evAll = await deliveryModel.listAll();
 
+      // Build list of this rider's orders from rider.orders array
+      const riderOrderIds = Array.isArray(rider.orders) ? rider.orders.map(v=>String(v)) : [];
+      const riderOrders = [];
+      try{
+        const db = getFirestore();
+        for (const oid of riderOrderIds){
+          const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === oid) || null;
+          let fromFs = null;
+          if (!fromCache && db) {
+            try{ const snap = await db.collection('orders').doc(oid).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
+          }
+          const base = fromCache || fromFs || { orderId: oid, name: oid };
+          riderOrders.push({
+            orderId: String(base.orderId || base.id || base.name || base.order_number || oid),
+            name: base.name || base.order_number || String(oid),
+            created_at: base.created_at || null,
+            expected_delivery_time: base.expected_delivery_time ?? base.expectedDeliveryTime ?? null,
+            actual_delivery_time: base.actual_delivery_time ?? base.actualDeliveryTime ?? null,
+            current_status: base.current_status || base.order_status || null,
+            shipping_address: base.shipping_address || null,
+            distance_km: base.distance_km ?? base.distanceKm ?? null,
+            orders: base.orders || undefined,
+            deliveryDuration: base.deliveryDuration !== undefined ? base.deliveryDuration : undefined,
+          });
+        }
+      }catch(_){ }
+
       function lastOf(list, type){
         for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
         return null;
@@ -460,7 +487,7 @@ module.exports = {
         return { date, deliveries: h.deliveries, avgTime: h.countTime ? Math.round(h.totalTime / h.countTime) : 0, distanceKm: h.distanceKm };
       });
 
-      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history }));
+      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history, riderOrders }));
     }catch(e){
       log.error('rider.profile.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to load rider profile'));
