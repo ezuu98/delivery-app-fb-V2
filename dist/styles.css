@@ -201,3 +201,12 @@
   color: #111827 !important;
   text-decoration: none !important;
 }
+
+/* Hover interactions for filter buttons and select arrow */
+.rc-select, .rc-chip{transition:background-color .15s ease, border-color .15s ease, color .15s ease}
+.rc-filters .rc-select:hover,
+.rc-filters .rc-chip:hover,
+.rc-filters .rc-select:focus,
+.rc-filters .rc-chip:focus{background:#eef6ff;border-color:#cfe0ff;color:#1f5fbf;outline:none}
+.rc-select.rc-select-arrow:hover,
+.rc-select.rc-select-arrow:focus{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%231f5fbf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>')}
