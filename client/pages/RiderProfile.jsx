@@ -2,6 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout.jsx';
 
+function toDateOrNull(value){
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value?.toDate === 'function') { try { return value.toDate(); } catch { return null; } }
+  if (typeof value === 'object' && value.seconds !== undefined) { const s = Number(value.seconds); if (Number.isFinite(s)) return new Date(s*1000); }
+  if (typeof value === 'number') { if (!Number.isFinite(value)) return null; return value > 1e12 ? new Date(value) : new Date(value*1000); }
+  if (typeof value === 'string') { const t = Date.parse(value); if (Number.isFinite(t)) return new Date(t); }
+  return null;
+}
+function formatTime(value){
+  const d = toDateOrNull(value);
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return '-';
+  try { return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch { return '-'; }
+}
+
 export default function RiderProfile(){
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -56,10 +71,9 @@ export default function RiderProfile(){
 
         <div className="rc-toolbar rp-stats">
           <div className="rc-filters rp-stats-wrap">
-            <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{metrics.totalDeliveries}</strong></div>
-            <div className="rc-select rc-chip">Avg. Delivery Time&nbsp;<strong>{metrics.avgDeliveryMins} mins</strong></div>
+            <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{Array.isArray(rider.orders) ? rider.orders.length : 0}</strong></div>
             <div className="rc-select rc-chip">On-Time Rate&nbsp;<strong>{metrics.onTimeRate}%</strong></div>
-            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{metrics.totalKm} km</strong></div>
+            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{Number(rider.totalKm || 0)} km</strong></div>
           </div>
         </div>
 
@@ -67,19 +81,30 @@ export default function RiderProfile(){
           <table className="rc-table">
             <thead>
               <tr>
-                <th className="col-name">Date</th>
-                <th className="col-km">Deliveries</th>
-                <th className="col-perf">Avg. Delivery Time</th>
+                <th className="col-name">Order</th>
+                <th className="col-km">Date</th>
+                <th className="col-perf">Expected</th>
+                <th className="col-perf">Actual</th>
                 <th className="col-comm">Distance (KM)</th>
               </tr>
             </thead>
             <tbody>
-              {(history||[]).map((row,i)=> (
-                <tr key={i}>
+              {(data.riderOrders || []).map((o,i)=> (
+                <tr key={o.orderId || i}>
+                  <td className="rc-col-name">{o.name || o.orderId}</td>
+                  <td className="rc-col-km">{toDateOrNull(o.created_at)?.toISOString().slice(0,10) || '-'}</td>
+                  <td className="rc-col-perf">{formatTime(o.expected_delivery_time)}</td>
+                  <td className="rc-col-perf">{formatTime(o.actual_delivery_time)}</td>
+                  <td className="rc-col-commission">{Number.isFinite(Number(o.distance_km)) ? Number(o.distance_km).toFixed(2) : (o.distance_km || '-')} km</td>
+                </tr>
+              ))}
+              {!data.riderOrders?.length && (history||[]).map((row,i)=> (
+                <tr key={`h-${i}`}>
                   <td className="rc-col-name">{row.date}</td>
                   <td className="rc-col-km">{row.deliveries}</td>
                   <td className="rc-col-perf">{row.avgTime} mins</td>
                   <td className="rc-col-commission">{row.distanceKm} km</td>
+                  <td className="rc-col-commission"></td>
                 </tr>
               ))}
             </tbody>

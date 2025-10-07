@@ -126,6 +126,26 @@ function formatTimeOfDay(value){
     return '-';
   }
 }
+function formatDurationHM(value){
+  if (value === null || value === undefined) return '-';
+  let minutes = null;
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    minutes = Math.round(value);
+  } else if (typeof value === 'string') {
+    const s = value.trim();
+    if (!s) return '-';
+    const m = s.match(/(\d+(?:\.\d+)?)/);
+    if (m) minutes = Math.round(parseFloat(m[1]));
+    else return s;
+  } else {
+    return '-';
+  }
+  if (!Number.isFinite(minutes)) return '-';
+  if (minutes < 60) return `${minutes} min`;
+  const h = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  return `${h}h ${rem}m`;
+}
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
@@ -281,7 +301,8 @@ export default function Orders(){
                 const startTime = formatTimeOfDay(deliveryStart);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
-                const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
+                const deliveryDuration = o?.orders?.deliveryDuration;
+                const actualDisplay = formatDurationHM(deliveryDuration);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
@@ -291,7 +312,7 @@ export default function Orders(){
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
-                    <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
                     <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
                 );

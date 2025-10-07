@@ -135,7 +135,7 @@ export default function Riders(){
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
                   ))}
-                  <td className="rc-col-total">{Number(r.assignedOrders || 0).toFixed(2)} km</td>
+                  <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (

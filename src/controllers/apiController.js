@@ -374,6 +374,33 @@ module.exports = {
       const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
       const evAll = await deliveryModel.listAll();
 
+      // Build list of this rider's orders from rider.orders array
+      const riderOrderIds = Array.isArray(rider.orders) ? rider.orders.map(v=>String(v)) : [];
+      const riderOrders = [];
+      try{
+        const db = getFirestore();
+        for (const oid of riderOrderIds){
+          const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === oid) || null;
+          let fromFs = null;
+          if (!fromCache && db) {
+            try{ const snap = await db.collection('orders').doc(oid).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
+          }
+          const base = fromCache || fromFs || { orderId: oid, name: oid };
+          riderOrders.push({
+            orderId: String(base.orderId || base.id || base.name || base.order_number || oid),
+            name: base.name || base.order_number || String(oid),
+            created_at: base.created_at || null,
+            expected_delivery_time: base.expected_delivery_time ?? base.expectedDeliveryTime ?? null,
+            actual_delivery_time: base.actual_delivery_time ?? base.actualDeliveryTime ?? null,
+            current_status: base.current_status || base.order_status || null,
+            shipping_address: base.shipping_address || null,
+            distance_km: base.distance_km ?? base.distanceKm ?? null,
+            orders: base.orders || undefined,
+            deliveryDuration: base.deliveryDuration !== undefined ? base.deliveryDuration : undefined,
+          });
+        }
+      }catch(_){ }
+
       function lastOf(list, type){
         for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
         return null;
@@ -425,19 +452,15 @@ module.exports = {
       }
 
       const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
-      const totalDeliveries = completed.length;
+      // Total deliveries from rider.orders if available, else fallback to completed count
+      const riderOrdersCount = Array.isArray(rider.orders) ? rider.orders.length : 0;
+      const totalDeliveries = riderOrdersCount || completed.length;
       const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
 
-      // on-time rate: if expectedMinutes present, compute actual on-time percentage; otherwise fallback to rider.performance heuristic
-      const withExpected = completed.filter(d => Number.isFinite(d.expectedMinutes));
-      let onTimeRate;
-      if (withExpected.length){
-        const onTimeCount = withExpected.filter(d => Number.isFinite(d.durationMins) && d.durationMins <= d.expectedMinutes).length;
-        onTimeRate = Math.round((onTimeCount / withExpected.length) * 100);
-      } else {
-        const perf = (typeof rider.performance === 'number') ? rider.performance : (Number(rider.performance) || 0);
-        onTimeRate = Math.min(99, Math.max(60, Math.round(perf + 5)));
-      }
+      // On-time rate = (# deliveries where actual < expected) / total deliveries * 100
+      const eligible = deliveries.filter(d => Number.isFinite(d.durationMins) && Number.isFinite(d.expectedMinutes));
+      const onTimeCount = eligible.filter(d => d.durationMins < d.expectedMinutes).length;
+      const onTimeRate = totalDeliveries ? Math.round((onTimeCount / totalDeliveries) * 100) : 0;
 
       const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
 
@@ -460,7 +483,7 @@ module.exports = {
         return { date, deliveries: h.deliveries, avgTime: h.countTime ? Math.round(h.totalTime / h.countTime) : 0, distanceKm: h.distanceKm };
       });
 
-      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history }));
+      return res.json(ok({ rider, metrics: { totalDeliveries, avgDeliveryMins, onTimeRate, totalKm }, history, riderOrders }));
     }catch(e){
       log.error('rider.profile.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to load rider profile'));
@@ -518,6 +541,18 @@ module.exports = {
           deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
           events: Array.isArray(f.events) ? f.events : o.events,
           riderId: f.riderId ?? o.riderId,
+          // Pass-through nested Firestore 'orders' object (e.g., orders.deliveryDuration)
+          orders: (() => {
+            const base = (f && typeof f.orders === 'object') ? f.orders : o.orders;
+            const hasBase = base && typeof base === 'object';
+            const merged = hasBase ? { ...base } : {};
+            if (f && (f.deliveryDuration !== undefined) && merged.deliveryDuration === undefined) {
+              merged.deliveryDuration = f.deliveryDuration;
+            }
+            return hasBase || merged.deliveryDuration !== undefined ? merged : base;
+          })(),
+          // Also expose a top-level convenience field if present in Firestore
+          deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
         };
       });
       for (const [key, f] of fsMap.entries()){
