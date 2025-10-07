@@ -245,10 +245,10 @@ export default function Orders(){
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={7} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={8} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={7} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={8} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const statusRaw = getRawStatus(o);
@@ -281,7 +281,7 @@ export default function Orders(){
                 );
               })}
               {!loading && !error && visible.length === 0 && (
-                <tr><td colSpan={7} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={8} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>
