@@ -17951,7 +17951,7 @@ function g_() {
               }, this);
             }),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: [
-              Number(X.assignedOrders || 0).toFixed(2),
+              Number(X.totalKm || 0).toFixed(2),
               " km"
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Riders.jsx",
