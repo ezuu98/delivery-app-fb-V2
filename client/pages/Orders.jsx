@@ -2,24 +2,29 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  return value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+}
 function getRawStatus(o){
   return (o && typeof o.current_status === 'string') ? o.current_status : '';
 }
 function getStatusKey(o){
-  const raw = getRawStatus(o);
-  return raw ? raw.toLowerCase().trim() : '';
+  return normalizeStatus(getRawStatus(o));
 }
 
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
   { key: 'assigned', label: 'Assigned' },
-  { key: 'in-transit', label: 'In transit' },
+  { key: 'in-progress', label: 'In-Progress' },
   { key: 'completed', label: 'delivered' },
 ];
 
 const STATUS_PARAM_MAP = {
   completed: 'delivered',
+  'in-progress': 'in_progress',
+  'in-transit': 'in_transit',
 };
 
 export default function Orders(){
@@ -46,7 +51,7 @@ export default function Orders(){
         if(q) params.set('q', q);
         if(tab && tab !== 'all'){
           const statusKey = STATUS_PARAM_MAP[tab] || tab;
-          params.set('status', statusKey);
+          params.set('status', normalizeStatus(statusKey));
         }
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -72,7 +77,7 @@ export default function Orders(){
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
     if(tab === 'all') return orders.slice();
-    const targetStatus = STATUS_PARAM_MAP[tab] || tab;
+    const targetStatus = normalizeStatus(STATUS_PARAM_MAP[tab] || tab);
     return orders.filter(o => getStatusKey(o) === targetStatus);
   }, [orders, tab]);
 
@@ -154,7 +159,7 @@ export default function Orders(){
                   addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
                     .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
                 }
-                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in-transit' ? 'Track' : 'Details';
+                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in_transit' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
