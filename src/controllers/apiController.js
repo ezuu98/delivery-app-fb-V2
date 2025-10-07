@@ -519,7 +519,15 @@ module.exports = {
           events: Array.isArray(f.events) ? f.events : o.events,
           riderId: f.riderId ?? o.riderId,
           // Pass-through nested Firestore 'orders' object (e.g., orders.deliveryDuration)
-          orders: (f && typeof f.orders === 'object') ? f.orders : o.orders,
+          orders: (() => {
+            const base = (f && typeof f.orders === 'object') ? f.orders : o.orders;
+            const hasBase = base && typeof base === 'object';
+            const merged = hasBase ? { ...base } : {};
+            if (f && (f.deliveryDuration !== undefined) && merged.deliveryDuration === undefined) {
+              merged.deliveryDuration = f.deliveryDuration;
+            }
+            return hasBase || merged.deliveryDuration !== undefined ? merged : base;
+          })(),
           // Also expose a top-level convenience field if present in Firestore
           deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
         };
