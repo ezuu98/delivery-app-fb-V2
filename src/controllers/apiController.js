@@ -40,6 +40,13 @@ function parseKm(v){
   return 0;
 }
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
+}
+
 async function findOrderByAnyId(id){
   const raw = String(id || '');
   const tried = [];
@@ -307,7 +314,7 @@ module.exports = {
           expectedAt: etaEv?.expectedAt ?? null,
           deliveredAt,
           durationMins,
-          status: deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new')),
+          status: deliveredAt ? 'delivered' : (ofdEv ? 'in_progress' : (assignment ? 'assigned' : 'new')),
         });
       }
 
@@ -404,16 +411,16 @@ module.exports = {
       cached = merged;
 
       const ql = String(q).toLowerCase().trim();
+      const normalizedStatus = normalizeStatus(status) || 'all';
       function getOrderStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
-        return cs;
+        return normalizeStatus(o?.current_status);
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
 
 
       const filtered = cached.filter(o => {
-        if (status !== 'all' && getOrderStatus(o) !== status) return false;
+        if (normalizedStatus !== 'all' && getOrderStatus(o) !== normalizedStatus) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
           const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
@@ -553,7 +560,7 @@ module.exports = {
           const t1 = Date.parse(startAt); const t2 = Date.parse(deliveredAt);
           if (Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1) durationMins = Math.round((t2 - t1) / 60000);
         }
-        const status = deliveredAt ? 'delivered' : (ofdEv ? 'in-transit' : (assignment ? 'assigned' : 'new'));
+        const status = deliveredAt ? 'delivered' : (ofdEv ? 'in_progress' : (assignment ? 'assigned' : 'new'));
         deliveries.push({
           orderId: id,
           orderNumber: order?.name || order?.order_number || id,
@@ -675,8 +682,8 @@ module.exports = {
       let processed = 0, updated = 0, errors = 0;
 
       function deriveStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
-        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
+        const normalized = normalizeStatus(o?.current_status);
+        if (normalized === 'assigned' || normalized === 'delivered' || normalized === 'new' || normalized === 'in_progress') return normalized;
         return 'new';
       }
 

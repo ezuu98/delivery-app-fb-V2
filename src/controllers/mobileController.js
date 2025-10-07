@@ -21,6 +21,13 @@ function getApiKey(){
   return (cfg && cfg.apiKey) || process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || '';
 }
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
+}
+
 async function upsertRider({ uid, email, displayName, contactNumber, photoURL, password }){
   const db = getFirestore();
   if (!db) return null;
@@ -222,12 +229,14 @@ module.exports = {
       const aMap = new Map(assigns.map(a => [String(a.orderId), a]));
 
       function statusOf(o){
+        const current = normalizeStatus(o?.current_status);
+        if (current === 'assigned' || current === 'delivered' || current === 'in_progress') return current;
         const tags = Array.isArray(o.tags) ? o.tags : (typeof o.tags === 'string' ? o.tags.split(',') : []);
         const tagStr = tags.join(',').toLowerCase();
         if(tagStr.includes('assigned')) return 'assigned';
         if(o.fulfillment_status === 'fulfilled') return 'delivered';
-        if(o.fulfillment_status === 'partial') return 'in-transit';
-        return 'new';
+        if(o.fulfillment_status === 'partial') return 'in_progress';
+        return current || 'new';
       }
 
       const items = cached.map(o => ({
@@ -245,9 +254,10 @@ module.exports = {
       }
 
       const ql = String(q).toLowerCase().trim();
+      const normalizedStatus = normalizeStatus(status) || 'all';
       const filtered = items.filter(o => {
         if (!isMine(o)) return false;
-        if (status !== 'all' && statusOf(o) !== status) return false;
+        if (normalizedStatus !== 'all' && statusOf(o) !== normalizedStatus) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
           const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();

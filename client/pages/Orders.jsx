@@ -2,24 +2,87 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
+}
 function getRawStatus(o){
   return (o && typeof o.current_status === 'string') ? o.current_status : '';
 }
 function getStatusKey(o){
-  const raw = getRawStatus(o);
-  return raw ? raw.toLowerCase().trim() : '';
+  return normalizeStatus(getRawStatus(o));
+}
+function toDateOrNull(value){
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value?.toDate === 'function') {
+    try { return value.toDate(); } catch { return null; }
+  }
+  if (typeof value === 'object' && value.seconds !== undefined) {
+    const seconds = Number(value.seconds);
+    if (Number.isFinite(seconds)) {
+      const ms = seconds * 1000;
+      return new Date(ms);
+    }
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return null;
+    if (value > 1e12) return new Date(value);
+    if (value > 1e9) return new Date(value * 1000);
+  }
+  if (typeof value === 'string') {
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return new Date(parsed);
+  }
+  return null;
+}
+function formatExpectedTime(value){
+  if (value === null || value === undefined) return '-';
+  if (typeof value === 'object' && value.minutes !== undefined) {
+    const minutes = Number(value.minutes);
+    if (Number.isFinite(minutes)) return `${minutes} min`;
+  }
+  const asDate = toDateOrNull(value);
+  if (asDate instanceof Date && !Number.isNaN(asDate.getTime())) {
+    try {
+      return asDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      /* ignore locale errors */
+    }
+  }
+  if (typeof value === 'number') {
+    const minutes = Number.isFinite(value) ? Math.round(value) : NaN;
+    if (!Number.isNaN(minutes)) return `${minutes} min`;
+    return '-';
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return '-';
+    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
+    if (durationMatch) {
+      const qtyRaw = durationMatch[1];
+      const qty = qtyRaw.replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
+      return `${qty} min`;
+    }
+    return trimmed;
+  }
+  return String(value);
 }
 
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
   { key: 'assigned', label: 'Assigned' },
-  { key: 'in-transit', label: 'In transit' },
+  { key: 'in-progress', label: 'In-Progress' },
   { key: 'completed', label: 'delivered' },
 ];
 
 const STATUS_PARAM_MAP = {
   completed: 'delivered',
+  'in-progress': 'in_progress',
+  'in-transit': 'in_progress',
 };
 
 export default function Orders(){
@@ -46,7 +109,7 @@ export default function Orders(){
         if(q) params.set('q', q);
         if(tab && tab !== 'all'){
           const statusKey = STATUS_PARAM_MAP[tab] || tab;
-          params.set('status', statusKey);
+          params.set('status', normalizeStatus(statusKey));
         }
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -72,7 +135,7 @@ export default function Orders(){
   const visible = useMemo(()=>{
     if(!Array.isArray(orders)) return [];
     if(tab === 'all') return orders.slice();
-    const targetStatus = STATUS_PARAM_MAP[tab] || tab;
+    const targetStatus = normalizeStatus(STATUS_PARAM_MAP[tab] || tab);
     return orders.filter(o => getStatusKey(o) === targetStatus);
   }, [orders, tab]);
 
@@ -154,7 +217,7 @@ export default function Orders(){
                   addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
                     .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
                 }
-                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in-transit' ? 'Track' : 'Details';
+                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in_progress' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
@@ -162,7 +225,7 @@ export default function Orders(){
                     <td className="rc-col-km">{fullName || '-'}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
-                    <td className="rc-col-expected">{o.expected_delivery_time ? new Date(o.expected_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                    <td className="rc-col-expected">{formatExpectedTime(o.expected_delivery_time)}</td>
                     <td className="rc-col-actual">{o.actual_delivery_time ? new Date(o.actual_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
                     <td className="rc-col-status"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
