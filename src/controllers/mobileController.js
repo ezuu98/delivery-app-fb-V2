@@ -21,6 +21,13 @@ function getApiKey(){
   return (cfg && cfg.apiKey) || process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || '';
 }
 
+function normalizeStatus(value){
+  if (typeof value !== 'string') return '';
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
+}
+
 async function upsertRider({ uid, email, displayName, contactNumber, photoURL, password }){
   const db = getFirestore();
   if (!db) return null;
