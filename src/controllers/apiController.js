@@ -40,6 +40,67 @@ function parseKm(v){
   return 0;
 }
 
+const MINUTE_TEXT_PATTERN = /^(-?\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i;
+const SECOND_TEXT_PATTERN = /^(-?\d+(?:\.\d+)?)\s*(s|sec|secs|seconds)$/i;
+const ISO_DURATION_PATTERN = /^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?$/i;
+const CLOCK_DURATION_PATTERN = /^\d{1,2}:\d{2}(?::\d{2})?$/;
+
+function parseMinutes(value){
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'number') {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const minuteMatch = trimmed.match(MINUTE_TEXT_PATTERN);
+    if (minuteMatch) return parseFloat(minuteMatch[1]);
+    const secondMatch = trimmed.match(SECOND_TEXT_PATTERN);
+    if (secondMatch) return parseFloat(secondMatch[1]) / 60;
+    const isoMatch = trimmed.match(ISO_DURATION_PATTERN);
+    if (isoMatch) {
+      const days = Number(isoMatch[1] || 0);
+      const hours = Number(isoMatch[2] || 0);
+      const minutes = Number(isoMatch[3] || 0);
+      const seconds = Number(isoMatch[4] || 0);
+      return (days * 1440) + (hours * 60) + minutes + (seconds / 60);
+    }
+    if (CLOCK_DURATION_PATTERN.test(trimmed)) {
+      const parts = trimmed.split(':').map(part => Number(part));
+      if (parts.length === 2) {
+        const [hours, minutes] = parts;
+        if (Number.isFinite(hours) && Number.isFinite(minutes)) return (hours * 60) + minutes;
+      } else if (parts.length === 3) {
+        const [hours, minutes, seconds] = parts;
+        if (Number.isFinite(hours) && Number.isFinite(minutes) && Number.isFinite(seconds)) {
+          return (hours * 60) + minutes + (seconds / 60);
+        }
+      }
+    }
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric)) return numeric;
+    return null;
+  }
+  if (typeof value === 'object') {
+    if (Number.isFinite(value.minutes)) return Number(value.minutes);
+    if (Number.isFinite(value.expectedMinutes)) return Number(value.expectedMinutes);
+    if (Number.isFinite(value.duration)) return Number(value.duration);
+    if (Number.isFinite(value.seconds)) return Number(value.seconds) / 60;
+    if (Number.isFinite(value.millis)) return Number(value.millis) / 60000;
+    if (Number.isFinite(value.ms)) return Number(value.ms) / 60000;
+    if (value.value !== undefined) {
+      const nested = parseMinutes(value.value);
+      if (nested !== null) return nested;
+    }
+    if (value.duration !== undefined) {
+      const nested = parseMinutes(value.duration);
+      if (nested !== null) return nested;
+    }
+  }
+  return null;
+}
+
 function resolveOrderDistanceKm(order, assignment){
   const candidates = [
     order?.distance_km,
