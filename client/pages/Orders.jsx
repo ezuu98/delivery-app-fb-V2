@@ -281,9 +281,11 @@ export default function Orders(){
                 const startTime = formatTimeOfDay(deliveryStart);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
-                const durationFromOrders = (o.orders && (o.orders.deliveryDuration ?? o.orders.delivery_duration)) ?? null;
-                const deliveryDuration = durationFromOrders ?? o.deliveryDuration ?? o.delivery_duration ?? o.actual_duration ?? null;
-                const actualDisplay = deliveryDuration != null ? formatExpectedTime(deliveryDuration) : formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
+                const deliveryDuration = o?.orders?.deliveryDuration;
+                let actualDisplay = '-';
+                if (deliveryDuration !== undefined && deliveryDuration !== null) {
+                  actualDisplay = typeof deliveryDuration === 'string' ? (deliveryDuration.trim() || '-') : String(deliveryDuration);
+                }
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
