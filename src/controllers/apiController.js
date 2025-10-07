@@ -578,6 +578,7 @@ module.exports = {
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
         const delivered = actualMap.get(idKey) || null;
+        const resolvedExpected = resolveExpectedDeliveryValue(o, eta);
 
         const candidateRiderIds = [
           assignment?.riderId,
