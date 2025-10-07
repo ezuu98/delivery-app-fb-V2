@@ -70,34 +70,6 @@ function formatExpectedTime(value){
   }
   return String(value);
 }
-function parseDurationMinutes(value){
-  if (value === null || value === undefined) return null;
-  if (typeof value === 'object') {
-    if (value.minutes !== undefined) {
-      const minutes = Number(value.minutes);
-      if (Number.isFinite(minutes)) return minutes;
-    }
-    if (value.seconds !== undefined) {
-      const seconds = Number(value.seconds);
-      if (Number.isFinite(seconds)) return seconds / 60;
-    }
-  }
-  if (typeof value === 'number') {
-    const minutes = Number(value);
-    if (Number.isFinite(minutes)) return minutes;
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
-    if (durationMatch) {
-      return Number(durationMatch[1]);
-    }
-    const parsedNumber = Number(trimmed);
-    if (Number.isFinite(parsedNumber)) return parsedNumber;
-  }
-  return null;
-}
 function formatTimeOfDay(value){
   const date = toDateOrNull(value);
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '-';
