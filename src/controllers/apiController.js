@@ -508,6 +508,12 @@ module.exports = {
           billing_address: f.billing_address ?? o.billing_address,
           deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
           deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
+          expected_delivery_time: f.expected_delivery_time ?? o.expected_delivery_time,
+          expectedDeliveryTime: f.expectedDeliveryTime ?? o.expectedDeliveryTime,
+          expected_time: f.expected_time ?? o.expected_time,
+          expectedTime: f.expectedTime ?? o.expectedTime,
+          actual_delivery_time: f.actual_delivery_time ?? o.actual_delivery_time,
+          actualDeliveryTime: f.actualDeliveryTime ?? o.actualDeliveryTime,
           riderId: f.riderId ?? o.riderId,
         };
       });
