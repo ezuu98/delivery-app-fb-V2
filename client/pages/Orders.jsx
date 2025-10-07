@@ -70,6 +70,54 @@ function formatExpectedTime(value){
   }
   return String(value);
 }
+function parseDurationMinutes(value){
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'object') {
+    if (value.minutes !== undefined) {
+      const minutes = Number(value.minutes);
+      if (Number.isFinite(minutes)) return minutes;
+    }
+    if (value.seconds !== undefined) {
+      const seconds = Number(value.seconds);
+      if (Number.isFinite(seconds)) return seconds / 60;
+    }
+  }
+  if (typeof value === 'number') {
+    const minutes = Number(value);
+    if (Number.isFinite(minutes)) return minutes;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
+    if (durationMatch) {
+      return Number(durationMatch[1]);
+    }
+    const parsedNumber = Number(trimmed);
+    if (Number.isFinite(parsedNumber)) return parsedNumber;
+  }
+  return null;
+}
+function formatTimeOfDay(value){
+  const date = toDateOrNull(value);
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '-';
+  try {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return '-';
+  }
+}
+function formatExpectedArrival(startValue, expectedValue){
+  const startDate = toDateOrNull(startValue);
+  if (startDate instanceof Date && !Number.isNaN(startDate.getTime())) {
+    const durationMinutes = parseDurationMinutes(expectedValue);
+    if (Number.isFinite(durationMinutes)) {
+      const arrivalDate = new Date(startDate.getTime() + durationMinutes * 60000);
+      return formatTimeOfDay(arrivalDate);
+    }
+  }
+  return formatExpectedTime(expectedValue);
+}
 
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
@@ -185,21 +233,22 @@ export default function Orders(){
           <table className="rc-table">
             <thead>
               <tr>
-                <th className="col-name">Order #</th>
-                <th className="col-km">Customer</th>
-                <th className="col-perf">Address</th>
-                <th className="col-rider">Rider</th>
-                <th className="col-expected">Expected Time</th>
-                <th className="col-actual">Actual Time</th>
-                <th className="col-status">Status</th>
+                <th className="col-name order-id-heading">Order</th>
+                <th className="col-km customer-heading">Customer</th>
+                <th className="col-perf address-heading">Address</th>
+                <th className="col-rider rider-heading">Rider</th>
+                <th className="col-start-time start-heading">Start</th>
+                <th className="col-expected expected-heading">Expected Time</th>
+                <th className="col-actual actual-heading">Actual Time</th>
+                <th className="col-status status-heading">Status</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={7} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={8} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={7} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={8} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const statusRaw = getRawStatus(o);
@@ -219,20 +268,28 @@ export default function Orders(){
                 }
                 const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in_progress' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
+                const orderReference = orderId !== undefined && orderId !== null ? String(orderId).replace(/^#+/, '').trim() : '';
+                const displayOrderId = orderReference || '-';
+                const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
+                const startTime = formatTimeOfDay(deliveryStart);
+                const expectedArrival = formatExpectedArrival(deliveryStart, o.expected_delivery_time);
+                const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
+                const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
-                    <td className="rc-col-name">{orderId}</td>
-                    <td className="rc-col-km">{fullName || '-'}</td>
-                    <td className="rc-col-perf">{addr}</td>
-                    <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
-                    <td className="rc-col-expected">{formatExpectedTime(o.expected_delivery_time)}</td>
-                    <td className="rc-col-actual">{o.actual_delivery_time ? new Date(o.actual_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-status"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
+                    <td className="rc-col-name order-id-cell">{displayOrderId}</td>
+                    <td className="rc-col-km customer-cell">{fullName || '-'}</td>
+                    <td className="rc-col-perf address-cell">{addr}</td>
+                    <td className="rc-col-rider rider-cell">{riderLabel}</td>
+                    <td className="rc-col-start-time start-cell">{startTime}</td>
+                    <td className="rc-col-expected expected-cell">{expectedArrival}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
+                    <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
                 );
               })}
               {!loading && !error && visible.length === 0 && (
-                <tr><td colSpan={7} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={8} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>
