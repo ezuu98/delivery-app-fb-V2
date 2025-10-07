@@ -514,6 +514,9 @@ module.exports = {
           expectedTime: f.expectedTime ?? o.expectedTime,
           actual_delivery_time: f.actual_delivery_time ?? o.actual_delivery_time,
           actualDeliveryTime: f.actualDeliveryTime ?? o.actualDeliveryTime,
+          delivery_events: Array.isArray(f.delivery_events) ? f.delivery_events : o.delivery_events,
+          deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
+          events: Array.isArray(f.events) ? f.events : o.events,
           riderId: f.riderId ?? o.riderId,
         };
       });
