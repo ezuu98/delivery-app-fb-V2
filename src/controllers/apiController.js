@@ -419,7 +419,7 @@ module.exports = {
       }
 
       const riderOrderIds = Array.isArray(rider.orders) ? rider.orders.map(v=>String(v)) : [];
-      const riderOrders = [];
+      let riderOrders = [];
       try{
         const db = getFirestore();
         for (const oid of riderOrderIds){
@@ -430,6 +430,7 @@ module.exports = {
             try{ const snap = await db.collection('orders').doc(key).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
           }
           const base = fromCache || fromFs || { orderId: key, name: key };
+          const assignment = aMap.get(key) || null;
           const events = eventsByOrderId.get(key) || [];
           const etaEv = lastOf(events, 'eta');
           const deliveredEv = lastOf(events, 'delivered');
@@ -454,6 +455,7 @@ module.exports = {
             }
             return null;
           })();
+          const distanceKm = resolveOrderDistanceKm(base, assignment);
           riderOrders.push({
             orderId: String(base.orderId || base.id || base.name || base.order_number || key),
             name: base.name || base.order_number || String(key),
@@ -462,7 +464,7 @@ module.exports = {
             actual_delivery_time: actualValue,
             current_status: base.current_status || base.order_status || null,
             shipping_address: base.shipping_address || null,
-            distance_km: base.distance_km ?? base.distanceKm ?? null,
+            distance_km: distanceKm ?? null,
             orders: base.orders || undefined,
             deliveryDuration: base.deliveryDuration !== undefined ? base.deliveryDuration : undefined,
             expectedMinutes: Number.isFinite(resolvedExpected?.minutes) ? Number(resolvedExpected.minutes) : (Number.isFinite(etaEv?.expectedMinutes) ? Number(etaEv.expectedMinutes) : undefined),
