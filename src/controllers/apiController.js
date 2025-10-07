@@ -409,16 +409,16 @@ module.exports = {
       cached = merged;
 
       const ql = String(q).toLowerCase().trim();
+      const normalizedStatus = normalizeStatus(status) || 'all';
       function getOrderStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase().trim() : '';
-        return cs;
+        return normalizeStatus(o?.current_status);
       }
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
 
 
       const filtered = cached.filter(o => {
-        if (status !== 'all' && getOrderStatus(o) !== status) return false;
+        if (normalizedStatus !== 'all' && getOrderStatus(o) !== normalizedStatus) return false;
         if (ql){
           const name = String(o.name || o.order_number || o.id || '').toLowerCase();
           const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
