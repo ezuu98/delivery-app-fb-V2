@@ -15,7 +15,7 @@ const FILTER_OPTIONS = [
   { key: 'new', label: 'New' },
   { key: 'assigned', label: 'Assigned' },
   { key: 'in-transit', label: 'In transit' },
-  { key: 'completed', label: 'Completed' },
+  { key: 'completed', label: 'delivered' },
 ];
 
 const STATUS_PARAM_MAP = {
