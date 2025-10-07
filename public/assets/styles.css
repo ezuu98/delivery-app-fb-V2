@@ -135,6 +135,10 @@
 .rc-col-name, .rc-col-km { padding-left:8px; padding-right:8px }
 .rc-table tbody td{padding:14px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
 .rc-col-km .rc-km-unit{color:#9ca3af;margin-left:4px}
+.order-id-heading,.customer-heading,.address-heading,.rider-heading,.start-heading,.expected-heading,.actual-heading,.status-heading{white-space:nowrap}
+.order-id-cell{padding-right:6px}
+.customer-cell{padding-left:6px}
+.start-cell,.expected-cell,.actual-time-cell{white-space:nowrap}
 .rc-progress{display:flex;align-items:center;gap:10px}
 .rc-progress-bar{width:180px;height:6px}
 .rc-progress-bar::-webkit-progress-bar{background:#e5e7eb;border-radius:999px}
