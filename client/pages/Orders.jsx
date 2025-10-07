@@ -279,7 +279,8 @@ export default function Orders(){
                 const displayOrderId = orderReference || '-';
                 const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
                 const startTime = formatTimeOfDay(deliveryStart);
-                const expectedTime = formatExpectedTime(o.expected_delivery_time);
+                const expectedValue = resolveExpectedValue(o);
+                const expectedTime = formatExpectedTime(expectedValue);
                 const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
