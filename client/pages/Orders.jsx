@@ -14,6 +14,62 @@ function getRawStatus(o){
 function getStatusKey(o){
   return normalizeStatus(getRawStatus(o));
 }
+function toDateOrNull(value){
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value?.toDate === 'function') {
+    try { return value.toDate(); } catch { return null; }
+  }
+  if (typeof value === 'object' && value.seconds !== undefined) {
+    const seconds = Number(value.seconds);
+    if (Number.isFinite(seconds)) {
+      const ms = seconds * 1000;
+      return new Date(ms);
+    }
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return null;
+    if (value > 1e12) return new Date(value);
+    if (value > 1e9) return new Date(value * 1000);
+  }
+  if (typeof value === 'string') {
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return new Date(parsed);
+  }
+  return null;
+}
+function formatExpectedTime(value){
+  if (value === null || value === undefined) return '-';
+  if (typeof value === 'object' && value.minutes !== undefined) {
+    const minutes = Number(value.minutes);
+    if (Number.isFinite(minutes)) return `${minutes} min`;
+  }
+  const asDate = toDateOrNull(value);
+  if (asDate instanceof Date && !Number.isNaN(asDate.getTime())) {
+    try {
+      return asDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      /* ignore locale errors */
+    }
+  }
+  if (typeof value === 'number') {
+    const minutes = Number.isFinite(value) ? Math.round(value) : NaN;
+    if (!Number.isNaN(minutes)) return `${minutes} min`;
+    return '-';
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return '-';
+    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
+    if (durationMatch) {
+      const qtyRaw = durationMatch[1];
+      const qty = qtyRaw.replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
+      return `${qty} min`;
+    }
+    return trimmed;
+  }
+  return String(value);
+}
 
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
@@ -169,7 +225,7 @@ export default function Orders(){
                     <td className="rc-col-km">{fullName || '-'}</td>
                     <td className="rc-col-perf">{addr}</td>
                     <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
-                    <td className="rc-col-expected">{o.expected_delivery_time ? new Date(o.expected_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                    <td className="rc-col-expected">{formatExpectedTime(o.expected_delivery_time)}</td>
                     <td className="rc-col-actual">{o.actual_delivery_time ? new Date(o.actual_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
                     <td className="rc-col-status"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
