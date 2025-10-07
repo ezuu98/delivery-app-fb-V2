@@ -26,7 +26,7 @@ const FILTER_OPTIONS = [
 const STATUS_PARAM_MAP = {
   completed: 'delivered',
   'in-progress': 'in_progress',
-  'in-transit': 'in_transit',
+  'in-transit': 'in_progress',
 };
 
 export default function Orders(){
