@@ -682,8 +682,8 @@ module.exports = {
       let processed = 0, updated = 0, errors = 0;
 
       function deriveStatus(o){
-        const cs = (o && typeof o.current_status === 'string') ? o.current_status.toLowerCase() : null;
-        if (cs === 'assigned' || cs === 'delivered' || cs === 'in-transit' || cs === 'new') return cs;
+        const normalized = normalizeStatus(o?.current_status);
+        if (normalized === 'assigned' || normalized === 'delivered' || normalized === 'new' || normalized === 'in_progress') return normalized;
         return 'new';
       }
 
