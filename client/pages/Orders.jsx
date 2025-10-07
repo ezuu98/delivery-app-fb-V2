@@ -4,7 +4,9 @@ import AssignModal from '../components/AssignModal.jsx';
 
 function normalizeStatus(value){
   if (typeof value !== 'string') return '';
-  return value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (normalized === 'in_transit') return 'in_progress';
+  return normalized;
 }
 function getRawStatus(o){
   return (o && typeof o.current_status === 'string') ? o.current_status : '';
