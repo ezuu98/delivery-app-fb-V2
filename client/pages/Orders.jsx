@@ -70,6 +70,53 @@ function formatExpectedTime(value){
   }
   return String(value);
 }
+function resolveExpectedValue(order){
+  if (!order || typeof order !== 'object') return null;
+  const candidates = [
+    order.expected_delivery_time,
+    order.expectedDeliveryTime,
+    order.order?.expected_delivery_time,
+    order.order?.expectedDeliveryTime,
+    order.orders?.expected_delivery_time,
+    order.orders?.expectedDeliveryTime,
+    order.delivery?.expected_delivery_time,
+    order.delivery?.expectedDeliveryTime,
+    order.expected_delivery?.time,
+    order.expected_delivery?.minutes,
+    order.expected_time,
+    order.expectedTime,
+  ];
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined) continue;
+    if (typeof candidate === 'string') {
+      if (candidate.trim()) return candidate;
+      continue;
+    }
+    if (typeof candidate === 'object') {
+      if (candidate.minutes !== undefined || candidate.seconds !== undefined) return candidate;
+      if (candidate.expectedMinutes !== undefined) return { minutes: candidate.expectedMinutes };
+      if (candidate.expectedAt) return candidate.expectedAt;
+      const values = Object.values(candidate);
+      const nonNull = values.find(v => v !== null && v !== undefined);
+      if (nonNull !== undefined) return candidate;
+      continue;
+    }
+    return candidate;
+  }
+  const events = order.delivery_events || order.deliveryEvents || order.events || null;
+  if (Array.isArray(events)) {
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      const ev = events[i];
+      if (!ev) continue;
+      const type = typeof ev.type === 'string' ? ev.type.toLowerCase().trim() : '';
+      if (type !== 'eta' && type !== 'expected') continue;
+      if (ev.expectedMinutes !== undefined && ev.expectedMinutes !== null) return { minutes: ev.expectedMinutes };
+      if (ev.minutes !== undefined && ev.minutes !== null) return { minutes: ev.minutes };
+      if (ev.expectedAt) return ev.expectedAt;
+    }
+  }
+  return null;
+}
 function formatTimeOfDay(value){
   const date = toDateOrNull(value);
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '-';
