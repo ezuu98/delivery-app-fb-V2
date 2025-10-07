@@ -515,8 +515,53 @@ module.exports = {
           deliveredAt,
           durationMins,
           status: deliveredAt ? 'delivered' : (ofdEv ? 'in_progress' : (assignment ? 'assigned' : 'new')),
+          distanceKm: resolveOrderDistanceKm(order, assignment) ?? null,
         });
       }
+
+      const deliveryMap = new Map(deliveries.map(d => [String(d.orderId), d]));
+      const mergedOrders = riderOrders.map(o => {
+        const key = String(o.orderId);
+        const match = deliveryMap.get(key);
+        if (!match) return o;
+        const expected = (() => {
+          if (match.expectedAt) return match.expectedAt;
+          if (Number.isFinite(match.expectedMinutes)) return { minutes: Number(match.expectedMinutes) };
+          return o.expected_delivery_time;
+        })();
+        const actual = match.deliveredAt || o.actual_delivery_time;
+        const distance = Number.isFinite(match.distanceKm) && match.distanceKm > 0 ? match.distanceKm : o.distance_km;
+        return {
+          ...o,
+          expected_delivery_time: expected ?? o.expected_delivery_time ?? null,
+          actual_delivery_time: actual ?? o.actual_delivery_time ?? null,
+          distance_km: distance ?? o.distance_km ?? null,
+          expectedMinutes: Number.isFinite(match.expectedMinutes) ? Number(match.expectedMinutes) : o.expectedMinutes,
+          deliveredAt: match.deliveredAt || o.deliveredAt,
+          durationMins: Number.isFinite(match.durationMins) ? Number(match.durationMins) : o.durationMins,
+        };
+      });
+      const mergedIds = new Set(mergedOrders.map(o => String(o.orderId)));
+      for (const delivery of deliveries){
+        const key = String(delivery.orderId);
+        if (mergedIds.has(key)) continue;
+        mergedOrders.push({
+          orderId: key,
+          name: delivery.orderNumber || key,
+          created_at: delivery.deliveredAt || delivery.expectedAt || null,
+          expected_delivery_time: delivery.expectedAt ?? (Number.isFinite(delivery.expectedMinutes) ? { minutes: Number(delivery.expectedMinutes) } : null),
+          actual_delivery_time: delivery.deliveredAt || null,
+          current_status: delivery.status || null,
+          shipping_address: null,
+          distance_km: Number.isFinite(delivery.distanceKm) ? Number(delivery.distanceKm) : null,
+          orders: undefined,
+          deliveryDuration: undefined,
+          expectedMinutes: Number.isFinite(delivery.expectedMinutes) ? Number(delivery.expectedMinutes) : undefined,
+          deliveredAt: delivery.deliveredAt || undefined,
+          durationMins: Number.isFinite(delivery.durationMins) ? Number(delivery.durationMins) : undefined,
+        });
+      }
+      riderOrders = mergedOrders;
 
       const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
       // Total deliveries from rider.orders if available, else fallback to completed count
