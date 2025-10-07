@@ -166,12 +166,12 @@ export default function Orders(){
                 const orderId = o.name || o.order_number || o.id;
                 const orderReference = orderId !== undefined && orderId !== null ? String(orderId).replace(/^#+/, '').trim() : '';
                 const displayOrderId = orderReference || '-';
-                const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
-                const startTime = formatTimeOfDay(deliveryStart);
+                const startValue = resolveStartTime(o);
+                const startTime = formatTimeOfDay(startValue);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
-                const deliveryDuration = o?.orders?.deliveryDuration;
-                const actualDisplay = formatDurationHM(deliveryDuration);
+                const actualDuration = resolveActualDuration(o);
+                const actualDisplay = formatDurationHM(actualDuration);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
