@@ -1,60 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout.jsx';
-
-function toDateOrNull(value){
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  if (typeof value?.toDate === 'function') { try { return value.toDate(); } catch { return null; } }
-  if (typeof value === 'object' && value.seconds !== undefined) { const s = Number(value.seconds); if (Number.isFinite(s)) return new Date(s*1000); }
-  if (typeof value === 'number') { if (!Number.isFinite(value)) return null; return value > 1e12 ? new Date(value) : new Date(value*1000); }
-  if (typeof value === 'string') { const t = Date.parse(value); if (Number.isFinite(t)) return new Date(t); }
-  return null;
-}
-function extractDurationMinutes(value){
-  if (value && typeof value === 'object' && !(value instanceof Date)){
-    if (Number.isFinite(value.minutes)) return Number(value.minutes);
-    if (Number.isFinite(value.expectedMinutes)) return Number(value.expectedMinutes);
-    if (Number.isFinite(value.seconds)) return Number(value.seconds) / 60;
-    if (value.duration !== undefined) return extractDurationMinutes(value.duration);
-    if (value.value !== undefined) return extractDurationMinutes(value.value);
-  }
-  if (typeof value === 'number' && Number.isFinite(value) && Math.abs(value) < 1e6) return value;
-  if (typeof value === 'string'){
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-    const minuteMatch = trimmed.match(/^(-?\d+(?:\.\d+)?)\s*(min|mins|minutes)$/i);
-    if (minuteMatch) return parseFloat(minuteMatch[1]);
-    const secondMatch = trimmed.match(/^(-?\d+(?:\.\d+)?)\s*(sec|secs|seconds)$/i);
-    if (secondMatch) return parseFloat(secondMatch[1]) / 60;
-    const numeric = Number(trimmed);
-    if (Number.isFinite(numeric) && Math.abs(numeric) < 1e6) return numeric;
-  }
-  return null;
-}
-
-function formatTime(value){
-  if (value === null || value === undefined || value === '') return '-';
-  if (value && typeof value === 'object' && !(value instanceof Date)){
-    if (value.expectedAt) return formatTime(value.expectedAt);
-    if (value.at) return formatTime(value.at);
-    if (value.value !== undefined && value.value !== value) return formatTime(value.value);
-  }
-  const minutes = extractDurationMinutes(value);
-  if (minutes !== null){
-    const rounded = Math.round(minutes);
-    return `${rounded} mins`;
-  }
-  const d = toDateOrNull(value);
-  if (!(d instanceof Date) || Number.isNaN(d.getTime())){
-    if (typeof value === 'string'){
-      const trimmed = value.trim();
-      return trimmed || '-';
-    }
-    return '-';
-  }
-  try { return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch { return '-'; }
-}
+import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, resolveStartTime, toDateOrNull } from '../utils/orderTime.js';
 
 export default function RiderProfile(){
   const { id } = useParams();
@@ -120,30 +67,48 @@ export default function RiderProfile(){
           <table className="rc-table">
             <thead>
               <tr>
-                <th className="col-name">Order</th>
-                <th className="col-km">Date</th>
-                <th className="col-perf">Expected</th>
-                <th className="col-perf">Actual</th>
-                <th className="col-comm">Distance (KM)</th>
+                <th className="col-name order-heading">Order</th>
+                <th className="col-km date-heading">Date</th>
+                <th className="col-start-time start-heading">Start</th>
+                <th className="col-expected expected-heading">Expected</th>
+                <th className="col-actual actual-heading">Actual</th>
+                <th className="col-comm distance-heading">Distance (KM)</th>
               </tr>
             </thead>
             <tbody>
-              {(data.riderOrders || []).map((o,i)=> (
-                <tr key={o.orderId || i}>
-                  <td className="rc-col-name">{o.name || o.orderId}</td>
-                  <td className="rc-col-km">{toDateOrNull(o.created_at)?.toISOString().slice(0,10) || '-'}</td>
-                  <td className="rc-col-perf">{formatTime(o.expected_delivery_time)}</td>
-                  <td className="rc-col-perf">{formatTime(o.actual_delivery_time)}</td>
-                  <td className="rc-col-commission">{Number.isFinite(Number(o.distance_km)) ? Number(o.distance_km).toFixed(2) : (o.distance_km || '-')} km</td>
-                </tr>
-              ))}
+              {(data.riderOrders || []).map((o,i)=> {
+                const orderLabel = o.name || o.orderId;
+                const createdDate = toDateOrNull(o.created_at);
+                const dateDisplay = (createdDate instanceof Date && !Number.isNaN(createdDate.getTime())) ? createdDate.toISOString().slice(0,10) : '-';
+                const startValue = resolveStartTime(o);
+                const startDisplay = formatTimeOfDay(startValue);
+                const expectedValue = resolveExpectedValue(o);
+                const expectedDisplay = formatExpectedTime(expectedValue);
+                const actualDuration = resolveActualDuration(o);
+                const actualDisplay = formatDurationHM(actualDuration);
+                const distanceNumber = Number(o.distance_km);
+                const distanceDisplay = Number.isFinite(distanceNumber)
+                  ? `${distanceNumber.toFixed(2)} km`
+                  : (typeof o.distance_km === 'string' && o.distance_km.trim() ? o.distance_km : '-');
+                return (
+                  <tr key={o.orderId || i}>
+                    <td className="rc-col-name order-cell">{orderLabel}</td>
+                    <td className="rc-col-km date-cell">{dateDisplay}</td>
+                    <td className="rc-col-start-time start-cell">{startDisplay}</td>
+                    <td className="rc-col-expected expected-cell">{expectedDisplay}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
+                    <td className="rc-col-commission distance-cell">{distanceDisplay}</td>
+                  </tr>
+                );
+              })}
               {!data.riderOrders?.length && (history||[]).map((row,i)=> (
                 <tr key={`h-${i}`}>
-                  <td className="rc-col-name">{row.date}</td>
-                  <td className="rc-col-km">{row.deliveries}</td>
-                  <td className="rc-col-perf">{row.avgTime} mins</td>
-                  <td className="rc-col-commission">{row.distanceKm} km</td>
-                  <td className="rc-col-commission"></td>
+                  <td className="rc-col-name order-cell">{row.date}</td>
+                  <td className="rc-col-km date-cell">{row.deliveries}</td>
+                  <td className="rc-col-start-time start-cell">-</td>
+                  <td className="rc-col-expected expected-cell">{row.avgTime ? `${row.avgTime} min` : '-'}</td>
+                  <td className="rc-col-actual actual-time-cell">-</td>
+                  <td className="rc-col-commission distance-cell">{Number.isFinite(Number(row.distanceKm)) ? `${Number(row.distanceKm).toFixed(2)} km` : (row.distanceKm || '-')}</td>
                 </tr>
               ))}
             </tbody>

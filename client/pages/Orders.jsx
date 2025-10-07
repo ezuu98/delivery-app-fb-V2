@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
+import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, resolveStartTime } from '../utils/orderTime.js';
 
 function normalizeStatus(value){
   if (typeof value !== 'string') return '';
@@ -13,138 +14,6 @@ function getRawStatus(o){
 }
 function getStatusKey(o){
   return normalizeStatus(getRawStatus(o));
-}
-function toDateOrNull(value){
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  if (typeof value?.toDate === 'function') {
-    try { return value.toDate(); } catch { return null; }
-  }
-  if (typeof value === 'object' && value.seconds !== undefined) {
-    const seconds = Number(value.seconds);
-    if (Number.isFinite(seconds)) {
-      const ms = seconds * 1000;
-      return new Date(ms);
-    }
-  }
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) return null;
-    if (value > 1e12) return new Date(value);
-    if (value > 1e9) return new Date(value * 1000);
-  }
-  if (typeof value === 'string') {
-    const parsed = Date.parse(value);
-    if (Number.isFinite(parsed)) return new Date(parsed);
-  }
-  return null;
-}
-function formatExpectedTime(value){
-  if (value === null || value === undefined) return '-';
-  if (typeof value === 'object' && value.minutes !== undefined) {
-    const minutes = Number(value.minutes);
-    if (Number.isFinite(minutes)) return `${minutes} min`;
-  }
-  const asDate = toDateOrNull(value);
-  if (asDate instanceof Date && !Number.isNaN(asDate.getTime())) {
-    try {
-      return asDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch {
-      /* ignore locale errors */
-    }
-  }
-  if (typeof value === 'number') {
-    const minutes = Number.isFinite(value) ? Math.round(value) : NaN;
-    if (!Number.isNaN(minutes)) return `${minutes} min`;
-    return '-';
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (!trimmed) return '-';
-    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
-    if (durationMatch) {
-      const qtyRaw = durationMatch[1];
-      const qty = qtyRaw.replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
-      return `${qty} min`;
-    }
-    return trimmed;
-  }
-  return String(value);
-}
-function resolveExpectedValue(order){
-  if (!order || typeof order !== 'object') return null;
-  const candidates = [
-    order.expected_delivery_time,
-    order.expectedDeliveryTime,
-    order.order?.expected_delivery_time,
-    order.order?.expectedDeliveryTime,
-    order.orders?.expected_delivery_time,
-    order.orders?.expectedDeliveryTime,
-    order.delivery?.expected_delivery_time,
-    order.delivery?.expectedDeliveryTime,
-    order.expected_delivery?.time,
-    order.expected_delivery?.minutes,
-    order.expected_time,
-    order.expectedTime,
-  ];
-  for (const candidate of candidates) {
-    if (candidate === null || candidate === undefined) continue;
-    if (typeof candidate === 'string') {
-      if (candidate.trim()) return candidate;
-      continue;
-    }
-    if (typeof candidate === 'object') {
-      if (candidate.minutes !== undefined || candidate.seconds !== undefined) return candidate;
-      if (candidate.expectedMinutes !== undefined) return { minutes: candidate.expectedMinutes };
-      if (candidate.expectedAt) return candidate.expectedAt;
-      const values = Object.values(candidate);
-      const nonNull = values.find(v => v !== null && v !== undefined);
-      if (nonNull !== undefined) return candidate;
-      continue;
-    }
-    return candidate;
-  }
-  const events = order.delivery_events || order.deliveryEvents || order.events || null;
-  if (Array.isArray(events)) {
-    for (let i = events.length - 1; i >= 0; i -= 1) {
-      const ev = events[i];
-      if (!ev) continue;
-      const type = typeof ev.type === 'string' ? ev.type.toLowerCase().trim() : '';
-      if (type !== 'eta' && type !== 'expected') continue;
-      if (ev.expectedMinutes !== undefined && ev.expectedMinutes !== null) return { minutes: ev.expectedMinutes };
-      if (ev.minutes !== undefined && ev.minutes !== null) return { minutes: ev.minutes };
-      if (ev.expectedAt) return ev.expectedAt;
-    }
-  }
-  return null;
-}
-function formatTimeOfDay(value){
-  const date = toDateOrNull(value);
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '-';
-  try {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } catch {
-    return '-';
-  }
-}
-function formatDurationHM(value){
-  if (value === null || value === undefined) return '-';
-  let minutes = null;
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    minutes = Math.round(value);
-  } else if (typeof value === 'string') {
-    const s = value.trim();
-    if (!s) return '-';
-    const m = s.match(/(\d+(?:\.\d+)?)/);
-    if (m) minutes = Math.round(parseFloat(m[1]));
-    else return s;
-  } else {
-    return '-';
-  }
-  if (!Number.isFinite(minutes)) return '-';
-  if (minutes < 60) return `${minutes} min`;
-  const h = Math.floor(minutes / 60);
-  const rem = minutes % 60;
-  return `${h}h ${rem}m`;
 }
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
@@ -297,12 +166,12 @@ export default function Orders(){
                 const orderId = o.name || o.order_number || o.id;
                 const orderReference = orderId !== undefined && orderId !== null ? String(orderId).replace(/^#+/, '').trim() : '';
                 const displayOrderId = orderReference || '-';
-                const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
-                const startTime = formatTimeOfDay(deliveryStart);
+                const startValue = resolveStartTime(o);
+                const startTime = formatTimeOfDay(startValue);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedTime = formatExpectedTime(expectedValue);
-                const deliveryDuration = o?.orders?.deliveryDuration;
-                const actualDisplay = formatDurationHM(deliveryDuration);
+                const actualDuration = resolveActualDuration(o);
+                const actualDisplay = formatDurationHM(actualDuration);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
