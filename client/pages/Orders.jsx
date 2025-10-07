@@ -233,13 +233,14 @@ export default function Orders(){
           <table className="rc-table">
             <thead>
               <tr>
-                <th className="col-name">Order #</th>
-                <th className="col-km">Customer</th>
-                <th className="col-perf">Address</th>
-                <th className="col-rider">Rider</th>
-                <th className="col-expected">Expected Time</th>
-                <th className="col-actual">Actual Time</th>
-                <th className="col-status">Status</th>
+                <th className="col-name order-id-heading">Order</th>
+                <th className="col-km customer-heading">Customer</th>
+                <th className="col-perf address-heading">Address</th>
+                <th className="col-rider rider-heading">Rider</th>
+                <th className="col-start-time start-heading">Start</th>
+                <th className="col-expected expected-heading">Expected Time</th>
+                <th className="col-actual actual-heading">Actual Time</th>
+                <th className="col-status status-heading">Status</th>
               </tr>
             </thead>
             <tbody>
