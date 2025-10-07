@@ -141,6 +141,112 @@ function normalizeRiderIdFromOrder(order){
   return null;
 }
 
+function normalizeExpectedCandidate(value){
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (typeof value === 'object') {
+    if (value.minutes !== undefined) {
+      const minutes = Number(value.minutes);
+      return Number.isFinite(minutes) ? { minutes } : null;
+    }
+    if (value.seconds !== undefined) {
+      const seconds = Number(value.seconds);
+      return Number.isFinite(seconds) ? { seconds } : null;
+    }
+    if (value.expectedMinutes !== undefined) {
+      const minutes = Number(value.expectedMinutes);
+      return Number.isFinite(minutes) ? { minutes } : null;
+    }
+    if (value.expectedAt !== undefined) {
+      const normalized = normalizeExpectedCandidate(value.expectedAt);
+      if (normalized !== null) return normalized;
+    }
+    if (value.value !== undefined) {
+      const normalized = normalizeExpectedCandidate(value.value);
+      if (normalized !== null) return normalized;
+    }
+    if (value.time !== undefined) {
+      const normalized = normalizeExpectedCandidate(value.time);
+      if (normalized !== null) return normalized;
+    }
+    if (value.duration !== undefined) {
+      const normalized = normalizeExpectedCandidate(value.duration);
+      if (normalized !== null) return normalized;
+    }
+    if (value.at !== undefined) {
+      const normalized = normalizeExpectedCandidate(value.at);
+      if (normalized !== null) return normalized;
+    }
+    const entries = Object.values(value);
+    for (const entry of entries) {
+      const normalized = normalizeExpectedCandidate(entry);
+      if (normalized !== null) return normalized;
+    }
+    return null;
+  }
+  return null;
+}
+function getNestedValue(source, path){
+  let current = source;
+  for (const key of path) {
+    if (current === null || current === undefined) return undefined;
+    if (typeof current !== 'object') return undefined;
+    current = current[key];
+  }
+  return current;
+}
+function resolveExpectedDeliveryValue(order, etaEvent){
+  if (!order || typeof order !== 'object') return null;
+  const candidatePaths = [
+    ['expected_delivery_time'],
+    ['expectedDeliveryTime'],
+    ['expected_time'],
+    ['expectedTime'],
+    ['order', 'expected_delivery_time'],
+    ['order', 'expectedDeliveryTime'],
+    ['orders', 'expected_delivery_time'],
+    ['orders', 'expectedDeliveryTime'],
+    ['delivery', 'expected_delivery_time'],
+    ['delivery', 'expectedDeliveryTime'],
+    ['expected_delivery', 'time'],
+    ['expected_delivery', 'minutes'],
+    ['expectedDelivery', 'time'],
+    ['expectedDelivery', 'minutes'],
+    ['delivery', 'eta'],
+    ['eta'],
+  ];
+  for (const path of candidatePaths) {
+    const candidate = getNestedValue(order, path);
+    const normalized = normalizeExpectedCandidate(candidate);
+    if (normalized !== null) return normalized;
+  }
+  if (Array.isArray(order.delivery_events) || Array.isArray(order.deliveryEvents) || Array.isArray(order.events)) {
+    const eventsList = order.delivery_events || order.deliveryEvents || order.events;
+    for (let i = eventsList.length - 1; i >= 0; i -= 1) {
+      const ev = eventsList[i];
+      if (!ev || typeof ev !== 'object') continue;
+      const type = typeof ev.type === 'string' ? ev.type.toLowerCase().trim() : '';
+      if (type !== 'eta' && type !== 'expected') continue;
+      const normalized = normalizeExpectedCandidate(ev);
+      if (normalized !== null) return normalized;
+    }
+  }
+  if (etaEvent && typeof etaEvent === 'object') {
+    const candidate = normalizeExpectedCandidate(etaEvent.expectedMinutes !== undefined ? { minutes: etaEvent.expectedMinutes } : etaEvent);
+    if (candidate !== null) return candidate;
+  }
+  return null;
+}
+
 async function computeRiderAssignmentCounts(){
   // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
   // Totals represent kilometers traveled (sum of per-order distance)
