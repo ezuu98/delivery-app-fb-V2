@@ -452,19 +452,15 @@ module.exports = {
       }
 
       const completed = deliveries.filter(d => d.deliveredAt && Number.isFinite(d.durationMins));
-      const totalDeliveries = completed.length;
+      // Total deliveries from rider.orders if available, else fallback to completed count
+      const riderOrdersCount = Array.isArray(rider.orders) ? rider.orders.length : 0;
+      const totalDeliveries = riderOrdersCount || completed.length;
       const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
 
-      // on-time rate: if expectedMinutes present, compute actual on-time percentage; otherwise fallback to rider.performance heuristic
-      const withExpected = completed.filter(d => Number.isFinite(d.expectedMinutes));
-      let onTimeRate;
-      if (withExpected.length){
-        const onTimeCount = withExpected.filter(d => Number.isFinite(d.durationMins) && d.durationMins <= d.expectedMinutes).length;
-        onTimeRate = Math.round((onTimeCount / withExpected.length) * 100);
-      } else {
-        const perf = (typeof rider.performance === 'number') ? rider.performance : (Number(rider.performance) || 0);
-        onTimeRate = Math.min(99, Math.max(60, Math.round(perf + 5)));
-      }
+      // On-time rate = (# deliveries where actual < expected) / total deliveries * 100
+      const eligible = deliveries.filter(d => Number.isFinite(d.durationMins) && Number.isFinite(d.expectedMinutes));
+      const onTimeCount = eligible.filter(d => d.durationMins < d.expectedMinutes).length;
+      const onTimeRate = totalDeliveries ? Math.round((onTimeCount / totalDeliveries) * 100) : 0;
 
       const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
 
