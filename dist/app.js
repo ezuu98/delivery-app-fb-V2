@@ -18181,7 +18181,7 @@ function E_() {
     /* @__PURE__ */ d.jsxDEV("div", { className: "rc-toolbar rp-stats", children: /* @__PURE__ */ d.jsxDEV("div", { className: "rc-filters rp-stats-wrap", children: [
       /* @__PURE__ */ d.jsxDEV("div", { className: "rc-select rc-chip", children: [
         "Total Deliveries ",
-        /* @__PURE__ */ d.jsxDEV("strong", { children: D.totalDeliveries }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("strong", { children: Array.isArray(k.orders) ? k.orders.length : 0 }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
           lineNumber: 74,
           columnNumber: 70
@@ -18192,14 +18192,14 @@ function E_() {
         columnNumber: 13
       }, this),
       /* @__PURE__ */ d.jsxDEV("div", { className: "rc-select rc-chip", children: [
-        "Avg. Delivery Time ",
+        "On-Time Rate ",
         /* @__PURE__ */ d.jsxDEV("strong", { children: [
-          D.avgDeliveryMins,
-          " mins"
+          D.onTimeRate,
+          "%"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
           lineNumber: 75,
-          columnNumber: 72
+          columnNumber: 66
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/RiderProfile.jsx",
@@ -18207,33 +18207,18 @@ function E_() {
         columnNumber: 13
       }, this),
       /* @__PURE__ */ d.jsxDEV("div", { className: "rc-select rc-chip", children: [
-        "On-Time Rate ",
-        /* @__PURE__ */ d.jsxDEV("strong", { children: [
-          D.onTimeRate,
-          "%"
-        ] }, void 0, !0, {
-          fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 76,
-          columnNumber: 66
-        }, this)
-      ] }, void 0, !0, {
-        fileName: "/app/code/client/pages/RiderProfile.jsx",
-        lineNumber: 76,
-        columnNumber: 13
-      }, this),
-      /* @__PURE__ */ d.jsxDEV("div", { className: "rc-select rc-chip", children: [
         "Total KM Traveled ",
         /* @__PURE__ */ d.jsxDEV("strong", { children: [
-          D.totalKm,
+          Number(k.totalKm || 0),
           " km"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 77,
+          lineNumber: 76,
           columnNumber: 71
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/RiderProfile.jsx",
-        lineNumber: 77,
+        lineNumber: 76,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
@@ -18249,36 +18234,36 @@ function E_() {
       /* @__PURE__ */ d.jsxDEV("thead", { children: /* @__PURE__ */ d.jsxDEV("tr", { children: [
         /* @__PURE__ */ d.jsxDEV("th", { className: "col-name", children: "Order" }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 85,
+          lineNumber: 84,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ d.jsxDEV("th", { className: "col-km", children: "Date" }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 86,
+          lineNumber: 85,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ d.jsxDEV("th", { className: "col-perf", children: "Expected" }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 87,
+          lineNumber: 86,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ d.jsxDEV("th", { className: "col-perf", children: "Actual" }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 88,
+          lineNumber: 87,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ d.jsxDEV("th", { className: "col-comm", children: "Distance (KM)" }, void 0, !1, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 89,
+          lineNumber: 88,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/RiderProfile.jsx",
-        lineNumber: 84,
+        lineNumber: 83,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/RiderProfile.jsx",
-        lineNumber: 83,
+        lineNumber: 82,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ d.jsxDEV("tbody", { children: [
@@ -18287,22 +18272,22 @@ function E_() {
           return /* @__PURE__ */ d.jsxDEV("tr", { children: [
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name", children: E.name || E.orderId }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 95,
+              lineNumber: 94,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-km", children: ((V = DE(E.created_at)) == null ? void 0 : V.toISOString().slice(0, 10)) || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 96,
+              lineNumber: 95,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-perf", children: oE(E.expected_delivery_time) }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 97,
+              lineNumber: 96,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-perf", children: oE(E.actual_delivery_time) }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 98,
+              lineNumber: 97,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission", children: [
@@ -18310,24 +18295,24 @@ function E_() {
               " km"
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 99,
+              lineNumber: 98,
               columnNumber: 19
             }, this)
           ] }, E.orderId || j, !0, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 94,
+            lineNumber: 93,
             columnNumber: 17
           }, this);
         }),
         !((L = p.riderOrders) != null && L.length) && (T || []).map((E, j) => /* @__PURE__ */ d.jsxDEV("tr", { children: [
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name", children: E.date }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 104,
+            lineNumber: 103,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-km", children: E.deliveries }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 105,
+            lineNumber: 104,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-perf", children: [
@@ -18335,7 +18320,7 @@ function E_() {
             " mins"
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 106,
+            lineNumber: 105,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission", children: [
@@ -18343,31 +18328,31 @@ function E_() {
             " km"
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 107,
+            lineNumber: 106,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission" }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 108,
+            lineNumber: 107,
             columnNumber: 19
           }, this)
         ] }, `h-${j}`, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 103,
+          lineNumber: 102,
           columnNumber: 17
         }, this))
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/RiderProfile.jsx",
-        lineNumber: 92,
+        lineNumber: 91,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/RiderProfile.jsx",
-      lineNumber: 82,
+      lineNumber: 81,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/RiderProfile.jsx",
-      lineNumber: 81,
+      lineNumber: 80,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
