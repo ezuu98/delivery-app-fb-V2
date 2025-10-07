@@ -70,31 +70,50 @@ function formatExpectedTime(value){
   }
   return String(value);
 }
-function parseDurationMinutes(value){
-  if (value === null || value === undefined) return null;
-  if (typeof value === 'object') {
-    if (value.minutes !== undefined) {
-      const minutes = Number(value.minutes);
-      if (Number.isFinite(minutes)) return minutes;
+function resolveExpectedValue(order){
+  if (!order || typeof order !== 'object') return null;
+  const candidates = [
+    order.expected_delivery_time,
+    order.expectedDeliveryTime,
+    order.order?.expected_delivery_time,
+    order.order?.expectedDeliveryTime,
+    order.orders?.expected_delivery_time,
+    order.orders?.expectedDeliveryTime,
+    order.delivery?.expected_delivery_time,
+    order.delivery?.expectedDeliveryTime,
+    order.expected_delivery?.time,
+    order.expected_delivery?.minutes,
+    order.expected_time,
+    order.expectedTime,
+  ];
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined) continue;
+    if (typeof candidate === 'string') {
+      if (candidate.trim()) return candidate;
+      continue;
     }
-    if (value.seconds !== undefined) {
-      const seconds = Number(value.seconds);
-      if (Number.isFinite(seconds)) return seconds / 60;
+    if (typeof candidate === 'object') {
+      if (candidate.minutes !== undefined || candidate.seconds !== undefined) return candidate;
+      if (candidate.expectedMinutes !== undefined) return { minutes: candidate.expectedMinutes };
+      if (candidate.expectedAt) return candidate.expectedAt;
+      const values = Object.values(candidate);
+      const nonNull = values.find(v => v !== null && v !== undefined);
+      if (nonNull !== undefined) return candidate;
+      continue;
     }
+    return candidate;
   }
-  if (typeof value === 'number') {
-    const minutes = Number(value);
-    if (Number.isFinite(minutes)) return minutes;
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-    const durationMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
-    if (durationMatch) {
-      return Number(durationMatch[1]);
+  const events = order.delivery_events || order.deliveryEvents || order.events || null;
+  if (Array.isArray(events)) {
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      const ev = events[i];
+      if (!ev) continue;
+      const type = typeof ev.type === 'string' ? ev.type.toLowerCase().trim() : '';
+      if (type !== 'eta' && type !== 'expected') continue;
+      if (ev.expectedMinutes !== undefined && ev.expectedMinutes !== null) return { minutes: ev.expectedMinutes };
+      if (ev.minutes !== undefined && ev.minutes !== null) return { minutes: ev.minutes };
+      if (ev.expectedAt) return ev.expectedAt;
     }
-    const parsedNumber = Number(trimmed);
-    if (Number.isFinite(parsedNumber)) return parsedNumber;
   }
   return null;
 }
@@ -107,18 +126,6 @@ function formatTimeOfDay(value){
     return '-';
   }
 }
-function formatExpectedArrival(startValue, expectedValue){
-  const startDate = toDateOrNull(startValue);
-  if (startDate instanceof Date && !Number.isNaN(startDate.getTime())) {
-    const durationMinutes = parseDurationMinutes(expectedValue);
-    if (Number.isFinite(durationMinutes)) {
-      const arrivalDate = new Date(startDate.getTime() + durationMinutes * 60000);
-      return formatTimeOfDay(arrivalDate);
-    }
-  }
-  return formatExpectedTime(expectedValue);
-}
-
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
@@ -238,8 +245,8 @@ export default function Orders(){
                 <th className="col-perf address-heading">Address</th>
                 <th className="col-rider rider-heading">Rider</th>
                 <th className="col-start-time start-heading">Start</th>
-                <th className="col-expected expected-heading">Expected Time</th>
-                <th className="col-actual actual-heading">Actual Time</th>
+                <th className="col-expected expected-heading">Expected</th>
+                <th className="col-actual actual-heading">Actual</th>
                 <th className="col-status status-heading">Status</th>
               </tr>
             </thead>
@@ -272,7 +279,8 @@ export default function Orders(){
                 const displayOrderId = orderReference || '-';
                 const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
                 const startTime = formatTimeOfDay(deliveryStart);
-                const expectedArrival = formatExpectedArrival(deliveryStart, o.expected_delivery_time);
+                const expectedValue = resolveExpectedValue(o);
+                const expectedTime = formatExpectedTime(expectedValue);
                 const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
@@ -282,7 +290,7 @@ export default function Orders(){
                     <td className="rc-col-perf address-cell">{addr}</td>
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
-                    <td className="rc-col-expected expected-cell">{expectedArrival}</td>
+                    <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
                     <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
