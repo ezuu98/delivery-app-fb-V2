@@ -247,6 +247,15 @@ function resolveExpectedDeliveryValue(order, etaEvent){
   return null;
 }
 
+function lastOf(list, type){
+  if (!Array.isArray(list) || !type) return null;
+  for (let i = list.length - 1; i >= 0; i -= 1){
+    const entry = list[i];
+    if (entry && entry.type === type) return entry;
+  }
+  return null;
+}
+
 async function computeRiderAssignmentCounts(){
   // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
   // Totals represent kilometers traveled (sum of per-order distance)
@@ -375,36 +384,65 @@ module.exports = {
       const evAll = await deliveryModel.listAll();
 
       // Build list of this rider's orders from rider.orders array
+      const eventsByOrderId = new Map();
+      for (const { orderId, events } of evAll){
+        const key = String(orderId || '').trim();
+        if (!key) continue;
+        eventsByOrderId.set(key, Array.isArray(events) ? events : []);
+      }
+
       const riderOrderIds = Array.isArray(rider.orders) ? rider.orders.map(v=>String(v)) : [];
       const riderOrders = [];
       try{
         const db = getFirestore();
         for (const oid of riderOrderIds){
-          const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === oid) || null;
+          const key = String(oid);
+          const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === key) || null;
           let fromFs = null;
           if (!fromCache && db) {
-            try{ const snap = await db.collection('orders').doc(oid).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
+            try{ const snap = await db.collection('orders').doc(key).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
           }
-          const base = fromCache || fromFs || { orderId: oid, name: oid };
+          const base = fromCache || fromFs || { orderId: key, name: key };
+          const events = eventsByOrderId.get(key) || [];
+          const etaEv = lastOf(events, 'eta');
+          const deliveredEv = lastOf(events, 'delivered');
+          const resolvedExpected = resolveExpectedDeliveryValue(base, etaEv);
+          const expectedValue = (() => {
+            if (resolvedExpected !== null) return resolvedExpected;
+            if (etaEv && typeof etaEv === 'object') {
+              if (etaEv.expectedAt) return etaEv.expectedAt;
+              if (etaEv.at) return etaEv.at;
+              if (Number.isFinite(etaEv.expectedMinutes)) return { minutes: Number(etaEv.expectedMinutes) };
+            }
+            return null;
+          })();
+          const actualValue = (() => {
+            if (deliveredEv && deliveredEv.at) return deliveredEv.at;
+            if (base.actual_delivery_time) return base.actual_delivery_time;
+            if (base.actualDeliveryTime) return base.actualDeliveryTime;
+            if (base.deliveryEndTime) return base.deliveryEndTime;
+            if (base.orders && typeof base.orders === 'object') {
+              const nested = base.orders.actual_delivery_time ?? base.orders.actualDeliveryTime ?? base.orders.deliveredAt ?? null;
+              if (nested) return nested;
+            }
+            return null;
+          })();
           riderOrders.push({
-            orderId: String(base.orderId || base.id || base.name || base.order_number || oid),
-            name: base.name || base.order_number || String(oid),
+            orderId: String(base.orderId || base.id || base.name || base.order_number || key),
+            name: base.name || base.order_number || String(key),
             created_at: base.created_at || null,
-            expected_delivery_time: base.expected_delivery_time ?? base.expectedDeliveryTime ?? null,
-            actual_delivery_time: base.actual_delivery_time ?? base.actualDeliveryTime ?? null,
+            expected_delivery_time: expectedValue,
+            actual_delivery_time: actualValue,
             current_status: base.current_status || base.order_status || null,
             shipping_address: base.shipping_address || null,
             distance_km: base.distance_km ?? base.distanceKm ?? null,
             orders: base.orders || undefined,
             deliveryDuration: base.deliveryDuration !== undefined ? base.deliveryDuration : undefined,
+            expectedMinutes: Number.isFinite(resolvedExpected?.minutes) ? Number(resolvedExpected.minutes) : (Number.isFinite(etaEv?.expectedMinutes) ? Number(etaEv.expectedMinutes) : undefined),
+            deliveredAt: deliveredEv?.at || undefined,
           });
         }
       }catch(_){ }
-
-      function lastOf(list, type){
-        for(let i=list.length-1;i>=0;i--){ if(list[i] && list[i].type === type) return list[i]; }
-        return null;
-      }
 
       const riderIdStr = String(rider.id);
       const deliveries = [];
