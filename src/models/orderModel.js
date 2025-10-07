@@ -1,5 +1,6 @@
 const redisSvc = require('../services/redis');
 const { getFirestore } = require('../services/firestore');
+const { initFirebaseAdmin } = require('../services/firebaseAdmin');
 const log = require('../utils/logger');
 
 // In-memory fallback
@@ -103,11 +104,24 @@ async function assign(orderId, riderId){
     }
   }catch(e){ log.warn('order.cache.update.assign.failed', { message: e?.message }); }
 
-  // Persist assignment status to Firestore orders document
+  // Persist assignment status to Firestore orders document and update rider aggregates
   try{
     const db = getFirestore();
+    const admin = initFirebaseAdmin();
     if (db) {
       await db.collection('orders').doc(id).set({ orderId: id, riderId: String(riderId), assignedAt: rec.assignedAt, order_status: 'assigned', current_status: 'assigned' }, { merge: true });
+      if (admin && admin.firestore && admin.firestore.FieldValue) {
+        const FV = admin.firestore.FieldValue;
+        await db.collection('riders').doc(String(riderId)).set({
+          uid: String(riderId),
+          updatedAt: rec.assignedAt,
+          // ensure numeric fields exist (increment by 0 creates field if missing)
+          total_kms: FV.increment(0),
+          this_month_kms: FV.increment(0),
+          // keep an append-only list of orders assigned to this rider
+          orders: FV.arrayUnion(id),
+        }, { merge: true });
+      }
     }
   }catch(e){ log.warn('firestore.orders.assign.status.failed', { message: e?.message }); }
 

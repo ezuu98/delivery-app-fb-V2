@@ -326,7 +326,7 @@ module.exports = {
         onTimeRate = Math.min(99, Math.max(60, Math.round(perf + 5)));
       }
 
-      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : 0;
+      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
 
       // Build history for last 10 days using actual delivered dates
       const historyMap = new Map();

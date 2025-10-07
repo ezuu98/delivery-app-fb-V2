@@ -27,15 +27,31 @@ async function upsertRider({ uid, email, displayName, contactNumber, photoURL, p
   const now = new Date().toISOString();
   const docRef = db.collection('riders').doc(uid);
   const snap = await docRef.get();
+  const existing = snap.exists ? (snap.data() || {}) : {};
   const payload = { uid, updatedAt: now };
   if (!snap.exists) payload.createdAt = now;
   if (email !== undefined) payload.email = email;
   if (displayName !== undefined) payload.displayName = displayName;
   if (contactNumber !== undefined) payload.contactNumber = contactNumber;
   if (photoURL !== undefined) payload.photoURL = photoURL;
+  // Initialize new aggregated fields when creating a rider
+  if (!snap.exists) {
+    payload.total_kms = 0;
+    payload.this_month_kms = 0;
+    payload.orders = [];
+  }
   // WARNING: storing plain passwords is insecure. This field stores the non-encrypted password for mobile app compatibility as requested.
   if (password !== undefined) payload.plainPassword = password;
   await docRef.set(payload, { merge: true });
+  // Backfill defaults on existing docs without the new fields
+  const needsDefaults = (existing.total_kms === undefined) || (existing.this_month_kms === undefined) || !Array.isArray(existing.orders);
+  if (needsDefaults) {
+    const defaults = {};
+    if (existing.total_kms === undefined) defaults.total_kms = 0;
+    if (existing.this_month_kms === undefined) defaults.this_month_kms = 0;
+    if (!Array.isArray(existing.orders)) defaults.orders = [];
+    await docRef.set(defaults, { merge: true });
+  }
   const doc = await docRef.get();
   return { id: uid, ...doc.data() };
 }

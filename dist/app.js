@@ -58,7 +58,7 @@ hf.exports;
        */
       current: null
     }, ce = {}, X = null;
-    function re(c) {
+    function ie(c) {
       X = c;
     }
     ce.setExtraStackFrame = function(c) {
@@ -69,7 +69,7 @@ hf.exports;
       var b = ce.getCurrentStack;
       return b && (c += b() || ""), c;
     };
-    var Z = !1, U = !1, ve = !1, oe = !1, Te = !1, je = {
+    var J = !1, U = !1, ve = !1, oe = !1, Te = !1, je = {
       ReactCurrentDispatcher: $,
       ReactCurrentBatchConfig: G,
       ReactCurrentOwner: ge
@@ -696,7 +696,7 @@ Your code should look like:
     var te;
     te = Symbol.for("react.module.reference");
     function Ne(c) {
-      return !!(typeof c == "string" || typeof c == "function" || c === C || c === k || Te || c === f || c === x || c === A || oe || c === pe || Z || U || ve || typeof c == "object" && c !== null && (c.$$typeof === Q || c.$$typeof === V || c.$$typeof === D || c.$$typeof === T || c.$$typeof === _ || // This needs to include all possible module reference object
+      return !!(typeof c == "string" || typeof c == "function" || c === C || c === k || Te || c === f || c === x || c === A || oe || c === pe || J || U || ve || typeof c == "object" && c !== null && (c.$$typeof === Q || c.$$typeof === V || c.$$typeof === D || c.$$typeof === T || c.$$typeof === _ || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
@@ -1016,9 +1016,9 @@ See https://reactjs.org/link/invalid-hook-call for tips about how to debug and f
     function rr(c) {
       if (c) {
         var b = c._owner, L = hi(c.type, c._source, b ? b.type : null);
-        re(L);
+        ie(L);
       } else
-        re(null);
+        ie(null);
     }
     var Ve;
     Ve = !1;
@@ -1326,14 +1326,14 @@ const Pw = /* @__PURE__ */ Hw(R), $w = /* @__PURE__ */ Fw({
       we.unshift("Warning: " + q), Function.prototype.apply.call(console[N], console, we);
     }
   }
-  var G = !1, B = !1, ge = !1, ce = !1, X = !1, re;
-  re = Symbol.for("react.module.reference");
-  function Z(N) {
+  var G = !1, B = !1, ge = !1, ce = !1, X = !1, ie;
+  ie = Symbol.for("react.module.reference");
+  function J(N) {
     return !!(typeof N == "string" || typeof N == "function" || N === y || N === C || X || N === g || N === T || N === _ || ce || N === V || G || B || ge || typeof N == "object" && N !== null && (N.$$typeof === A || N.$$typeof === x || N.$$typeof === f || N.$$typeof === k || N.$$typeof === D || // This needs to include all possible module reference object
     // types supported by any Flight configuration anywhere since
     // we don't know which Flight build this will end up being used
     // with.
-    N.$$typeof === re || N.getModuleId !== void 0));
+    N.$$typeof === ie || N.getModuleId !== void 0));
   }
   function U(N, q, te) {
     var Ne = N.displayName;
@@ -1848,7 +1848,7 @@ Check the top-level render call using <` + te + ">.");
   var In = {};
   function za(N, q, te, Ne, Pe, we) {
     {
-      var ke = Z(N);
+      var ke = J(N);
       if (!ke) {
         var Se = "";
         (N === void 0 || typeof N == "object" && N !== null && Object.keys(N).length === 0) && (Se += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
@@ -1960,25 +1960,25 @@ var d = sE.exports, fE = { exports: {} }, ea = {}, dE = { exports: {} }, pE = {}
         return he.now() - I;
       };
     }
-    var $ = 1073741823, G = -1, B = 250, ge = 5e3, ce = 1e4, X = $, re = [], Z = [], U = 1, ve = null, oe = x, Te = !1, je = !1, Le = !1, ye = typeof setTimeout == "function" ? setTimeout : null, Ge = typeof clearTimeout == "function" ? clearTimeout : null, Ht = typeof setImmediate < "u" ? setImmediate : null;
+    var $ = 1073741823, G = -1, B = 250, ge = 5e3, ce = 1e4, X = $, ie = [], J = [], U = 1, ve = null, oe = x, Te = !1, je = !1, Le = !1, ye = typeof setTimeout == "function" ? setTimeout : null, Ge = typeof clearTimeout == "function" ? clearTimeout : null, Ht = typeof setImmediate < "u" ? setImmediate : null;
     typeof navigator < "u" && navigator.scheduling !== void 0 && navigator.scheduling.isInputPending !== void 0 && navigator.scheduling.isInputPending.bind(navigator.scheduling);
     function Nn(ee) {
-      for (var be = g(Z); be !== null; ) {
+      for (var be = g(J); be !== null; ) {
         if (be.callback === null)
-          C(Z);
+          C(J);
         else if (be.startTime <= ee)
-          C(Z), be.sortIndex = be.expirationTime, y(re, be);
+          C(J), be.sortIndex = be.expirationTime, y(ie, be);
         else
           return;
-        be = g(Z);
+        be = g(J);
       }
     }
     function $n(ee) {
       if (Le = !1, Nn(ee), !je)
-        if (g(re) !== null)
+        if (g(ie) !== null)
           je = !0, wt(Bt);
         else {
-          var be = g(Z);
+          var be = g(J);
           be !== null && Rn($n, be.startTime - ee);
         }
     }
@@ -1994,19 +1994,19 @@ var d = sE.exports, fE = { exports: {} }, ea = {}, dE = { exports: {} }, pE = {}
     }
     function pa(ee, be) {
       var ze = be;
-      for (Nn(ze), ve = g(re); ve !== null && !(ve.expirationTime > ze && (!ee || tr())); ) {
+      for (Nn(ze), ve = g(ie); ve !== null && !(ve.expirationTime > ze && (!ee || tr())); ) {
         var et = ve.callback;
         if (typeof et == "function") {
           ve.callback = null, oe = ve.priorityLevel;
           var ct = ve.expirationTime <= ze, gt = et(ct);
-          ze = s.unstable_now(), typeof gt == "function" ? ve.callback = gt : ve === g(re) && C(re), Nn(ze);
+          ze = s.unstable_now(), typeof gt == "function" ? ve.callback = gt : ve === g(ie) && C(ie), Nn(ze);
         } else
-          C(re);
-        ve = g(re);
+          C(ie);
+        ve = g(ie);
       }
       if (ve !== null)
         return !0;
-      var yt = g(Z);
+      var yt = g(J);
       return yt !== null && Rn($n, yt.startTime - ze), !1;
     }
     function En(ee, be) {
@@ -2094,7 +2094,7 @@ var d = sE.exports, fE = { exports: {} }, ea = {}, dE = { exports: {} }, pE = {}
         expirationTime: dn,
         sortIndex: -1
       };
-      return ct > et ? (Nt.sortIndex = ct, y(Z, Nt), g(re) === null && Nt === g(Z) && (Le ? kn() : Le = !0, Rn($n, ct - et))) : (Nt.sortIndex = dn, y(re, Nt), !je && !Te && (je = !0, wt(Bt))), Nt;
+      return ct > et ? (Nt.sortIndex = ct, y(J, Nt), g(ie) === null && Nt === g(J) && (Le ? kn() : Le = !0, Rn($n, ct - et))) : (Nt.sortIndex = dn, y(ie, Nt), !je && !Te && (je = !0, wt(Bt))), Nt;
     }
     function Yn() {
     }
@@ -2102,7 +2102,7 @@ var d = sE.exports, fE = { exports: {} }, ea = {}, dE = { exports: {} }, pE = {}
       !je && !Te && (je = !0, wt(Bt));
     }
     function Jt() {
-      return g(re);
+      return g(ie);
     }
     function Zt(ee) {
       ee.callback = null;
@@ -2206,7 +2206,7 @@ var Yw = dE.exports;
       i.unshift("Warning: " + t), Function.prototype.apply.call(console[e], console, i);
     }
   }
-  var D = 0, T = 1, _ = 2, x = 3, A = 4, V = 5, Q = 6, pe = 7, ae = 8, he = 9, I = 10, $ = 11, G = 12, B = 13, ge = 14, ce = 15, X = 16, re = 17, Z = 18, U = 19, ve = 21, oe = 22, Te = 23, je = 24, Le = 25, ye = !0, Ge = !1, Ht = !1, Nn = !1, $n = !1, Bt = !0, pa = !0, En = !0, er = !0, ka = /* @__PURE__ */ new Set(), Kt = {}, Yn = {};
+  var D = 0, T = 1, _ = 2, x = 3, A = 4, V = 5, Q = 6, pe = 7, ae = 8, he = 9, I = 10, $ = 11, G = 12, B = 13, ge = 14, ce = 15, X = 16, ie = 17, J = 18, U = 19, ve = 21, oe = 22, Te = 23, je = 24, Le = 25, ye = !0, Ge = !1, Ht = !1, Nn = !1, $n = !1, Bt = !0, pa = !0, En = !0, er = !0, ka = /* @__PURE__ */ new Set(), Kt = {}, Yn = {};
   function Xt(e, t) {
     Jt(e, t), Jt(e + "Capture", t);
   }
@@ -3051,7 +3051,7 @@ Error generating stack: ` + a.message + `
       case I:
         var r = n;
         return rr(r._context) + ".Provider";
-      case Z:
+      case J:
         return "DehydratedFragment";
       case $:
         return Nf(n, n.render, "ForwardRef");
@@ -3083,7 +3083,7 @@ Error generating stack: ` + a.message + `
         return "TracingMarker";
       case T:
       case D:
-      case re:
+      case ie:
       case _:
       case ge:
       case ce:
@@ -8702,8 +8702,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
         var se = gv(w, j.mode, W);
         return se.return = j, se;
       } else {
-        var ie = r(H, w);
-        return ie.return = j, ie;
+        var re = r(H, w);
+        return re.return = j, re;
       }
     }
     function u(j, H, w, W) {
@@ -8716,8 +8716,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
       // because hot reloading has different semantics than prod because
       // it doesn't resuspend. So we can't let the call below suspend.
       typeof se == "object" && se !== null && se.$$typeof === Se && uy(se) === H.type)) {
-        var ie = r(H, w.props);
-        return ie.ref = hu(j, H, w), ie.return = j, ie._debugSource = w._source, ie._debugOwner = w._owner, ie;
+        var re = r(H, w.props);
+        return re.ref = hu(j, H, w), re.return = j, re._debugSource = w._source, re._debugOwner = w._owner, re;
       }
       var De = hv(w, j.mode, W);
       return De.ref = hu(j, H, w), De.return = j, De;
@@ -8727,14 +8727,14 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
         var se = yv(w, j.mode, W);
         return se.return = j, se;
       } else {
-        var ie = r(H, w.children || []);
-        return ie.return = j, ie;
+        var re = r(H, w.children || []);
+        return re.return = j, re;
       }
     }
     function v(j, H, w, W, se) {
       if (H === null || H.tag !== pe) {
-        var ie = ri(w, j.mode, W, se);
-        return ie.return = j, ie;
+        var re = ri(w, j.mode, W, se);
+        return re.return = j, re;
       } else {
         var De = r(H, w);
         return De.return = j, De;
@@ -8752,8 +8752,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
             return se.ref = hu(j, null, H), se.return = j, se;
           }
           case In: {
-            var ie = yv(H, j.mode, w);
-            return ie.return = j, ie;
+            var re = yv(H, j.mode, w);
+            return re.return = j, re;
           }
           case Se: {
             var De = H._payload, Ae = H._init;
@@ -8779,8 +8779,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
           case In:
             return w.key === se ? p(j, H, w, W) : null;
           case Se: {
-            var ie = w._payload, De = w._init;
-            return E(j, H, De(ie), W);
+            var re = w._payload, De = w._init;
+            return E(j, H, De(re), W);
           }
         }
         if (He(w) || ba(w))
@@ -8791,8 +8791,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
     }
     function O(j, H, w, W, se) {
       if (typeof W == "string" && W !== "" || typeof W == "number") {
-        var ie = j.get(w) || null;
-        return o(H, ie, "" + W, se);
+        var re = j.get(w) || null;
+        return o(H, re, "" + W, se);
       }
       if (typeof W == "object" && W !== null) {
         switch (W.$$typeof) {
@@ -8838,16 +8838,16 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
             f("Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.", W);
             break;
           case Se:
-            var se = j._payload, ie = j._init;
-            M(ie(se), H, w);
+            var se = j._payload, re = j._init;
+            M(re(se), H, w);
             break;
         }
       }
       return H;
     }
     function F(j, H, w, W) {
-      for (var se = null, ie = 0; ie < w.length; ie++) {
-        var De = w[ie];
+      for (var se = null, re = 0; re < w.length; re++) {
+        var De = w[re];
         se = M(De, se, j);
       }
       for (var Ae = null, rt = null, We = H, Rt = 0, Qe = 0, xt = null; We !== null && Qe < w.length; Qe++) {
@@ -8896,9 +8896,9 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
       {
         typeof Symbol == "function" && // $FlowFixMe Flow doesn't know about toStringTag
         w[Symbol.toStringTag] === "Generator" && (bp || f("Using Generators as children is unsupported and will likely yield unexpected results because enumerating a generator mutates it. You may convert it to an array with `Array.from()` or the `[...spread]` operator before rendering. Keep in mind you might need to polyfill these features for older browsers."), bp = !0), w.entries === se && (yp || f("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), yp = !0);
-        var ie = se.call(w);
-        if (ie)
-          for (var De = null, Ae = ie.next(); !Ae.done; Ae = ie.next()) {
+        var re = se.call(w);
+        if (re)
+          for (var De = null, Ae = re.next(); !Ae.done; Ae = re.next()) {
             var rt = Ae.value;
             De = M(rt, De, j);
           }
@@ -8952,34 +8952,34 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
         return se.return = j, se;
       }
       n(j, H);
-      var ie = gv(w, j.mode, W);
-      return ie.return = j, ie;
+      var re = gv(w, j.mode, W);
+      return re.return = j, re;
     }
     function me(j, H, w, W) {
-      for (var se = w.key, ie = H; ie !== null; ) {
-        if (ie.key === se) {
+      for (var se = w.key, re = H; re !== null; ) {
+        if (re.key === se) {
           var De = w.type;
           if (De === za) {
-            if (ie.tag === pe) {
-              n(j, ie.sibling);
-              var Ae = r(ie, w.props.children);
+            if (re.tag === pe) {
+              n(j, re.sibling);
+              var Ae = r(re, w.props.children);
               return Ae.return = j, Ae._debugSource = w._source, Ae._debugOwner = w._owner, Ae;
             }
-          } else if (ie.elementType === De || // Keep this check inline so it only runs on the false path:
-          mN(ie, w) || // Lazy types should reconcile their resolved type.
+          } else if (re.elementType === De || // Keep this check inline so it only runs on the false path:
+          mN(re, w) || // Lazy types should reconcile their resolved type.
           // We need to do this after the Hot Reloading check above,
           // because hot reloading has different semantics than prod because
           // it doesn't resuspend. So we can't let the call below suspend.
-          typeof De == "object" && De !== null && De.$$typeof === Se && uy(De) === ie.type) {
-            n(j, ie.sibling);
-            var rt = r(ie, w.props);
-            return rt.ref = hu(j, ie, w), rt.return = j, rt._debugSource = w._source, rt._debugOwner = w._owner, rt;
+          typeof De == "object" && De !== null && De.$$typeof === Se && uy(De) === re.type) {
+            n(j, re.sibling);
+            var rt = r(re, w.props);
+            return rt.ref = hu(j, re, w), rt.return = j, rt._debugSource = w._source, rt._debugOwner = w._owner, rt;
           }
-          n(j, ie);
+          n(j, re);
           break;
         } else
-          t(j, ie);
-        ie = ie.sibling;
+          t(j, re);
+        re = re.sibling;
       }
       if (w.type === za) {
         var We = ri(w.props.children, j.mode, W, w.key);
@@ -8990,19 +8990,19 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
       }
     }
     function qe(j, H, w, W) {
-      for (var se = w.key, ie = H; ie !== null; ) {
-        if (ie.key === se)
-          if (ie.tag === A && ie.stateNode.containerInfo === w.containerInfo && ie.stateNode.implementation === w.implementation) {
-            n(j, ie.sibling);
-            var De = r(ie, w.children || []);
+      for (var se = w.key, re = H; re !== null; ) {
+        if (re.key === se)
+          if (re.tag === A && re.stateNode.containerInfo === w.containerInfo && re.stateNode.implementation === w.implementation) {
+            n(j, re.sibling);
+            var De = r(re, w.children || []);
             return De.return = j, De;
           } else {
-            n(j, ie);
+            n(j, re);
             break;
           }
         else
-          t(j, ie);
-        ie = ie.sibling;
+          t(j, re);
+        re = re.sibling;
       }
       var Ae = yv(w, j.mode, W);
       return Ae.return = j, Ae;
@@ -9016,8 +9016,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
           case In:
             return l(qe(j, H, w, W));
           case Se:
-            var ie = w._payload, De = w._init;
-            return Be(j, H, De(ie), W);
+            var re = w._payload, De = w._init;
+            return Be(j, H, De(re), W);
         }
         if (He(w))
           return F(j, H, w, W);
@@ -9101,7 +9101,7 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
         }
       } else if (a.tag === I)
         r = a.type === e.type ? null : a.child;
-      else if (a.tag === Z) {
+      else if (a.tag === J) {
         var O = a.return;
         if (O === null)
           throw new Error("We just came from a parent so we must have had a parent. This is a bug in React.");
@@ -9408,8 +9408,8 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
         if (me = me.next, me === null) {
           if (o = r.shared.pending, o === null)
             break;
-          var se = o, ie = se.next;
-          se.next = null, me = ie, r.lastBaseUpdate = se, r.shared.pending = null;
+          var se = o, re = se.next;
+          se.next = null, me = re, r.lastBaseUpdate = se, r.shared.pending = null;
         }
       } while (!0);
       Ee === null && (F = O), r.baseState = F, r.firstBaseUpdate = ne, r.lastBaseUpdate = Ee;
@@ -9562,7 +9562,7 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
       ua === null ? ua = [e] : ua.push(e);
     }
   }
-  function J() {
+  function Z() {
     {
       var e = P;
       ua !== null && (Xr++, ua[Xr] !== e && wD(e));
@@ -10276,25 +10276,25 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         return jt(e);
       },
       useCallback: function(e, t) {
-        return P = "useCallback", J(), em(e, t);
+        return P = "useCallback", Z(), em(e, t);
       },
       useContext: function(e) {
-        return P = "useContext", J(), jt(e);
+        return P = "useContext", Z(), jt(e);
       },
       useEffect: function(e, t) {
-        return P = "useEffect", J(), _c(e, t);
+        return P = "useEffect", Z(), _c(e, t);
       },
       useImperativeHandle: function(e, t, n) {
-        return P = "useImperativeHandle", J(), Zp(e, t, n);
+        return P = "useImperativeHandle", Z(), Zp(e, t, n);
       },
       useInsertionEffect: function(e, t) {
-        return P = "useInsertionEffect", J(), Xp(e, t);
+        return P = "useInsertionEffect", Z(), Xp(e, t);
       },
       useLayoutEffect: function(e, t) {
-        return P = "useLayoutEffect", J(), Jp(e, t);
+        return P = "useLayoutEffect", Z(), Jp(e, t);
       },
       useMemo: function(e, t) {
-        P = "useMemo", J();
+        P = "useMemo", Z();
         var n = ue.current;
         ue.current = Wa;
         try {
@@ -10304,7 +10304,7 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useReducer: function(e, t, n) {
-        P = "useReducer", J();
+        P = "useReducer", Z();
         var a = ue.current;
         ue.current = Wa;
         try {
@@ -10314,10 +10314,10 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useRef: function(e) {
-        return P = "useRef", J(), Kp(e);
+        return P = "useRef", Z(), Kp(e);
       },
       useState: function(e) {
-        P = "useState", J();
+        P = "useState", Z();
         var t = ue.current;
         ue.current = Wa;
         try {
@@ -10327,22 +10327,22 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useDebugValue: function(e, t) {
-        return P = "useDebugValue", J(), void 0;
+        return P = "useDebugValue", Z(), void 0;
       },
       useDeferredValue: function(e) {
-        return P = "useDeferredValue", J(), nm(e);
+        return P = "useDeferredValue", Z(), nm(e);
       },
       useTransition: function() {
-        return P = "useTransition", J(), am();
+        return P = "useTransition", Z(), am();
       },
       useMutableSource: function(e, t, n) {
-        return P = "useMutableSource", J(), void 0;
+        return P = "useMutableSource", Z(), void 0;
       },
       useSyncExternalStore: function(e, t, n) {
-        return P = "useSyncExternalStore", J(), Gp(e, t, n);
+        return P = "useSyncExternalStore", Z(), Gp(e, t, n);
       },
       useId: function() {
-        return P = "useId", J(), rm();
+        return P = "useId", Z(), rm();
       },
       unstable_isNewReconciler: Ge
     }, Iy = {
@@ -10350,25 +10350,25 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         return jt(e);
       },
       useCallback: function(e, t) {
-        return P = "useCallback", J(), Vc(e, t);
+        return P = "useCallback", Z(), Vc(e, t);
       },
       useContext: function(e) {
-        return P = "useContext", J(), jt(e);
+        return P = "useContext", Z(), jt(e);
       },
       useEffect: function(e, t) {
-        return P = "useEffect", J(), Cu(e, t);
+        return P = "useEffect", Z(), Cu(e, t);
       },
       useImperativeHandle: function(e, t, n) {
-        return P = "useImperativeHandle", J(), Mc(e, t, n);
+        return P = "useImperativeHandle", Z(), Mc(e, t, n);
       },
       useInsertionEffect: function(e, t) {
-        return P = "useInsertionEffect", J(), Oc(e, t);
+        return P = "useInsertionEffect", Z(), Oc(e, t);
       },
       useLayoutEffect: function(e, t) {
-        return P = "useLayoutEffect", J(), Lc(e, t);
+        return P = "useLayoutEffect", Z(), Lc(e, t);
       },
       useMemo: function(e, t) {
-        P = "useMemo", J();
+        P = "useMemo", Z();
         var n = ue.current;
         ue.current = Ta;
         try {
@@ -10378,7 +10378,7 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useReducer: function(e, t, n) {
-        P = "useReducer", J();
+        P = "useReducer", Z();
         var a = ue.current;
         ue.current = Ta;
         try {
@@ -10388,10 +10388,10 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useRef: function(e) {
-        return P = "useRef", J(), jc();
+        return P = "useRef", Z(), jc();
       },
       useState: function(e) {
-        P = "useState", J();
+        P = "useState", Z();
         var t = ue.current;
         ue.current = Ta;
         try {
@@ -10401,22 +10401,22 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useDebugValue: function(e, t) {
-        return P = "useDebugValue", J(), Ac();
+        return P = "useDebugValue", Z(), Ac();
       },
       useDeferredValue: function(e) {
-        return P = "useDeferredValue", J(), My(e);
+        return P = "useDeferredValue", Z(), My(e);
       },
       useTransition: function() {
-        return P = "useTransition", J(), ky();
+        return P = "useTransition", Z(), ky();
       },
       useMutableSource: function(e, t, n) {
-        return P = "useMutableSource", J(), void 0;
+        return P = "useMutableSource", Z(), void 0;
       },
       useSyncExternalStore: function(e, t, n) {
-        return P = "useSyncExternalStore", J(), Dc(e, t);
+        return P = "useSyncExternalStore", Z(), Dc(e, t);
       },
       useId: function() {
-        return P = "useId", J(), Uc();
+        return P = "useId", Z(), Uc();
       },
       unstable_isNewReconciler: Ge
     }, qy = {
@@ -10424,25 +10424,25 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         return jt(e);
       },
       useCallback: function(e, t) {
-        return P = "useCallback", J(), Vc(e, t);
+        return P = "useCallback", Z(), Vc(e, t);
       },
       useContext: function(e) {
-        return P = "useContext", J(), jt(e);
+        return P = "useContext", Z(), jt(e);
       },
       useEffect: function(e, t) {
-        return P = "useEffect", J(), Cu(e, t);
+        return P = "useEffect", Z(), Cu(e, t);
       },
       useImperativeHandle: function(e, t, n) {
-        return P = "useImperativeHandle", J(), Mc(e, t, n);
+        return P = "useImperativeHandle", Z(), Mc(e, t, n);
       },
       useInsertionEffect: function(e, t) {
-        return P = "useInsertionEffect", J(), Oc(e, t);
+        return P = "useInsertionEffect", Z(), Oc(e, t);
       },
       useLayoutEffect: function(e, t) {
-        return P = "useLayoutEffect", J(), Lc(e, t);
+        return P = "useLayoutEffect", Z(), Lc(e, t);
       },
       useMemo: function(e, t) {
-        P = "useMemo", J();
+        P = "useMemo", Z();
         var n = ue.current;
         ue.current = Fc;
         try {
@@ -10452,7 +10452,7 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useReducer: function(e, t, n) {
-        P = "useReducer", J();
+        P = "useReducer", Z();
         var a = ue.current;
         ue.current = Fc;
         try {
@@ -10462,10 +10462,10 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useRef: function(e) {
-        return P = "useRef", J(), jc();
+        return P = "useRef", Z(), jc();
       },
       useState: function(e) {
-        P = "useState", J();
+        P = "useState", Z();
         var t = ue.current;
         ue.current = Fc;
         try {
@@ -10475,22 +10475,22 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useDebugValue: function(e, t) {
-        return P = "useDebugValue", J(), Ac();
+        return P = "useDebugValue", Z(), Ac();
       },
       useDeferredValue: function(e) {
-        return P = "useDeferredValue", J(), Ay(e);
+        return P = "useDeferredValue", Z(), Ay(e);
       },
       useTransition: function() {
-        return P = "useTransition", J(), Uy();
+        return P = "useTransition", Z(), Uy();
       },
       useMutableSource: function(e, t, n) {
-        return P = "useMutableSource", J(), void 0;
+        return P = "useMutableSource", Z(), void 0;
       },
       useSyncExternalStore: function(e, t, n) {
-        return P = "useSyncExternalStore", J(), Dc(e, t);
+        return P = "useSyncExternalStore", Z(), Dc(e, t);
       },
       useId: function() {
-        return P = "useId", J(), Uc();
+        return P = "useId", Z(), Uc();
       },
       unstable_isNewReconciler: Ge
     }, Wa = {
@@ -10572,25 +10572,25 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         return im(), jt(e);
       },
       useCallback: function(e, t) {
-        return P = "useCallback", Oe(), J(), Vc(e, t);
+        return P = "useCallback", Oe(), Z(), Vc(e, t);
       },
       useContext: function(e) {
-        return P = "useContext", Oe(), J(), jt(e);
+        return P = "useContext", Oe(), Z(), jt(e);
       },
       useEffect: function(e, t) {
-        return P = "useEffect", Oe(), J(), Cu(e, t);
+        return P = "useEffect", Oe(), Z(), Cu(e, t);
       },
       useImperativeHandle: function(e, t, n) {
-        return P = "useImperativeHandle", Oe(), J(), Mc(e, t, n);
+        return P = "useImperativeHandle", Oe(), Z(), Mc(e, t, n);
       },
       useInsertionEffect: function(e, t) {
-        return P = "useInsertionEffect", Oe(), J(), Oc(e, t);
+        return P = "useInsertionEffect", Oe(), Z(), Oc(e, t);
       },
       useLayoutEffect: function(e, t) {
-        return P = "useLayoutEffect", Oe(), J(), Lc(e, t);
+        return P = "useLayoutEffect", Oe(), Z(), Lc(e, t);
       },
       useMemo: function(e, t) {
-        P = "useMemo", Oe(), J();
+        P = "useMemo", Oe(), Z();
         var n = ue.current;
         ue.current = Ta;
         try {
@@ -10600,7 +10600,7 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useReducer: function(e, t, n) {
-        P = "useReducer", Oe(), J();
+        P = "useReducer", Oe(), Z();
         var a = ue.current;
         ue.current = Ta;
         try {
@@ -10610,10 +10610,10 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useRef: function(e) {
-        return P = "useRef", Oe(), J(), jc();
+        return P = "useRef", Oe(), Z(), jc();
       },
       useState: function(e) {
-        P = "useState", Oe(), J();
+        P = "useState", Oe(), Z();
         var t = ue.current;
         ue.current = Ta;
         try {
@@ -10623,22 +10623,22 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useDebugValue: function(e, t) {
-        return P = "useDebugValue", Oe(), J(), Ac();
+        return P = "useDebugValue", Oe(), Z(), Ac();
       },
       useDeferredValue: function(e) {
-        return P = "useDeferredValue", Oe(), J(), My(e);
+        return P = "useDeferredValue", Oe(), Z(), My(e);
       },
       useTransition: function() {
-        return P = "useTransition", Oe(), J(), ky();
+        return P = "useTransition", Oe(), Z(), ky();
       },
       useMutableSource: function(e, t, n) {
-        return P = "useMutableSource", Oe(), J(), void 0;
+        return P = "useMutableSource", Oe(), Z(), void 0;
       },
       useSyncExternalStore: function(e, t, n) {
-        return P = "useSyncExternalStore", Oe(), J(), Dc(e, t);
+        return P = "useSyncExternalStore", Oe(), Z(), Dc(e, t);
       },
       useId: function() {
-        return P = "useId", Oe(), J(), Uc();
+        return P = "useId", Oe(), Z(), Uc();
       },
       unstable_isNewReconciler: Ge
     }, Fc = {
@@ -10646,25 +10646,25 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         return im(), jt(e);
       },
       useCallback: function(e, t) {
-        return P = "useCallback", Oe(), J(), Vc(e, t);
+        return P = "useCallback", Oe(), Z(), Vc(e, t);
       },
       useContext: function(e) {
-        return P = "useContext", Oe(), J(), jt(e);
+        return P = "useContext", Oe(), Z(), jt(e);
       },
       useEffect: function(e, t) {
-        return P = "useEffect", Oe(), J(), Cu(e, t);
+        return P = "useEffect", Oe(), Z(), Cu(e, t);
       },
       useImperativeHandle: function(e, t, n) {
-        return P = "useImperativeHandle", Oe(), J(), Mc(e, t, n);
+        return P = "useImperativeHandle", Oe(), Z(), Mc(e, t, n);
       },
       useInsertionEffect: function(e, t) {
-        return P = "useInsertionEffect", Oe(), J(), Oc(e, t);
+        return P = "useInsertionEffect", Oe(), Z(), Oc(e, t);
       },
       useLayoutEffect: function(e, t) {
-        return P = "useLayoutEffect", Oe(), J(), Lc(e, t);
+        return P = "useLayoutEffect", Oe(), Z(), Lc(e, t);
       },
       useMemo: function(e, t) {
-        P = "useMemo", Oe(), J();
+        P = "useMemo", Oe(), Z();
         var n = ue.current;
         ue.current = Ta;
         try {
@@ -10674,7 +10674,7 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useReducer: function(e, t, n) {
-        P = "useReducer", Oe(), J();
+        P = "useReducer", Oe(), Z();
         var a = ue.current;
         ue.current = Ta;
         try {
@@ -10684,10 +10684,10 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useRef: function(e) {
-        return P = "useRef", Oe(), J(), jc();
+        return P = "useRef", Oe(), Z(), jc();
       },
       useState: function(e) {
-        P = "useState", Oe(), J();
+        P = "useState", Oe(), Z();
         var t = ue.current;
         ue.current = Ta;
         try {
@@ -10697,22 +10697,22 @@ Incoming: %s`, P, "[" + t.join(", ") + "]", "[" + e.join(", ") + "]");
         }
       },
       useDebugValue: function(e, t) {
-        return P = "useDebugValue", Oe(), J(), Ac();
+        return P = "useDebugValue", Oe(), Z(), Ac();
       },
       useDeferredValue: function(e) {
-        return P = "useDeferredValue", Oe(), J(), Ay(e);
+        return P = "useDeferredValue", Oe(), Z(), Ay(e);
       },
       useTransition: function() {
-        return P = "useTransition", Oe(), J(), Uy();
+        return P = "useTransition", Oe(), Z(), Uy();
       },
       useMutableSource: function(e, t, n) {
-        return P = "useMutableSource", Oe(), J(), void 0;
+        return P = "useMutableSource", Oe(), Z(), void 0;
       },
       useSyncExternalStore: function(e, t, n) {
-        return P = "useSyncExternalStore", Oe(), J(), Dc(e, t);
+        return P = "useSyncExternalStore", Oe(), Z(), Dc(e, t);
       },
       useId: function() {
-        return P = "useId", Oe(), J(), Uc();
+        return P = "useId", Oe(), Z(), Uc();
       },
       unstable_isNewReconciler: Ge
     };
@@ -11182,7 +11182,7 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
         if (e.flags |= Je, n.flags |= Yf, n.flags &= -52805, n.tag === T) {
           var i = n.alternate;
           if (i === null)
-            n.tag = re;
+            n.tag = ie;
           else {
             var l = Er(st, _e);
             l.tag = hc, Wr(n, l, _e);
@@ -12243,7 +12243,7 @@ Check the render method of \`` + a + "`.");
       }
       case ce:
         return cb(e, t, t.type, t.pendingProps, n);
-      case re: {
+      case ie: {
         var H = t.type, w = t.pendingProps, W = t.elementType === H ? w : ja(H, w);
         return nT(e, t, H, W, n);
       }
@@ -12457,9 +12457,9 @@ Check the render method of \`` + a + "`.");
       case A:
         return Ul(t), Hm(e, t), e === null && H0(t.stateNode.containerInfo), rn(t), null;
       case I:
-        var ie = t.type._context;
-        return Dp(ie, t), rn(t), null;
-      case re: {
+        var re = t.type._context;
+        return Dp(re, t), rn(t), null;
+      case ie: {
         var De = t.type;
         return Ia(De) && nc(t), rn(t), null;
       }
@@ -12745,7 +12745,7 @@ Check the render method of \`` + a + "`.");
         case V:
         case Q:
         case A:
-        case re:
+        case ie:
           break;
         default:
           throw new Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
@@ -12928,7 +12928,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           break;
         }
         case U:
-        case re:
+        case ie:
         case ve:
         case oe:
         case Te:
@@ -13061,7 +13061,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           return null;
         t = t.return;
       }
-      for (t.sibling.return = t.return, t = t.sibling; t.tag !== V && t.tag !== Q && t.tag !== Z; ) {
+      for (t.sibling.return = t.return, t = t.sibling; t.tag !== V && t.tag !== Q && t.tag !== J; ) {
         if (t.flags & Tt || t.child === null || t.tag === A)
           continue e;
         t.child.return = t, t = t.child;
@@ -13160,7 +13160,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         }
         return;
       }
-      case Z: {
+      case J: {
         on !== null && (Oa ? o0(on, n.stateNode) : ep(on, n.stateNode));
         return;
       }
@@ -13397,8 +13397,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           var H = e.stateNode, w = e.memoizedState, W = w !== null, se = e;
           if (H.isHidden = W, W && !Be && (se.mode & Ye) !== xe) {
             fe = se;
-            for (var ie = se.child; ie !== null; )
-              fe = ie, IT(ie), ie = ie.sibling;
+            for (var re = se.child; re !== null; )
+              fe = re, IT(re), re = re.sibling;
           }
           kT(se, W);
         }
@@ -14950,7 +14950,7 @@ Check the render method of \`` + p + "`.");
     return e.elementType = "DELETED", e;
   }
   function ow(e) {
-    var t = Jn(Z, null, null, xe);
+    var t = Jn(J, null, null, xe);
     return t.stateNode = e, t;
   }
   function yv(e, t, n) {
@@ -16681,12 +16681,12 @@ const n_ = /* @__PURE__ */ R.forwardRef(function(m, h) {
     isActive: ge,
     isPending: ce,
     isTransitioning: he
-  }, re = ge ? y : void 0, Z;
-  typeof C == "function" ? Z = C(X) : Z = [C, ge ? "active" : null, ce ? "pending" : null, he ? "transitioning" : null].filter(Boolean).join(" ");
+  }, ie = ge ? y : void 0, J;
+  typeof C == "function" ? J = C(X) : J = [C, ge ? "active" : null, ce ? "pending" : null, he ? "transitioning" : null].filter(Boolean).join(" ");
   let U = typeof k == "function" ? k(X) : k;
   return /* @__PURE__ */ R.createElement(ii, Zl({}, x, {
-    "aria-current": re,
-    className: Z,
+    "aria-current": ie,
+    className: J,
     ref: h,
     style: U,
     to: D,
@@ -16873,11 +16873,11 @@ function d_() {
     $.preventDefault(), T(""), x(""), V(!0);
     try {
       if (!(s != null && s.apiKey)) throw new Error("Firebase not configured");
-      const G = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(s), B = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), { getAuth: ge, setPersistence: ce, browserLocalPersistence: X, browserSessionPersistence: re, signInWithEmailAndPassword: Z } = B, U = ge();
-      await ce(U, f ? X : re);
-      const oe = await (await Z(U, h.trim(), g)).user.getIdToken();
+      const G = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(s), B = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), { getAuth: ge, setPersistence: ce, browserLocalPersistence: X, browserSessionPersistence: ie, signInWithEmailAndPassword: J } = B, U = ge();
+      await ce(U, f ? X : ie);
+      const oe = await (await J(U, h.trim(), g)).user.getIdToken();
       if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: oe }) })).ok) throw new Error("Session creation failed");
-      x("Signed in successfully. Redirecting..."), setTimeout(() => window.location.href = "/dashboard", 600);
+      x("Signed in successfully."), setTimeout(() => window.location.href = "/dashboard", 600);
     } catch (G) {
       T(ae(G));
     } finally {
@@ -17048,7 +17048,7 @@ function d_() {
 function p_() {
   const [s, m] = R.useState(null), [h, y] = R.useState(""), [g, C] = R.useState(""), [f, k] = R.useState(""), [D, T] = R.useState(""), [_, x] = R.useState(""), [A, V] = R.useState(""), [Q, pe] = R.useState(""), [ae, he] = R.useState(!1), [I, $] = R.useState(!1), [G, B] = R.useState(!1), [ge, ce] = R.useState(!1);
   R.useEffect(() => {
-    const Z = typeof window < "u" ? window : void 0, U = Z && Z.__FIREBASE__ ? Z.__FIREBASE__ : null;
+    const J = typeof window < "u" ? window : void 0, U = J && J.__FIREBASE__ ? J.__FIREBASE__ : null;
     m({
       apiKey: U && U.apiKey || void 0 || "AIzaSyD-zBSQk_OIyIDzRG0wBNlQCloBqu25ijo",
       authDomain: U && U.authDomain || void 0 || "fresh-basket-a8933.firebaseapp.com",
@@ -17058,12 +17058,12 @@ function p_() {
       measurementId: U && U.measurementId || void 0 || "G-7M8H5YJF18"
     });
   }, []);
-  function X(Z) {
-    const U = (Z == null ? void 0 : Z.code) || "";
-    return U.includes("email-already-in-use") ? "An account with this email already exists." : U.includes("weak-password") ? "Password should be at least 6 characters." : U.includes("invalid-email") ? "Please enter a valid email address." : U.includes("network-request-failed") ? "Network error. Check your connection and try again." : (Z == null ? void 0 : Z.message) || "Something went wrong.";
+  function X(J) {
+    const U = (J == null ? void 0 : J.code) || "";
+    return U.includes("email-already-in-use") ? "An account with this email already exists." : U.includes("weak-password") ? "Password should be at least 6 characters." : U.includes("invalid-email") ? "Please enter a valid email address." : U.includes("network-request-failed") ? "Network error. Check your connection and try again." : (J == null ? void 0 : J.message) || "Something went wrong.";
   }
-  async function re(Z) {
-    Z.preventDefault(), V(""), pe(""), he(!0);
+  async function ie(J) {
+    J.preventDefault(), V(""), pe(""), he(!0);
     try {
       const U = String(h).trim(), ve = String(g).trim(), oe = ve.replace(/\D+/g, ""), Te = { fn: !U, cn: !ve };
       if (B(Te.fn), ce(Te.cn || oe.length < 7), Te.fn || Te.cn) {
@@ -17101,11 +17101,11 @@ function p_() {
       lineNumber: 69,
       columnNumber: 14
     }, this),
-    /* @__PURE__ */ d.jsxDEV("form", { className: "auth-form", onSubmit: re, children: [
+    /* @__PURE__ */ d.jsxDEV("form", { className: "auth-form", onSubmit: ie, children: [
       /* @__PURE__ */ d.jsxDEV("label", { className: "auth-label", children: [
         "Full name",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input" + (G && !String(h).trim() ? " input-error" : ""), value: h, onChange: (Z) => {
-          y(Z.target.value), G && B(!String(Z.target.value).trim());
+        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input" + (G && !String(h).trim() ? " input-error" : ""), value: h, onChange: (J) => {
+          y(J.target.value), G && B(!String(J.target.value).trim());
         }, onBlur: () => B(!String(h).trim()), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 72,
@@ -17118,14 +17118,14 @@ function p_() {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "auth-label", children: [
         "Contact number",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input" + (ge ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: g, onChange: (Z) => {
-          if (C(Z.target.value), ge) {
-            const U = String(Z.target.value).trim().replace(/\D+/g, "");
+        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input" + (ge ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: g, onChange: (J) => {
+          if (C(J.target.value), ge) {
+            const U = String(J.target.value).trim().replace(/\D+/g, "");
             ce(!(U.length >= 7));
           }
         }, onBlur: () => {
-          const Z = String(g).trim().replace(/\D+/g, "");
-          ce(!(Z.length >= 7));
+          const J = String(g).trim().replace(/\D+/g, "");
+          ce(!(J.length >= 7));
         }, placeholder: "e.g. +1 555 123 4567", required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 75,
@@ -17138,7 +17138,7 @@ function p_() {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "auth-label", children: [
         "Email",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: "email", value: f, onChange: (Z) => k(Z.target.value), required: !0 }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: "email", value: f, onChange: (J) => k(J.target.value), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 78,
           columnNumber: 11
@@ -17151,12 +17151,12 @@ function p_() {
       /* @__PURE__ */ d.jsxDEV("label", { className: "auth-label", children: [
         "Password",
         /* @__PURE__ */ d.jsxDEV("span", { className: "password-field", children: [
-          /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: I ? "text" : "password", value: D, onChange: (Z) => T(Z.target.value), minLength: 6, required: !0 }, void 0, !1, {
+          /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: I ? "text" : "password", value: D, onChange: (J) => T(J.target.value), minLength: 6, required: !0 }, void 0, !1, {
             fileName: "/app/code/client/pages/Register.jsx",
             lineNumber: 82,
             columnNumber: 13
           }, this),
-          /* @__PURE__ */ d.jsxDEV("button", { type: "button", className: "toggle-password", "aria-label": I ? "Hide password" : "Show password", onClick: () => $((Z) => !Z), children: "👁️" }, void 0, !1, {
+          /* @__PURE__ */ d.jsxDEV("button", { type: "button", className: "toggle-password", "aria-label": I ? "Hide password" : "Show password", onClick: () => $((J) => !J), children: "👁️" }, void 0, !1, {
             fileName: "/app/code/client/pages/Register.jsx",
             lineNumber: 83,
             columnNumber: 13
@@ -17173,7 +17173,7 @@ function p_() {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "auth-label", children: [
         "Confirm Password",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: "password", value: _, onChange: (Z) => x(Z.target.value), minLength: 6, required: !0 }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("input", { className: "auth-input", type: "password", value: _, onChange: (J) => x(J.target.value), minLength: 6, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 87,
           columnNumber: 11
@@ -17525,7 +17525,7 @@ function v_({ onClose: s, onCreated: m }) {
   const [h, y] = R.useState(""), [g, C] = R.useState(""), [f, k] = R.useState(""), [D, T] = R.useState(""), [_, x] = R.useState(!1), [A, V] = R.useState(""), [Q, pe] = R.useState(""), [ae, he] = R.useState(!1), [I, $] = R.useState(!1), [G, B] = R.useState(!1), [ge, ce] = R.useState(!1);
   async function X() {
     V(""), pe(""), ce(!0);
-    const re = String(h).trim(), Z = String(g), U = String(f).trim(), ve = String(D).trim(), oe = ve.replace(/\D+/g, ""), Te = { fn: !U, cn: !ve, pw: !Z };
+    const ie = String(h).trim(), J = String(g), U = String(f).trim(), ve = String(D).trim(), oe = ve.replace(/\D+/g, ""), Te = { fn: !U, cn: !ve, pw: !J };
     if (he(Te.fn), $(Te.cn || oe.length < 7), B(Te.pw), Te.fn || Te.cn || Te.pw) {
       V("Full name, mobile and password are required");
       return;
@@ -17534,11 +17534,11 @@ function v_({ onClose: s, onCreated: m }) {
       V("Please enter a valid mobile number"), $(!0);
       return;
     }
-    if (re && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(re)) {
+    if (ie && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ie)) {
       V("Please enter a valid email");
       return;
     }
-    if (Z.length < 6) {
+    if (J.length < 6) {
       B(!0), V("Password must be at least 6 characters");
       return;
     }
@@ -17548,12 +17548,12 @@ function v_({ onClose: s, onCreated: m }) {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: re, password: Z, fullName: U, contactNumber: ve })
+        body: JSON.stringify({ email: ie, password: J, fullName: U, contactNumber: ve })
       }), Le = await je.json().catch(() => null);
       if (!je.ok) {
         const ye = String(Le && (Le.error || Le.message) || ""), Ge = ye.toUpperCase();
         if (/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(ye) || /MISSING\s*EMAIL\/PASSWORD/i.test(ye))
-          V("Full name, mobile and password are required"), he(!U), $(!ve || oe.length < 7), B(!Z);
+          V("Full name, mobile and password are required"), he(!U), $(!ve || oe.length < 7), B(!J);
         else if (Ge.includes("EMAIL_EXISTS"))
           V("An account with this email already exists. Use a different email or leave email blank.");
         else if (Ge.includes("INVALID_EMAIL"))
@@ -17603,8 +17603,8 @@ function v_({ onClose: s, onCreated: m }) {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
         "Full name",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && !String(f).trim() ? " input-error" : ""), value: f, onChange: (re) => {
-          k(re.target.value), ge && he(!String(re.target.value).trim());
+        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && !String(f).trim() ? " input-error" : ""), value: f, onChange: (ie) => {
+          k(ie.target.value), ge && he(!String(ie.target.value).trim());
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
           lineNumber: 99,
@@ -17617,8 +17617,8 @@ function v_({ onClose: s, onCreated: m }) {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
         "Email",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input", type: "email", value: h, onChange: (re) => {
-          y(re.target.value);
+        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input", type: "email", value: h, onChange: (ie) => {
+          y(ie.target.value);
         } }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
           lineNumber: 102,
@@ -17631,8 +17631,8 @@ function v_({ onClose: s, onCreated: m }) {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
         "Password",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && !String(g) ? " input-error" : ""), type: "password", value: g, onChange: (re) => {
-          C(re.target.value), ge && B(!String(re.target.value));
+        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && !String(g) ? " input-error" : ""), type: "password", value: g, onChange: (ie) => {
+          C(ie.target.value), ge && B(!String(ie.target.value));
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
           lineNumber: 105,
@@ -17645,10 +17645,10 @@ function v_({ onClose: s, onCreated: m }) {
       }, this),
       /* @__PURE__ */ d.jsxDEV("label", { className: "field-label", children: [
         "Contact number",
-        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && String(D).trim().replace(/\D+/g, "").length < 7 ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: D, onChange: (re) => {
-          if (T(re.target.value), ge) {
-            const Z = String(re.target.value).trim().replace(/\D+/g, "");
-            $(!(Z.length >= 7));
+        /* @__PURE__ */ d.jsxDEV("input", { className: "field-input" + (ge && String(D).trim().replace(/\D+/g, "").length < 7 ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: D, onChange: (ie) => {
+          if (T(ie.target.value), ge) {
+            const J = String(ie.target.value).trim().replace(/\D+/g, "");
+            $(!(J.length >= 7));
           }
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
@@ -17701,7 +17701,7 @@ function h_() {
   R.useEffect(() => {
     let X = !0;
     return (async () => {
-      var re, Z, U, ve;
+      var ie, J, U, ve;
       x(!0), V("");
       try {
         const oe = new URLSearchParams();
@@ -17713,7 +17713,7 @@ function h_() {
         }
         if (!Te.ok) throw new Error("Failed to load riders");
         const je = await Te.json();
-        X && (m(Array.isArray(je.riders) ? je.riders : []), $({ total: ((re = je.meta) == null ? void 0 : re.total) || 0, page: ((Z = je.meta) == null ? void 0 : Z.page) || 1, limit: ((U = je.meta) == null ? void 0 : U.limit) || ae, pages: ((ve = je.meta) == null ? void 0 : ve.pages) || 1 }));
+        X && (m(Array.isArray(je.riders) ? je.riders : []), $({ total: ((ie = je.meta) == null ? void 0 : ie.total) || 0, page: ((J = je.meta) == null ? void 0 : J.page) || 1, limit: ((U = je.meta) == null ? void 0 : U.limit) || ae, pages: ((ve = je.meta) == null ? void 0 : ve.pages) || 1 }));
       } catch (oe) {
         X && V(oe.message || "Failed to load riders");
       } finally {
@@ -17726,17 +17726,17 @@ function h_() {
   const ge = R.useMemo(() => s.filter((X) => {
     if (h && !X.name.toLowerCase().includes(h.toLowerCase().trim()) || D !== "all" && X.status !== D || f !== "all" && String(X.id) !== String(f)) return !1;
     if (g !== "all") {
-      const re = parseInt(X.lastActiveDays, 10) || 9999, Z = parseInt(g, 10);
-      if (!(re <= Z)) return !1;
+      const ie = parseInt(X.lastActiveDays, 10) || 9999, J = parseInt(g, 10);
+      if (!(ie <= J)) return !1;
     }
     return !0;
   }), [s, h, D, f, g]), ce = R.useMemo(() => {
-    const X = /* @__PURE__ */ new Date(), re = [], Z = [];
+    const X = /* @__PURE__ */ new Date(), ie = [], J = [];
     for (let U = 2; U >= 0; U--) {
       const ve = new Date(X.getFullYear(), X.getMonth() - U, 1), oe = `${ve.getFullYear()}-${String(ve.getMonth() + 1).padStart(2, "0")}`, Te = ve.toLocaleString(void 0, { month: "short", year: "numeric" });
-      re.push(oe), Z.push(Te);
+      ie.push(oe), J.push(Te);
     }
-    return { keys: re, labels: Z };
+    return { keys: ie, labels: J };
   }, []);
   return /* @__PURE__ */ d.jsxDEV(oi, { children: /* @__PURE__ */ d.jsxDEV("section", { className: "rider-management", children: [
     /* @__PURE__ */ d.jsxDEV("header", { className: "rc-header riders-header", children: [
@@ -17891,7 +17891,7 @@ function h_() {
             lineNumber: 118,
             columnNumber: 17
           }, this),
-          ce.labels.map((X, re) => /* @__PURE__ */ d.jsxDEV("th", { className: "col-month", children: X }, ce.keys[re], !1, {
+          ce.labels.map((X, ie) => /* @__PURE__ */ d.jsxDEV("th", { className: "col-month", children: X }, ce.keys[ie], !1, {
             fileName: "/app/code/client/pages/Riders.jsx",
             lineNumber: 120,
             columnNumber: 19
@@ -17939,12 +17939,21 @@ function h_() {
               lineNumber: 134,
               columnNumber: 19
             }, this),
-            ce.keys.map((re) => /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-month", children: X.monthlyCounts && X.monthlyCounts[re] ? X.monthlyCounts[re] : 0 }, re, !1, {
-              fileName: "/app/code/client/pages/Riders.jsx",
-              lineNumber: 136,
-              columnNumber: 21
-            }, this)),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: X.assignedOrders ?? 0 }, void 0, !1, {
+            ce.keys.map((ie) => {
+              var J;
+              return /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-month", children: [
+                Number(((J = X.monthlyCounts) == null ? void 0 : J[ie]) || 0).toFixed(2),
+                " km"
+              ] }, ie, !0, {
+                fileName: "/app/code/client/pages/Riders.jsx",
+                lineNumber: 136,
+                columnNumber: 21
+              }, this);
+            }),
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: [
+              Number(X.assignedOrders || 0).toFixed(2),
+              " km"
+            ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Riders.jsx",
               lineNumber: 138,
               columnNumber: 19
@@ -18465,7 +18474,7 @@ const y_ = [
   { key: "new", label: "New" },
   { key: "assigned", label: "Assigned" },
   { key: "in-transit", label: "In transit" },
-  { key: "completed", label: "Completed" }
+  { key: "completed", label: "delivered" }
 ], oE = {
   completed: "delivered"
 };
@@ -18506,10 +18515,10 @@ function b_() {
     const U = oE[g] || g;
     return s.filter((ve) => lE(ve) === U);
   }, [s, g]);
-  function re() {
+  function ie() {
     ce(null), B(!1);
   }
-  function Z(U) {
+  function J(U) {
     try {
       const { orderId: ve } = U || {};
       if (!ve) return;
@@ -18741,7 +18750,7 @@ function b_() {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ d.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: [
-      G && ge && /* @__PURE__ */ d.jsxDEV(RE, { orderId: ge, onClose: re, onAssigned: Z }, void 0, !1, {
+      G && ge && /* @__PURE__ */ d.jsxDEV(RE, { orderId: ge, onClose: ie, onAssigned: J }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
         lineNumber: 179,
         columnNumber: 11
@@ -19065,18 +19074,18 @@ function E_() {
       var B, ge, ce, X;
       y(!0), C("");
       try {
-        const re = new URLSearchParams();
-        re.set("limit", String(D)), re.set("page", String(f));
-        const Z = await fetch(`/api/orders?${re.toString()}`, { credentials: "include" });
-        if (Z.status === 401) {
+        const ie = new URLSearchParams();
+        ie.set("limit", String(D)), ie.set("page", String(f));
+        const J = await fetch(`/api/orders?${ie.toString()}`, { credentials: "include" });
+        if (J.status === 401) {
           window.location.href = "/auth/login";
           return;
         }
-        if (!Z.ok) throw new Error("Failed to load orders");
-        const U = await Z.json();
+        if (!J.ok) throw new Error("Failed to load orders");
+        const U = await J.json();
         G && (m(Array.isArray(U.orders) ? U.orders : []), x({ total: ((B = U.meta) == null ? void 0 : B.total) || 0, page: ((ge = U.meta) == null ? void 0 : ge.page) || f, limit: ((ce = U.meta) == null ? void 0 : ce.limit) || D, pages: ((X = U.meta) == null ? void 0 : X.pages) || 1 }));
-      } catch (re) {
-        G && C(re.message || "Failed to load orders");
+      } catch (ie) {
+        G && C(ie.message || "Failed to load orders");
       } finally {
         G && y(!1);
       }
@@ -19099,9 +19108,9 @@ function E_() {
       const { orderId: B } = G || {};
       if (!B) return;
       const ge = String(B).replace(/^#+/, "");
-      m((ce) => ce.filter((X, re) => {
-        const Z = String(X.id || X.name || X.order_number || re).replace(/^#+/, "");
-        return String(Z) !== String(ge);
+      m((ce) => ce.filter((X, ie) => {
+        const J = String(X.id || X.name || X.order_number || ie).replace(/^#+/, "");
+        return String(J) !== String(ge);
       })), x((ce) => ({ ...ce || {}, total: Math.max(0, ((ce == null ? void 0 : ce.total) || 0) - 1) }));
       try {
         window && typeof window.showToast == "function" && window.showToast(`Order assigned: ${B}`, { type: "success" });
@@ -19227,11 +19236,11 @@ function E_() {
         }, this),
         !h && !g && (Array.isArray(s) ? s.filter((B) => A(B) === "new") : []).map((B, ge) => {
           const ce = A(B), X = B.full_name || (B.customer && B.customer.full_name ? B.customer.full_name : "");
-          let re = "-";
-          typeof B.shipping_address == "string" && String(B.shipping_address).trim() ? re = String(B.shipping_address).trim() : B.shipping_address && typeof B.shipping_address == "object" ? re = [B.shipping_address.address1 || "", B.shipping_address.city || "", B.shipping_address.province || "", B.shipping_address.country || ""].map((je) => String(je || "").trim()).filter(Boolean).join(", ") || "-" : typeof B.billing_address == "string" && String(B.billing_address).trim() ? re = String(B.billing_address).trim() : B.billing_address && typeof B.billing_address == "object" && (re = [B.billing_address.address1 || "", B.billing_address.city || "", B.billing_address.province || "", B.billing_address.country || ""].map((je) => String(je || "").trim()).filter(Boolean).join(", ") || "-");
-          const Z = B.name || B.order_number || B.id || ge, U = String(B.id || B.name || B.order_number || ge).replace(/^#+/, ""), ve = B.created_at ? new Date(B.created_at) : null, oe = ve ? ve.toLocaleDateString() : "-", Te = ve ? ve.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
+          let ie = "-";
+          typeof B.shipping_address == "string" && String(B.shipping_address).trim() ? ie = String(B.shipping_address).trim() : B.shipping_address && typeof B.shipping_address == "object" ? ie = [B.shipping_address.address1 || "", B.shipping_address.city || "", B.shipping_address.province || "", B.shipping_address.country || ""].map((je) => String(je || "").trim()).filter(Boolean).join(", ") || "-" : typeof B.billing_address == "string" && String(B.billing_address).trim() ? ie = String(B.billing_address).trim() : B.billing_address && typeof B.billing_address == "object" && (ie = [B.billing_address.address1 || "", B.billing_address.city || "", B.billing_address.province || "", B.billing_address.country || ""].map((je) => String(je || "").trim()).filter(Boolean).join(", ") || "-");
+          const J = B.name || B.order_number || B.id || ge, U = String(B.id || B.name || B.order_number || ge).replace(/^#+/, ""), ve = B.created_at ? new Date(B.created_at) : null, oe = ve ? ve.toLocaleDateString() : "-", Te = ve ? ve.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
           return /* @__PURE__ */ d.jsxDEV("tr", { "data-status": ce, children: [
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-order", children: Z }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-order", children: J }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 122,
               columnNumber: 23
@@ -19241,7 +19250,7 @@ function E_() {
               lineNumber: 123,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-address", children: re }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-address", children: ie }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 124,
               columnNumber: 23

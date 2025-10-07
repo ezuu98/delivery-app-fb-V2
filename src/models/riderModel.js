@@ -11,12 +11,14 @@ function mapRider(doc){
   const d = doc && doc.data ? doc.data() : (doc || {});
   const id = String((doc && doc.id) || d.uid || '');
   const name = d.displayName || d.name || d.email || 'Unknown';
-  const totalKm = Number(d.totalKm || 0);
+  const totalKm = Number(d.totalKm ?? d.total_kms ?? 0);
   const performance = Number(d.performance || 80);
   const commissionUsd = Number(d.commissionUsd || 0);
   const lastActiveDays = daysSince(d.updatedAt || d.createdAt || null);
   const status = lastActiveDays <= 30 ? 'Active' : 'Inactive';
-  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays };
+  const thisMonthKm = Number(d.this_month_kms ?? 0);
+  const orders = Array.isArray(d.orders) ? d.orders.slice() : [];
+  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays, thisMonthKm, orders };
 }
 
 async function list() {
