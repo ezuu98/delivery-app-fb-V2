@@ -79,18 +79,6 @@ function formatTimeOfDay(value){
     return '-';
   }
 }
-function formatExpectedArrival(startValue, expectedValue){
-  const startDate = toDateOrNull(startValue);
-  if (startDate instanceof Date && !Number.isNaN(startDate.getTime())) {
-    const durationMinutes = parseDurationMinutes(expectedValue);
-    if (Number.isFinite(durationMinutes)) {
-      const arrivalDate = new Date(startDate.getTime() + durationMinutes * 60000);
-      return formatTimeOfDay(arrivalDate);
-    }
-  }
-  return formatExpectedTime(expectedValue);
-}
-
 const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
