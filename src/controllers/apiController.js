@@ -121,6 +121,7 @@ function normalizeRiderIdFromOrder(order){
 
 async function computeRiderAssignmentCounts(){
   // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
+  // Totals represent kilometers traveled (sum of per-order distance)
   const counts = new Map();
   const seenOrders = new Set();
 
@@ -153,13 +154,16 @@ async function computeRiderAssignmentCounts(){
         if (orderId) seenOrders.add(orderId);
         if (!riderId) return;
         const entry = ensureEntry(riderId);
-        entry.total = (entry.total || 0) + 1;
+        const kmRaw = (data.totalDistance ?? data.total_distance ?? data.distanceKm ?? data.distance_km ?? 0);
+        const km = Number(kmRaw);
+        const addKm = Number.isFinite(km) ? km : 0;
+        entry.total = (entry.total || 0) + addKm;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
         const dd = toDateOrNull(created);
         if (dd){
           const k = monthKeyLocal(dd);
-          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
+          if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
         }
       });
     }
@@ -175,13 +179,16 @@ async function computeRiderAssignmentCounts(){
       const riderId = normalizeRiderIdFromOrder(order);
       if (!riderId) continue;
       const entry = ensureEntry(riderId);
-      entry.total = (entry.total || 0) + 1;
+      const kmRaw = (order?.totalDistance ?? order?.total_distance ?? order?.distanceKm ?? order?.distance_km ?? 0);
+      const km = Number(kmRaw);
+      const addKm = Number.isFinite(km) ? km : 0;
+      entry.total = (entry.total || 0) + addKm;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
       const dd = toDateOrNull(created);
       if (dd){
         const k = monthKeyLocal(dd);
-        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + 1);
+        if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
       }
     }
   }catch(e){
