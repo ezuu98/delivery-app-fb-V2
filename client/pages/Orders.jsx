@@ -268,15 +268,23 @@ export default function Orders(){
                 }
                 const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in_progress' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
+                const orderReference = orderId !== undefined && orderId !== null ? String(orderId).replace(/^#+/, '').trim() : '';
+                const displayOrderId = orderReference || '-';
+                const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
+                const startTime = formatTimeOfDay(deliveryStart);
+                const expectedArrival = formatExpectedArrival(deliveryStart, o.expected_delivery_time);
+                const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
+                const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
                   <tr key={orderId||i} data-status={statusKey}>
-                    <td className="rc-col-name">{orderId}</td>
-                    <td className="rc-col-km">{fullName || '-'}</td>
-                    <td className="rc-col-perf">{addr}</td>
-                    <td className="rc-col-rider">{o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned')}</td>
-                    <td className="rc-col-expected">{formatExpectedTime(o.expected_delivery_time)}</td>
-                    <td className="rc-col-actual">{o.actual_delivery_time ? new Date(o.actual_delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                    <td className="rc-col-status"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
+                    <td className="rc-col-name order-id-cell">{displayOrderId}</td>
+                    <td className="rc-col-km customer-cell">{fullName || '-'}</td>
+                    <td className="rc-col-perf address-cell">{addr}</td>
+                    <td className="rc-col-rider rider-cell">{riderLabel}</td>
+                    <td className="rc-col-start-time start-cell">{startTime}</td>
+                    <td className="rc-col-expected expected-cell">{expectedArrival}</td>
+                    <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
+                    <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
                 );
               })}
