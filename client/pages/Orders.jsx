@@ -242,7 +242,7 @@ export default function Orders(){
                     <td className="rc-col-perf address-cell">{addr}</td>
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
-                    <td className="rc-col-expected expected-cell">{expectedArrival}</td>
+                    <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDeliveryTime}</td>
                     <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
                   </tr>
