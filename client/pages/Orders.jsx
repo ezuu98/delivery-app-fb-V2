@@ -232,7 +232,7 @@ export default function Orders(){
                 const displayOrderId = orderReference || '-';
                 const deliveryStart = o.deliveryStartTime ?? o.delivery_start_time ?? o.start_time ?? null;
                 const startTime = formatTimeOfDay(deliveryStart);
-                const expectedArrival = formatExpectedArrival(deliveryStart, o.expected_delivery_time);
+                const expectedTime = formatExpectedTime(o.expected_delivery_time);
                 const actualDeliveryTime = formatTimeOfDay(o.actual_delivery_time ?? o.delivery_completion_time ?? null);
                 const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
                 return (
