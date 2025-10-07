@@ -67,11 +67,12 @@ export default function RiderProfile(){
           <table className="rc-table">
             <thead>
               <tr>
-                <th className="col-name">Order</th>
-                <th className="col-km">Date</th>
-                <th className="col-perf">Expected</th>
-                <th className="col-perf">Actual</th>
-                <th className="col-comm">Distance (KM)</th>
+                <th className="col-name order-heading">Order</th>
+                <th className="col-km date-heading">Date</th>
+                <th className="col-start-time start-heading">Start</th>
+                <th className="col-expected expected-heading">Expected</th>
+                <th className="col-actual actual-heading">Actual</th>
+                <th className="col-comm distance-heading">Distance (KM)</th>
               </tr>
             </thead>
             <tbody>
