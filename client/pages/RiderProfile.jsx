@@ -103,11 +103,12 @@ export default function RiderProfile(){
               })}
               {!data.riderOrders?.length && (history||[]).map((row,i)=> (
                 <tr key={`h-${i}`}>
-                  <td className="rc-col-name">{row.date}</td>
-                  <td className="rc-col-km">{row.deliveries}</td>
-                  <td className="rc-col-perf">{row.avgTime} mins</td>
-                  <td className="rc-col-commission">{row.distanceKm} km</td>
-                  <td className="rc-col-commission"></td>
+                  <td className="rc-col-name order-cell">{row.date}</td>
+                  <td className="rc-col-km date-cell">{row.deliveries}</td>
+                  <td className="rc-col-start-time start-cell">-</td>
+                  <td className="rc-col-expected expected-cell">{row.avgTime ? `${row.avgTime} min` : '-'}</td>
+                  <td className="rc-col-actual actual-time-cell">-</td>
+                  <td className="rc-col-commission distance-cell">{Number.isFinite(Number(row.distanceKm)) ? `${Number(row.distanceKm).toFixed(2)} km` : (row.distanceKm || '-')}</td>
                 </tr>
               ))}
             </tbody>
