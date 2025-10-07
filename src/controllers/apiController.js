@@ -495,6 +495,8 @@ module.exports = {
           const events = eventsByOrderId.get(key) || [];
           const etaEv = lastOf(events, 'eta');
           const deliveredEv = lastOf(events, 'delivered');
+          const ofdEv = lastOf(events, 'out_for_delivery');
+          const pickupEv = lastOf(events, 'pickup');
           const resolvedExpected = resolveExpectedDeliveryValue(base, etaEv);
           const expectedValue = (() => {
             if (resolvedExpected !== null) return resolvedExpected;
@@ -506,30 +508,116 @@ module.exports = {
             return null;
           })();
           const actualValue = (() => {
-            if (deliveredEv && deliveredEv.at) return deliveredEv.at;
-            if (base.actual_delivery_time) return base.actual_delivery_time;
-            if (base.actualDeliveryTime) return base.actualDeliveryTime;
-            if (base.deliveryEndTime) return base.deliveryEndTime;
-            if (base.orders && typeof base.orders === 'object') {
-              const nested = base.orders.actual_delivery_time ?? base.orders.actualDeliveryTime ?? base.orders.deliveredAt ?? null;
-              if (nested) return nested;
+            const candidates = [
+              deliveredEv?.at,
+              base.actual_delivery_time,
+              base.actualDeliveryTime,
+              base.deliveryEndTime,
+              base.delivery_end_time,
+              base.deliveredAt,
+              base.delivered_at,
+              base.orders?.actual_delivery_time,
+              base.orders?.actualDeliveryTime,
+              base.orders?.deliveryEndTime,
+              base.orders?.delivery_end_time,
+              base.orders?.deliveredAt,
+              base.orders?.delivered_at,
+            ];
+            for (const candidate of candidates) {
+              if (candidate === null || candidate === undefined) continue;
+              if (typeof candidate === 'string' && !candidate.trim()) continue;
+              return candidate;
             }
             return null;
           })();
+          const startValue = (() => {
+            const candidates = [
+              ofdEv?.at,
+              pickupEv?.at,
+              base.deliveryStartTime,
+              base.delivery_start_time,
+              base.startTime,
+              base.start_time,
+              base.startedAt,
+              base.started_at,
+              base.orders?.deliveryStartTime,
+              base.orders?.delivery_start_time,
+              base.orders?.startTime,
+              base.orders?.start_time,
+              assignment?.startAt,
+              assignment?.startedAt,
+              assignment?.pickupAt,
+              assignment?.pickup_at,
+              assignment?.assignedAt,
+            ];
+            for (const candidate of candidates) {
+              if (candidate === null || candidate === undefined) continue;
+              if (typeof candidate === 'string' && !candidate.trim()) continue;
+              return candidate;
+            }
+            return null;
+          })();
+          const rawDurationCandidates = [
+            base.deliveryDuration,
+            base.delivery_duration,
+            base.durationMins,
+            base.duration_minutes,
+            base.actualDuration,
+            base.actual_duration,
+            base.actualDurationMinutes,
+            base.orders?.deliveryDuration,
+            base.orders?.delivery_duration,
+            base.orders?.durationMins,
+            base.orders?.duration_minutes,
+            base.orders?.actualDuration,
+            base.orders?.actual_duration,
+            base.orders?.actualDurationMinutes,
+            assignment?.durationMinutes,
+            assignment?.duration_minutes,
+            deliveredEv?.durationMinutes,
+            deliveredEv?.duration_minutes,
+          ];
+          let resolvedDuration = null;
+          for (const candidate of rawDurationCandidates) {
+            const parsed = parseMinutes(candidate);
+            if (parsed !== null) {
+              resolvedDuration = parsed;
+              break;
+            }
+          }
+          if (resolvedDuration === null) {
+            const startDate = toDateOrNull(startValue);
+            const deliveredDate = toDateOrNull(actualValue);
+            if (startDate && deliveredDate) {
+              const diffMs = deliveredDate.getTime() - startDate.getTime();
+              if (Number.isFinite(diffMs) && diffMs >= 0) {
+                resolvedDuration = Math.round(diffMs / 60000);
+              }
+            }
+          }
+          const rawDurationValue = base.deliveryDuration ?? base.delivery_duration ?? base.durationMins ?? base.duration_minutes ?? base.actualDuration ?? base.actual_duration ?? base.actualDurationMinutes ?? null;
+          const normalizedDuration = resolvedDuration !== null ? resolvedDuration : parseMinutes(rawDurationValue);
           const distanceKm = resolveOrderDistanceKm(base, assignment);
+          const assignedAtValue = assignment?.assignedAt ?? base.assignedAt ?? base.assigned_at ?? null;
+          const totalDistanceRaw = base.totalDistance ?? base.total_distance ?? base.distance ?? base.distance_km ?? base.distanceKm ?? assignment?.distance ?? assignment?.distance_km ?? assignment?.distanceKm ?? null;
           riderOrders.push({
             orderId: String(base.orderId || base.id || base.name || base.order_number || key),
             name: base.name || base.order_number || String(key),
-            created_at: base.created_at || null,
+            created_at: base.created_at || base.createdAt || null,
             expected_delivery_time: expectedValue,
             actual_delivery_time: actualValue,
             current_status: base.current_status || base.order_status || null,
             shipping_address: base.shipping_address || null,
             distance_km: distanceKm ?? null,
-            orders: base.orders || undefined,
-            deliveryDuration: base.deliveryDuration !== undefined ? base.deliveryDuration : undefined,
+            totalDistance: totalDistanceRaw ?? undefined,
+            deliveryStartTime: startValue || null,
+            deliveryEndTime: actualValue || null,
+            deliveryDuration: normalizedDuration !== null ? normalizedDuration : (rawDurationValue ?? undefined),
+            durationMins: normalizedDuration !== null ? normalizedDuration : undefined,
             expectedMinutes: Number.isFinite(resolvedExpected?.minutes) ? Number(resolvedExpected.minutes) : (Number.isFinite(etaEv?.expectedMinutes) ? Number(etaEv.expectedMinutes) : undefined),
-            deliveredAt: deliveredEv?.at || undefined,
+            deliveredAt: actualValue || undefined,
+            assignedAt: assignedAtValue ?? undefined,
+            orders: base.orders || undefined,
           });
         }
       }catch(_){ }
