@@ -77,7 +77,6 @@ export default function SiteLayout({ children }){
           <Link to="/dashboard" onClick={(e)=>{ e.preventDefault(); navigate('/dashboard'); }}>Dashboard</Link>
           <Link to="/orders" onClick={(e)=>{ e.preventDefault(); navigate('/orders'); }}>Orders</Link>
           <Link to="/riders" onClick={(e)=>{ e.preventDefault(); navigate('/riders'); }}>Riders</Link>
-          <Link to="/reports" onClick={(e)=>{ e.preventDefault(); navigate('/reports'); }}>Reports</Link>
           <span className="site-nav-spacer"></span>
           <div className="nav-dropdown">
             <button id="notifBtn" className="icon-btn" aria-haspopup="true" aria-expanded="false" aria-controls="notifMenu" aria-label="Notifications" title="Notifications">
