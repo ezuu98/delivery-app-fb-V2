@@ -543,7 +543,20 @@ module.exports = {
         eventsByOrderId.set(key, Array.isArray(events) ? events : []);
       }
 
-      const riderOrderIds = Array.isArray(rider.orders) ? rider.orders.map(v=>String(v)) : [];
+      let riderOrderIds = [];
+      try{
+        const db = getFirestore();
+        if (db) {
+          try{
+            const snap = await db.collection('riders').doc(String(req.params.id)).get();
+            if (snap && snap.exists) {
+              const d = snap.data() || {};
+              if (Array.isArray(d.orders)) riderOrderIds = d.orders.map(v => String(v));
+            }
+          }catch(_){ }
+        }
+      }catch(_){ }
+      if (!riderOrderIds.length && Array.isArray(rider.orders)) riderOrderIds = rider.orders.map(v=>String(v));
       let riderOrders = [];
       try{
         const db = getFirestore();
