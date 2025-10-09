@@ -18,18 +18,23 @@ export default function Riders(){
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
 
   useEffect(()=>{
-    setFareSettings(readFareSettings());
+    function syncFareSettings(){
+      setFareSettings(readFareSettings());
+    }
+    syncFareSettings();
     function handleStorage(event){
       if(event.key === FARE_SETTINGS_STORAGE_KEY){
-        setFareSettings(readFareSettings());
+        syncFareSettings();
       }
     }
     if(typeof window !== 'undefined'){
       window.addEventListener('storage', handleStorage);
+      window.addEventListener('fare-settings-changed', syncFareSettings);
     }
     return ()=>{
       if(typeof window !== 'undefined'){
         window.removeEventListener('storage', handleStorage);
+        window.removeEventListener('fare-settings-changed', syncFareSettings);
       }
     };
   },[]);
