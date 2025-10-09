@@ -58,10 +58,6 @@ function countOrdersForMonth(orders, monthKey){
     const key = extractOrderMonthKey(order);
     if (key === monthKey) count += 1;
   }
-  if (count === 0 && Array.isArray(orders)){
-    const hasUnknown = orders.some(order => !extractOrderMonthKey(order));
-    if (hasUnknown) return orders.length;
-  }
   return count;
 }
 
