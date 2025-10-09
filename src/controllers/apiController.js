@@ -462,12 +462,26 @@ module.exports = {
     const list = await riderModel.list();
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
 
-    // Load all orders to resolve orders.onTime when riders.orders contains IDs
-    const allOrders = await orderModel.getAll().catch(()=>[]);
+    // Load all orders from Firestore to resolve orders.onTime when riders.orders contains IDs
     const orderMap = new Map();
-    for (const o of allOrders){
-      const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
-      for (const id of ids){ if (id !== undefined && id !== null) orderMap.set(String(id), o); }
+    try{
+      const db = getFirestore();
+      if (db){
+        const snap = await db.collection('orders').get();
+        snap.forEach(doc => {
+          const o = doc.data() || {};
+          const ids = [o?.orderId, o?.id, o?.name, o?.order_number, doc.id];
+          for (const id of ids){ if (id !== undefined && id !== null) orderMap.set(String(id), o); }
+        });
+      }
+    }catch(e){
+      log.warn('riders.orders.firestore.failed', { message: e?.message });
+      // fallback to cached orders
+      const allOrders = await orderModel.getAll().catch(()=>[]);
+      for (const o of allOrders){
+        const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
+        for (const id of ids){ if (id !== undefined && id !== null) orderMap.set(String(id), o); }
+      }
     }
 
     const withTotals = list.map(r => {
