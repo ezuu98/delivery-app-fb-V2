@@ -18098,8 +18098,11 @@ function Or(o) {
   if (typeof o == "string") {
     const p = o.trim();
     if (!p) return null;
-    const v = Date.parse(p);
-    if (Number.isFinite(v)) return new Date(v);
+    let v = p;
+    const g = v.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.(\d+)(.*)$/);
+    g && g[2].length > 3 && (v = `${g[1]}.${g[2].slice(0, 3)}${g[3]}`);
+    const y = Date.parse(v);
+    if (Number.isFinite(y)) return new Date(y);
   }
   if (Ua(o)) {
     if (o.at) return Or(o.at);
