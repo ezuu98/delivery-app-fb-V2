@@ -576,7 +576,13 @@ module.exports = {
         const db = getFirestore();
         for (const oid of riderOrderIds){
           const key = String(oid);
-          const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === key) || null;
+          let fromCache = orders.find(o => String(o.id||o.name||o.order_number) === key) || null;
+          if (!fromCache && db){
+            try{
+              const qsnap = await db.collection('orders').where('orderId','==', key).limit(1).get();
+              if (qsnap && !qsnap.empty){ qsnap.forEach(d => { if (!fromCache) fromCache = d.data() || null; }); }
+            }catch(_){ }
+          }
           let fromFs = null;
           if (!fromCache && db) {
             try{
