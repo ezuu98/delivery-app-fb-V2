@@ -3,6 +3,68 @@ import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
 import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
 
+function toDate(value){
+  if (!value) return null;
+  if (value instanceof Date){
+    return Number.isFinite(value.getTime()) ? value : null;
+  }
+  if (typeof value === 'string'){
+    const t = Date.parse(value);
+    return Number.isFinite(t) ? new Date(t) : null;
+  }
+  if (typeof value === 'number'){
+    const d = new Date(value);
+    return Number.isFinite(d.getTime()) ? d : null;
+  }
+  if (typeof value === 'object'){
+    if (typeof value.toDate === 'function'){
+      try{
+        const d = value.toDate();
+        if (d instanceof Date && Number.isFinite(d.getTime())) return d;
+      }catch(_){ }
+    }
+    if (typeof value.seconds === 'number'){
+      const ms = (value.seconds * 1000) + (typeof value.nanoseconds === 'number' ? Math.floor(value.nanoseconds / 1e6) : 0);
+      const d = new Date(ms);
+      if (Number.isFinite(d.getTime())) return d;
+    }
+  }
+  return null;
+}
+
+function monthKeyFromDate(date){
+  if (!(date instanceof Date) || !Number.isFinite(date.getTime())) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+const ORDER_DATE_FIELDS = [
+  'completedAt','completed_at','deliveredAt','delivered_at','createdAt','created_at','created','assignedAt','assigned_at','timestamp','orderedAt','ordered_at','updatedAt','updated_at'
+];
+
+function extractOrderMonthKey(order){
+  if (!order || typeof order !== 'object') return '';
+  for (const field of ORDER_DATE_FIELDS){
+    const value = order[field];
+    const date = toDate(value);
+    if (date) return monthKeyFromDate(date);
+  }
+  return '';
+}
+
+function countOrdersForMonth(orders, monthKey){
+  if (!Array.isArray(orders) || !monthKey) return 0;
+  let count = 0;
+  for (const order of orders){
+    const key = extractOrderMonthKey(order);
+    if (key === monthKey) count += 1;
+  }
+  if (count === 0 && Array.isArray(orders)){
+    const hasUnknown = orders.some(order => !extractOrderMonthKey(order));
+    if (hasUnknown) return orders.length;
+  }
+  return count;
+}
+
 export default function Riders(){
   const [riders, setRiders] = useState([]);
   const [q, setQ] = useState('');
