@@ -81,6 +81,7 @@ export default function RiderProfile(){
                 const createdDate = toDateOrNull(o.created_at);
                 const dateDisplay = (createdDate instanceof Date && !Number.isNaN(createdDate.getTime())) ? createdDate.toISOString().slice(0,10) : '-';
                 const startDisplay = formatTimeOfDay(o.deliveryStartTime);
+                console.log("deliveryStartTime") 
                 const expectedValue = resolveExpectedValue(o);
                 const expectedDisplay = formatExpectedTime(expectedValue);
                 const actualDuration = resolveActualDuration(o);
