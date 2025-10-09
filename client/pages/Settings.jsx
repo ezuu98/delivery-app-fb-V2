@@ -1,39 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
-
-const STORAGE_KEY = 'app.settings.fares';
+import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
 
 export default function Settings(){
-  const [baseFare, setBaseFare] = useState(0);
-  const [farePerKm, setFarePerKm] = useState(2);
+  const [baseFare, setBaseFare] = useState(DEFAULT_FARE_SETTINGS.baseFare);
+  const [farePerKm, setFarePerKm] = useState(DEFAULT_FARE_SETTINGS.farePerKm);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw){
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object'){
-          if (parsed.baseFare !== undefined && Number.isFinite(Number(parsed.baseFare))) setBaseFare(Number(parsed.baseFare));
-          if (parsed.farePerKm !== undefined && Number.isFinite(Number(parsed.farePerKm))) setFarePerKm(Number(parsed.farePerKm));
-        }
-      }
-    }catch(_){ /* ignore */ }
+    const settings = readFareSettings();
+    setBaseFare(settings.baseFare);
+    setFarePerKm(settings.farePerKm);
   }, []);
 
   function onSave(){
     setSaving(true);
     try{
       const payload = { baseFare: Number(baseFare) || 0, farePerKm: Number(farePerKm) || 0 };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      if (typeof window !== 'undefined' && window.localStorage){
+        window.localStorage.setItem(FARE_SETTINGS_STORAGE_KEY, JSON.stringify(payload));
+        try{ window.dispatchEvent(new Event('fare-settings-changed')); }catch(_){ }
+      }
       try{ if (typeof window !== 'undefined' && typeof window.showToast === 'function'){ window.showToast('Settings saved', { type: 'success' }); } }catch(_){ }
     }finally{ setSaving(false); }
   }
 
   function onReset(){
-    setBaseFare(0);
-    setFarePerKm(2);
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(_){ }
+    setBaseFare(DEFAULT_FARE_SETTINGS.baseFare);
+    setFarePerKm(DEFAULT_FARE_SETTINGS.farePerKm);
+    try{
+      if (typeof window !== 'undefined' && window.localStorage){
+        window.localStorage.removeItem(FARE_SETTINGS_STORAGE_KEY);
+        try{ window.dispatchEvent(new Event('fare-settings-changed')); }catch(_){ }
+      }
+    }catch(_){ }
   }
 
   return (
