@@ -19,6 +19,7 @@ const FILTER_OPTIONS = [
   { key: 'all', label: 'All' },
   { key: 'new', label: 'New' },
   { key: 'assigned', label: 'Assigned' },
+  { key: 'pending', label: 'Pending' },
   { key: 'in-progress', label: 'In-Progress' },
   { key: 'completed', label: 'delivered' },
 ];

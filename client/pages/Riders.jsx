@@ -119,15 +119,17 @@ export default function Riders(){
                 {lastThreeMonths.labels.map((l,idx)=> (
                   <th key={lastThreeMonths.keys[idx]} className="col-month">{l}</th>
                 ))}
+                <th className="col-earnings">{(() => { const k = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const parts = String(k).split('-'); const y = parseInt(parts[0],10); const m = parseInt(parts[1],10); const d = new Date(Number.isFinite(y)?y:new Date().getFullYear(), Number.isFinite(m)?(m-1):new Date().getMonth()-1, 1); const ml = d.toLocaleString(undefined, { month: 'short' }); return `Earnings (${ml}, Rs)`; })()}</th>
+                <th className="col-perf">Performance</th>
                 <th className="col-total">Total</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={7} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={5} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={7} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
@@ -135,11 +137,13 @@ export default function Riders(){
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
                   ))}
+                  {(() => { const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const km = Number(r.monthlyCounts?.[lastMonthKey] || 0); const rs = km * 2; return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${Math.round(rs)} Rs.` : '0 Rs.'}</td>); })()}
+                  {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ const flag = (it.onTime === true) || (it.on_time === true) || (it.metrics && it.metrics.onTime === true); if (flag) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={5} className="section-note">No riders found.</td></tr>
+                <tr><td colSpan={7} className="section-note">No riders found.</td></tr>
               )}
             </tbody>
           </table>

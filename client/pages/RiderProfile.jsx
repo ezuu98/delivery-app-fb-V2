@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout.jsx';
-import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, resolveStartTime, toDateOrNull } from '../utils/orderTime.js';
+import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, toDateOrNull } from '../utils/orderTime.js';
 
 export default function RiderProfile(){
   const { id } = useParams();
@@ -80,8 +80,7 @@ export default function RiderProfile(){
                 const orderLabel = o.name || o.orderId;
                 const createdDate = toDateOrNull(o.created_at);
                 const dateDisplay = (createdDate instanceof Date && !Number.isNaN(createdDate.getTime())) ? createdDate.toISOString().slice(0,10) : '-';
-                const startValue = resolveStartTime(o);
-                const startDisplay = formatTimeOfDay(startValue);
+                const startDisplay = formatTimeOfDay(o.deliveryStartTime);
                 const expectedValue = resolveExpectedValue(o);
                 const expectedDisplay = formatExpectedTime(expectedValue);
                 const actualDuration = resolveActualDuration(o);

@@ -7,6 +7,7 @@ import RiderProfile from './pages/RiderProfile.jsx';
 import Orders from './pages/Orders.jsx';
 import Reports from './pages/Reports.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Settings from './pages/Settings.jsx';
 
 export default function App(){
   return (
@@ -19,6 +20,7 @@ export default function App(){
         <Route path="/orders" element={<Orders />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
     </BrowserRouter>

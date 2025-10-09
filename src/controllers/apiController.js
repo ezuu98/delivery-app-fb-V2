@@ -530,33 +530,7 @@ module.exports = {
             }
             return null;
           })();
-          const startValue = (() => {
-            const candidates = [
-              ofdEv?.at,
-              pickupEv?.at,
-              base.deliveryStartTime,
-              base.delivery_start_time,
-              base.startTime,
-              base.start_time,
-              base.startedAt,
-              base.started_at,
-              base.orders?.deliveryStartTime,
-              base.orders?.delivery_start_time,
-              base.orders?.startTime,
-              base.orders?.start_time,
-              assignment?.startAt,
-              assignment?.startedAt,
-              assignment?.pickupAt,
-              assignment?.pickup_at,
-              assignment?.assignedAt,
-            ];
-            for (const candidate of candidates) {
-              if (candidate === null || candidate === undefined) continue;
-              if (typeof candidate === 'string' && !candidate.trim()) continue;
-              return candidate;
-            }
-            return null;
-          })();
+          const startValue = (base && base.orders ? base.orders.deliveryStartTime ?? null : null);
           const rawDurationCandidates = [
             base.deliveryDuration,
             base.delivery_duration,
