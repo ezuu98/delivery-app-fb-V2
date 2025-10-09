@@ -145,6 +145,11 @@ export default function Riders(){
     return Number.isFinite(rate) ? rate : DEFAULT_FARE_SETTINGS.farePerKm;
   },[fareSettings]);
 
+  const baseFare = useMemo(()=>{
+    const value = Number(fareSettings.baseFare);
+    return Number.isFinite(value) ? value : DEFAULT_FARE_SETTINGS.baseFare;
+  },[fareSettings]);
+
   // compute last three months keys and labels (YYYY-MM)
   const lastThreeMonths = useMemo(()=>{
     const now = new Date();
@@ -228,7 +233,14 @@ export default function Riders(){
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
                   ))}
-                  {(() => { const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const km = Number(r.monthlyCounts?.[lastMonthKey] || 0); const rs = km * farePerKm; return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>); })()}
+                  {(() => {
+                    const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
+                    const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
+                    const orders = Array.isArray(r.orders) ? r.orders : [];
+                    const rideCount = countOrdersForMonth(orders, lastMonthKey);
+                    const rs = (km * farePerKm) + (rideCount * baseFare);
+                    return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
+                  })()}
                   {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ const flag = (it.onTime === true) || (it.on_time === true) || (it.metrics && it.metrics.onTime === true); if (flag) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
