@@ -579,7 +579,41 @@ module.exports = {
           const fromCache = orders.find(o => String(o.id||o.name||o.order_number) === key) || null;
           let fromFs = null;
           if (!fromCache && db) {
-            try{ const snap = await db.collection('orders').doc(key).get(); if (snap && snap.exists) fromFs = snap.data() || null; }catch(_){ }
+            try{
+              // Try as document id first
+              try{
+                const snap = await db.collection('orders').doc(key).get();
+                if (snap && snap.exists) fromFs = snap.data() || null;
+              }catch(_){ }
+              // If not found by doc id, query common identifying fields
+              if (!fromFs){
+                try{
+                  const q = db.collection('orders')
+                    .where('orderId', '==', key)
+                    .limit(1);
+                  const qsnap = await q.get();
+                  if (qsnap && !qsnap.empty){ qsnap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
+                }catch(_){ }
+              }
+              if (!fromFs){
+                try{
+                  const q2 = db.collection('orders')
+                    .where('order_number', '==', key)
+                    .limit(1);
+                  const q2snap = await q2.get();
+                  if (q2snap && !q2snap.empty){ q2snap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
+                }catch(_){ }
+              }
+              if (!fromFs){
+                try{
+                  const q3 = db.collection('orders')
+                    .where('name', '==', key)
+                    .limit(1);
+                  const q3snap = await q3.get();
+                  if (q3snap && !q3snap.empty){ q3snap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
+                }catch(_){ }
+              }
+            }catch(_){ }
           }
           const base = fromCache || fromFs || { orderId: key, name: key };
           const assignment = aMap.get(key) || null;
