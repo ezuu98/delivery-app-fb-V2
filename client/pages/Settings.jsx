@@ -44,36 +44,36 @@ export default function Settings(){
           <p className="rc-subtitle">Manage fares for earnings calculations.</p>
         </header>
 
-        <div className="rc-toolbar">
-          <div className="rc-filters">
-            <label className="rc-select rc-chip">
-              <span>Base Fare</span>
+        <div className="fare-settings-card">
+          <div className="fare-fields">
+            <label className="fare-field">
+              <span className="fare-field-label">Base Fare</span>
               <input
                 type="number"
-                className="rc-search-input"
+                className="fare-field-input"
                 value={Number.isFinite(baseFare) ? String(baseFare) : ''}
                 min="0"
                 step="0.01"
-                onChange={e=> setBaseFare(e.target.value === '' ? 0 : Number(e.target.value))}
+                onChange={e => setBaseFare(e.target.value === '' ? 0 : Number(e.target.value))}
                 aria-label="Base Fare"
               />
             </label>
-            <label className="rc-select rc-chip">
-              <span>Fare per Km</span>
+            <label className="fare-field">
+              <span className="fare-field-label">Fare per Km</span>
               <input
                 type="number"
-                className="rc-search-input"
+                className="fare-field-input"
                 value={Number.isFinite(farePerKm) ? String(farePerKm) : ''}
                 min="0"
                 step="0.01"
-                onChange={e=> setFarePerKm(e.target.value === '' ? 0 : Number(e.target.value))}
+                onChange={e => setFarePerKm(e.target.value === '' ? 0 : Number(e.target.value))}
                 aria-label="Fare per Km"
               />
             </label>
           </div>
-          <div className="rc-filters">
-            <button className="rc-select rc-chip" onClick={onSave} disabled={saving}>Save</button>
-            <button className="rc-select rc-chip" onClick={onReset} disabled={saving}>Reset</button>
+          <div className="fare-actions">
+            <button className="btn-primary" onClick={onSave} disabled={saving}>Save</button>
+            <button className="btn-secondary" onClick={onReset} disabled={saving}>Reset</button>
           </div>
         </div>
 
