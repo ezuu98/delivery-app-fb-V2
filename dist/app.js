@@ -18071,12 +18071,12 @@ function F_() {
               }, this);
               let Ee = 0;
               for (const Z of X)
-                Z && typeof Z == "object" && (Z.onTime === !0 || Z.on_time === !0 || Z.metrics && Z.metrics.onTime === !0) && (Ee += 1);
+                Z && typeof Z == "object" && (Z.orders && Z.orders.onTime === !0 || Z.onTime === !0 || Z.on_time === !0 || Z.metrics && Z.metrics.onTime === !0) && (Ee += 1);
               const be = Math.round(Ee / me * 100);
               return /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-performance", children: `${be}%` }, void 0, !1, {
                 fileName: "/app/code/client/pages/Riders.jsx",
                 lineNumber: 240,
-                columnNumber: 421
+                columnNumber: 465
               }, this);
             })(),
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-total", children: [
