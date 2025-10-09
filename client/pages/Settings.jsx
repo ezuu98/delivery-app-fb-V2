@@ -77,9 +77,6 @@ export default function Settings(){
           </div>
         </div>
 
-        <div className="rc-table-wrapper">
-          <div className="section-note">Current: Base Fare {Number(baseFare).toFixed(2)} • Fare/Km {Number(farePerKm).toFixed(2)}</div>
-        </div>
       </section>
     </SiteLayout>
   );
