@@ -609,9 +609,28 @@ module.exports = {
           })();
           const startValue = (() => {
             if (!base) return null;
-            if (base.deliveryStartTime !== undefined && base.deliveryStartTime !== null) return base.deliveryStartTime;
-            if (base.orders && (base.orders.deliveryStartTime !== undefined && base.orders.deliveryStartTime !== null)) return base.orders.deliveryStartTime;
-            return null;
+            const candidates = [
+              base.deliveryStartTime,
+              base.delivery_start_time,
+              base.start_time,
+              base.startTime,
+              base.started_at,
+              base.startedAt,
+              base.orders?.deliveryStartTime,
+              base.orders?.delivery_start_time,
+              base.orders?.start_time,
+              base.orders?.startTime,
+              base.orders?.started_at,
+              base.orders?.startedAt,
+            ];
+            for (const c of candidates) {
+              if (c === undefined || c === null) continue;
+              if (typeof c === 'string' && !c.trim()) continue;
+              return c;
+            }
+            // fallback to events/assignment/created
+            const evtStart = ofdEv?.at || pickupEv?.at || assignment?.assignedAt || base.created_at || base.createdAt || null;
+            return evtStart || null;
           })();
           const rawDurationCandidates = [
             base.deliveryDuration,
