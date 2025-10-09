@@ -409,10 +409,10 @@ async function computeRiderAssignmentCounts(){
             entry.totalRides = (entry.totalRides || 0) + 1;
           }
         }
-        // Performance (strictly orders.onTime)
-        if (data && data.orders && Object.prototype.hasOwnProperty.call(data.orders, 'onTime')){
+        // Performance (strictly orders.onTime stored at top-level as onTime)
+        if (data && Object.prototype.hasOwnProperty.call(data, 'onTime')){
           entry.perfTotal = (entry.perfTotal || 0) + 1;
-          if (data.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
+          if (data.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
         }
       });
     }
@@ -443,10 +443,10 @@ async function computeRiderAssignmentCounts(){
           entry.totalRides = (entry.totalRides || 0) + 1;
         }
       }
-      // Performance (strictly orders.onTime)
-      if (order && order.orders && Object.prototype.hasOwnProperty.call(order.orders, 'onTime')){
+      // Performance (strictly orders.onTime stored at top-level as onTime)
+      if (order && Object.prototype.hasOwnProperty.call(order, 'onTime')){
         entry.perfTotal = (entry.perfTotal || 0) + 1;
-        if (order.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
+        if (order.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
       }
     }
   }catch(e){
@@ -502,12 +502,12 @@ module.exports = {
       let perfOnTime = 0;
       for (const item of riderOrdersArr){
         if (item && typeof item === 'object'){
-          if (item.orders && item.orders.onTime === true) { perfOnTime += 1; continue; }
+          if (Object.prototype.hasOwnProperty.call(item, 'onTime') && item.onTime === true) { perfOnTime += 1; continue; }
           const oid = String(item.orderId || item.id || item.name || item.order_number || '').trim();
-          if (oid){ const ord = orderMap.get(oid); if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1; }
+          if (oid){ const ord = orderMap.get(oid); if (ord && Object.prototype.hasOwnProperty.call(ord, 'onTime') && ord.onTime === true) perfOnTime += 1; }
         } else if (item != null) {
           const ord = orderMap.get(String(item));
-          if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1;
+          if (ord && Object.prototype.hasOwnProperty.call(ord, 'onTime') && ord.onTime === true) perfOnTime += 1;
         }
       }
       const performancePct = perfTotal ? Math.round((perfOnTime / perfTotal) * 100) : 0;
