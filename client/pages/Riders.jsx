@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
+import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
 
 export default function Riders(){
   const [riders, setRiders] = useState([]);
@@ -14,6 +15,24 @@ export default function Riders(){
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
+  const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
+
+  useEffect(()=>{
+    setFareSettings(readFareSettings());
+    function handleStorage(event){
+      if(event.key === FARE_SETTINGS_STORAGE_KEY){
+        setFareSettings(readFareSettings());
+      }
+    }
+    if(typeof window !== 'undefined'){
+      window.addEventListener('storage', handleStorage);
+    }
+    return ()=>{
+      if(typeof window !== 'undefined'){
+        window.removeEventListener('storage', handleStorage);
+      }
+    };
+  },[]);
 
   useEffect(()=>{
     let alive = true;
@@ -53,6 +72,11 @@ export default function Riders(){
       return true;
     });
   },[riders,q,statusFilter,riderFilter,dateFilter]);
+
+  const farePerKm = useMemo(()=>{
+    const rate = Number(fareSettings.farePerKm);
+    return Number.isFinite(rate) ? rate : DEFAULT_FARE_SETTINGS.farePerKm;
+  },[fareSettings]);
 
   // compute last three months keys and labels (YYYY-MM)
   const lastThreeMonths = useMemo(()=>{
@@ -137,7 +161,7 @@ export default function Riders(){
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
                   ))}
-                  {(() => { const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const km = Number(r.monthlyCounts?.[lastMonthKey] || 0); const rs = km * 2; return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${Math.round(rs)} Rs.` : '0 Rs.'}</td>); })()}
+                  {(() => { const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const km = Number(r.monthlyCounts?.[lastMonthKey] || 0); const rs = km * farePerKm; return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>); })()}
                   {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ const flag = (it.onTime === true) || (it.on_time === true) || (it.metrics && it.metrics.onTime === true); if (flag) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
