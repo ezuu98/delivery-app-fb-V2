@@ -530,26 +530,7 @@ module.exports = {
             }
             return null;
           })();
-          const startValue = (() => {
-            const candidates = [
-              ofdEv?.at,
-              pickupEv?.at,
-              base.deliveryStartTime,
-              base.delivery_start_time,
-              base.orders?.deliveryStartTime,
-              base.orders?.delivery_start_time,
-              base.created_at,
-              base.createdAt,
-              base.orders?.created_at,
-              base.orders?.createdAt,
-            ];
-            for (const candidate of candidates) {
-              if (candidate === null || candidate === undefined) continue;
-              if (typeof candidate === 'string' && !candidate.trim()) continue;
-              return candidate;
-            }
-            return null;
-          })();
+          const startValue = base.deliveryStartTime ?? null;
           const rawDurationCandidates = [
             base.deliveryDuration,
             base.delivery_duration,
