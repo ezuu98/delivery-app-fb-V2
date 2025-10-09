@@ -104,6 +104,7 @@ export default function SiteLayout({ children }){
             </button>
             <div id="profileMenu" className="dropdown-menu hidden" role="menu" aria-labelledby="profileBtn" aria-hidden="true">
               <div className="dropdown-header">Signed in</div>
+              <Link className="dropdown-item" to="/settings" onClick={(e)=>{ e.preventDefault(); navigate('/settings'); }}>Settings</Link>
               <Link className="dropdown-item" to="/riders" onClick={(e)=>{ e.preventDefault(); navigate('/riders'); }}>Riders</Link>
               <Link className="dropdown-item" to="/orders" onClick={(e)=>{ e.preventDefault(); navigate('/orders'); }}>Orders</Link>
               <form method="POST" action="/auth/logout"><button className="dropdown-item" type="submit">Logout</button></form>
