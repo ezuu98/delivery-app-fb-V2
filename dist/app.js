@@ -19746,10 +19746,10 @@ function F_() {
       lineNumber: 42,
       columnNumber: 9
     }, this),
-    /* @__PURE__ */ d.jsxDEV("div", { className: "rc-toolbar", children: [
-      /* @__PURE__ */ d.jsxDEV("div", { className: "rc-filters", children: [
-        /* @__PURE__ */ d.jsxDEV("label", { className: "rc-select rc-chip", children: [
-          /* @__PURE__ */ d.jsxDEV("span", { children: "Base Fare" }, void 0, !1, {
+    /* @__PURE__ */ d.jsxDEV("div", { className: "fare-settings-card", children: [
+      /* @__PURE__ */ d.jsxDEV("div", { className: "fare-fields", children: [
+        /* @__PURE__ */ d.jsxDEV("label", { className: "fare-field", children: [
+          /* @__PURE__ */ d.jsxDEV("span", { className: "fare-field-label", children: "Base Fare" }, void 0, !1, {
             fileName: "/app/code/client/pages/Settings.jsx",
             lineNumber: 50,
             columnNumber: 15
@@ -19758,7 +19758,7 @@ function F_() {
             "input",
             {
               type: "number",
-              className: "rc-search-input",
+              className: "fare-field-input",
               value: Number.isFinite(o) ? String(o) : "",
               min: "0",
               step: "0.01",
@@ -19779,8 +19779,8 @@ function F_() {
           lineNumber: 49,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("label", { className: "rc-select rc-chip", children: [
-          /* @__PURE__ */ d.jsxDEV("span", { children: "Fare per Km" }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("label", { className: "fare-field", children: [
+          /* @__PURE__ */ d.jsxDEV("span", { className: "fare-field-label", children: "Fare per Km" }, void 0, !1, {
             fileName: "/app/code/client/pages/Settings.jsx",
             lineNumber: 62,
             columnNumber: 15
@@ -19789,7 +19789,7 @@ function F_() {
             "input",
             {
               type: "number",
-              className: "rc-search-input",
+              className: "fare-field-input",
               value: Number.isFinite(v) ? String(v) : "",
               min: "0",
               step: "0.01",
@@ -19815,13 +19815,13 @@ function F_() {
         lineNumber: 48,
         columnNumber: 11
       }, this),
-      /* @__PURE__ */ d.jsxDEV("div", { className: "rc-filters", children: [
-        /* @__PURE__ */ d.jsxDEV("button", { className: "rc-select rc-chip", onClick: c, disabled: y, children: "Save" }, void 0, !1, {
+      /* @__PURE__ */ d.jsxDEV("div", { className: "fare-actions", children: [
+        /* @__PURE__ */ d.jsxDEV("button", { className: "btn-primary", onClick: c, disabled: y, children: "Save" }, void 0, !1, {
           fileName: "/app/code/client/pages/Settings.jsx",
           lineNumber: 75,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ d.jsxDEV("button", { className: "rc-select rc-chip", onClick: O, disabled: y, children: "Reset" }, void 0, !1, {
+        /* @__PURE__ */ d.jsxDEV("button", { className: "btn-secondary", onClick: O, disabled: y, children: "Reset" }, void 0, !1, {
           fileName: "/app/code/client/pages/Settings.jsx",
           lineNumber: 76,
           columnNumber: 13
