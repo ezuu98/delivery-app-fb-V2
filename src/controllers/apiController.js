@@ -474,13 +474,12 @@ module.exports = {
       if (entry.ridesMonths && typeof entry.ridesMonths.forEach === 'function'){
         entry.ridesMonths.forEach((v,k)=>{ ridesObj[k] = v; });
       }
-      // Performance from rider.orders array using orders.onTime only
-      const riderOrderIds = Array.isArray(r.orders) ? r.orders : [];
-      const perfTotal = riderOrderIds.length;
+      // Performance from riders.orders array using orders.onTime only
+      const riderOrdersArr = Array.isArray(r.orders) ? r.orders : [];
+      const perfTotal = riderOrdersArr.length;
       let perfOnTime = 0;
-      for (const oid of riderOrderIds){
-        const ord = orderMap.get(String(oid)) || null;
-        if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1;
+      for (const item of riderOrdersArr){
+        if (item && typeof item === 'object' && item.orders && item.orders.onTime === true) perfOnTime += 1;
       }
       const performancePct = perfTotal ? Math.round((perfOnTime / perfTotal) * 100) : 0;
 
