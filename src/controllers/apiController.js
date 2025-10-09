@@ -574,164 +574,46 @@ module.exports = {
       let riderOrders = [];
       try{
         const db = getFirestore();
+        if (!db) throw new Error('no-db');
+        // Strict behavior: for each id in riders.orders[], fetch the order doc by orderId and use only deliveryStartTime and distance fields from that doc
         for (const oid of riderOrderIds){
           const key = String(oid);
-          let fromCache = orders.find(o => String(o.id||o.name||o.order_number) === key) || null;
-          if (!fromCache && db){
-            try{
-              const qsnap = await db.collection('orders').where('orderId','==', key).limit(1).get();
-              if (qsnap && !qsnap.empty){ qsnap.forEach(d => { if (!fromCache) fromCache = d.data() || null; }); }
-            }catch(_){ }
-          }
-          let fromFs = null;
-          if (!fromCache && db) {
-            try{
-              // Try as document id first
-              try{
-                const snap = await db.collection('orders').doc(key).get();
-                if (snap && snap.exists) fromFs = snap.data() || null;
-              }catch(_){ }
-              // If not found by doc id, query common identifying fields
-              if (!fromFs){
-                try{
-                  const q = db.collection('orders')
-                    .where('orderId', '==', key)
-                    .limit(1);
-                  const qsnap = await q.get();
-                  if (qsnap && !qsnap.empty){ qsnap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
-                }catch(_){ }
-              }
-              if (!fromFs){
-                try{
-                  const q2 = db.collection('orders')
-                    .where('order_number', '==', key)
-                    .limit(1);
-                  const q2snap = await q2.get();
-                  if (q2snap && !q2snap.empty){ q2snap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
-                }catch(_){ }
-              }
-              if (!fromFs){
-                try{
-                  const q3 = db.collection('orders')
-                    .where('name', '==', key)
-                    .limit(1);
-                  const q3snap = await q3.get();
-                  if (q3snap && !q3snap.empty){ q3snap.forEach(d => { if (!fromFs) fromFs = d.data() || null; }); }
-                }catch(_){ }
-              }
-            }catch(_){ }
-          }
-          const base = fromCache || fromFs || { orderId: key, name: key };
-          const assignment = aMap.get(key) || null;
-          const events = eventsByOrderId.get(key) || [];
-          const etaEv = lastOf(events, 'eta');
-          const deliveredEv = lastOf(events, 'delivered');
-          const ofdEv = lastOf(events, 'out_for_delivery');
-          const pickupEv = lastOf(events, 'pickup');
-          const resolvedExpected = resolveExpectedDeliveryValue(base, etaEv);
-          const expectedValue = (() => {
-            if (resolvedExpected !== null) return resolvedExpected;
-            if (etaEv && typeof etaEv === 'object') {
-              if (etaEv.expectedAt) return etaEv.expectedAt;
-              if (etaEv.at) return etaEv.at;
-              if (Number.isFinite(etaEv.expectedMinutes)) return { minutes: Number(etaEv.expectedMinutes) };
-            }
-            return null;
-          })();
-          const actualValue = (() => {
-            const candidates = [
-              deliveredEv?.at,
-              base.actual_delivery_time,
-              base.actualDeliveryTime,
-              base.deliveryEndTime,
-              base.delivery_end_time,
-              base.deliveredAt,
-              base.delivered_at,
-              base.orders?.actual_delivery_time,
-              base.orders?.actualDeliveryTime,
-              base.orders?.deliveryEndTime,
-              base.orders?.delivery_end_time,
-              base.orders?.deliveredAt,
-              base.orders?.delivered_at,
-            ];
-            for (const candidate of candidates) {
-              if (candidate === null || candidate === undefined) continue;
-              if (typeof candidate === 'string' && !candidate.trim()) continue;
-              return candidate;
-            }
-            return null;
-          })();
-          const startValue = (() => {
-            if (!base) return null;
-            const v = base.deliveryStartTime;
-            if (v === undefined || v === null) return null;
-            if (typeof v === 'string' && !v.trim()) return null;
-            return v;
-          })();
-          const rawDurationCandidates = [
-            base.deliveryDuration,
-            base.delivery_duration,
-            base.durationMins,
-            base.duration_minutes,
-            base.actualDuration,
-            base.actual_duration,
-            base.actualDurationMinutes,
-            base.orders?.deliveryDuration,
-            base.orders?.delivery_duration,
-            base.orders?.durationMins,
-            base.orders?.duration_minutes,
-            base.orders?.actualDuration,
-            base.orders?.actual_duration,
-            base.orders?.actualDurationMinutes,
-            assignment?.durationMinutes,
-            assignment?.duration_minutes,
-            deliveredEv?.durationMinutes,
-            deliveredEv?.duration_minutes,
-          ];
-          let resolvedDuration = null;
-          for (const candidate of rawDurationCandidates) {
-            const parsed = parseMinutes(candidate);
-            if (parsed !== null) {
-              resolvedDuration = parsed;
-              break;
-            }
-          }
-          if (resolvedDuration === null) {
-            const startDate = toDateOrNull(startValue);
-            const deliveredDate = toDateOrNull(actualValue);
-            if (startDate && deliveredDate) {
-              const diffMs = deliveredDate.getTime() - startDate.getTime();
-              if (Number.isFinite(diffMs) && diffMs >= 0) {
-                resolvedDuration = Math.round(diffMs / 60000);
-              }
-            }
-          }
-          const rawDurationValue = base.deliveryDuration ?? base.delivery_duration ?? base.durationMins ?? base.duration_minutes ?? base.actualDuration ?? base.actual_duration ?? base.actualDurationMinutes ?? null;
-          const normalizedDuration = resolvedDuration !== null ? resolvedDuration : parseMinutes(rawDurationValue);
-          const distanceKm = resolveOrderDistanceKm(base, assignment);
-          const assignedAtValue = assignment?.assignedAt ?? base.assignedAt ?? base.assigned_at ?? null;
-          const totalDistanceRaw = base.totalDistance ?? base.total_distance ?? base.distance ?? base.distance_km ?? base.distanceKm ?? assignment?.distance ?? assignment?.distance_km ?? assignment?.distanceKm ?? null;
+          let base = null;
+          try{
+            const qsnap = await db.collection('orders').where('orderId','==', key).limit(1).get();
+            if (qsnap && !qsnap.empty) base = qsnap.docs[0].data() || null;
+          }catch(_){ }
+
+          const deliveryStart = base && base.deliveryStartTime !== undefined ? base.deliveryStartTime : null;
+          const totalDistanceRaw = base ? (base.totalDistance ?? base.total_distance ?? base.distance ?? base.distance_km ?? base.distanceKm ?? null) : null;
+          const distanceKm = (totalDistanceRaw !== null && totalDistanceRaw !== undefined && totalDistanceRaw !== '') ? parseKm(totalDistanceRaw) : null;
+
           riderOrders.push({
-            orderId: String(base.orderId || base.id || base.name || base.order_number || key),
-            name: base.name || base.order_number || String(key),
-            created_at: base.created_at || base.createdAt || null,
-            expected_delivery_time: expectedValue,
-            actual_delivery_time: actualValue,
-            current_status: base.current_status || base.order_status || null,
-            shipping_address: base.shipping_address || null,
-            distance_km: distanceKm ?? null,
+            orderId: key,
+            name: base ? (base.name || base.order_number || base.orderId || key) : key,
+            created_at: base ? (base.created_at || base.createdAt || null) : null,
+            expected_delivery_time: base ? (base.expected_delivery_time ?? null) : null,
+            actual_delivery_time: base ? (base.actual_delivery_time ?? null) : null,
+            current_status: base ? (base.current_status ?? null) : null,
+            shipping_address: base ? (base.shipping_address ?? null) : null,
+            distance_km: distanceKm,
             totalDistance: totalDistanceRaw ?? undefined,
-            deliveryStartTime: startValue || null,
-            deliveryEndTime: actualValue || null,
-            deliveryDuration: normalizedDuration !== null ? normalizedDuration : (rawDurationValue ?? undefined),
-            durationMins: normalizedDuration !== null ? normalizedDuration : undefined,
-            expectedMinutes: Number.isFinite(resolvedExpected?.minutes) ? Number(resolvedExpected.minutes) : (Number.isFinite(etaEv?.expectedMinutes) ? Number(etaEv.expectedMinutes) : undefined),
-            deliveredAt: actualValue || undefined,
-            assignedAt: assignedAtValue ?? undefined,
-            orders: base.orders || undefined,
+            deliveryStartTime: deliveryStart,
+            deliveryEndTime: base ? (base.deliveryEndTime ?? null) : null,
+            deliveryDuration: base ? (base.deliveryDuration ?? undefined) : undefined,
+            durationMins: base ? (base.deliveryDuration ?? undefined) : undefined,
+            expectedMinutes: undefined,
+            deliveredAt: base ? (base.actual_delivery_time ?? undefined) : undefined,
+            assignedAt: undefined,
+            orders: undefined,
           });
         }
-      }catch(_){ }
+      }catch(_){
+        for (const oid of riderOrderIds){
+          const key = String(oid);
+          riderOrders.push({ orderId: key, name: key, created_at: null, expected_delivery_time: null, actual_delivery_time: null, current_status: null, shipping_address: null, distance_km: null, totalDistance: undefined, deliveryStartTime: null, deliveryEndTime: null, deliveryDuration: undefined, durationMins: undefined, expectedMinutes: undefined, deliveredAt: undefined, assignedAt: undefined, orders: undefined });
+        }
+      }
 
       const riderIdStr = String(rider.id);
       const deliveries = [];
