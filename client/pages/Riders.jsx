@@ -237,7 +237,7 @@ export default function Riders(){
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
-                  {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ if (it.orders && it.orders.onTime === true) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
+                  <td className="rc-col-performance">{Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%'}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
