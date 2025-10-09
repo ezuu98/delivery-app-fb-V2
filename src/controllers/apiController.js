@@ -375,6 +375,9 @@ async function computeRiderAssignmentCounts(){
         monthsKm: kmByMonth,
         totalRides: 0,
         ridesMonths: ridesByMonth,
+        // Performance counters (strictly based on orders.onTime)
+        perfOnTime: 0,
+        perfTotal: 0,
       });
     }
     return counts.get(riderId);
@@ -406,6 +409,11 @@ async function computeRiderAssignmentCounts(){
             entry.totalRides = (entry.totalRides || 0) + 1;
           }
         }
+        // Performance (strictly orders.onTime)
+        if (data && data.orders && Object.prototype.hasOwnProperty.call(data.orders, 'onTime')){
+          entry.perfTotal = (entry.perfTotal || 0) + 1;
+          if (data.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
+        }
       });
     }
   }catch(e){
@@ -435,6 +443,11 @@ async function computeRiderAssignmentCounts(){
           entry.totalRides = (entry.totalRides || 0) + 1;
         }
       }
+      // Performance (strictly orders.onTime)
+      if (order && order.orders && Object.prototype.hasOwnProperty.call(order.orders, 'onTime')){
+        entry.perfTotal = (entry.perfTotal || 0) + 1;
+        if (order.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
+      }
     }
   }catch(e){
     log.warn('riders.count.orders.cache.failed', { message: e?.message });
@@ -450,7 +463,7 @@ module.exports = {
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
-      const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0 };
+      const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0, perfOnTime: 0, perfTotal: 0 };
       // convert months map to plain object { 'YYYY-MM': value }
       const monthsObj = {};
       if (entry.months && typeof entry.months.forEach === 'function'){
@@ -460,7 +473,8 @@ module.exports = {
       if (entry.ridesMonths && typeof entry.ridesMonths.forEach === 'function'){
         entry.ridesMonths.forEach((v,k)=>{ ridesObj[k] = v; });
       }
-      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj, monthlyRideCounts: ridesObj };
+      const performancePct = entry.perfTotal ? Math.round((entry.perfOnTime / entry.perfTotal) * 100) : 0;
+      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj, monthlyRideCounts: ridesObj, performancePct };
     });
     const filtered = withTotals.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;
