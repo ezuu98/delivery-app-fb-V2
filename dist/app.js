@@ -18599,78 +18599,80 @@ function H_() {
       }, this),
       /* @__PURE__ */ d.jsxDEV("tbody", { children: [
         (p.riderOrders || []).map((E, j) => {
-          const k = E.name || E.orderId, Q = Ar(E.created_at), de = Q instanceof Date && !Number.isNaN(Q.getTime()) ? Q.toISOString().slice(0, 10) : "-", ee = UE(E.assignedAt), he = zE(E), I = FE(he), Y = kE(E), G = HE(Y), P = Number(E.distance_km), me = Number.isFinite(P) ? `${P.toFixed(2)} km` : typeof E.distance_km == "string" && E.distance_km.trim() ? E.distance_km : "-";
+          const k = E.name || E.orderId, Q = Ar(E.created_at), de = Q instanceof Date && !Number.isNaN(Q.getTime()) ? Q.toISOString().slice(0, 10) : "-", ee = UE(E.deliveryStartTime);
+          console.log("deliveryStartTime");
+          const he = zE(E), I = FE(he), Y = kE(E), G = HE(Y), P = Number(E.distance_km), me = Number.isFinite(P) ? `${P.toFixed(2)} km` : typeof E.distance_km == "string" && E.distance_km.trim() ? E.distance_km : "-";
           return /* @__PURE__ */ d.jsxDEV("tr", { children: [
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name order-cell", children: k }, void 0, !1, {
-              fileName: "/app/code/client/pages/RiderProfile.jsx",
-              lineNumber: 94,
-              columnNumber: 21
-            }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-km date-cell", children: de }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 95,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-start-time start-cell", children: ee }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-km date-cell", children: de }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 96,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-expected expected-cell", children: I }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-start-time start-cell", children: ee }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 97,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: G }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-expected expected-cell", children: I }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 98,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission distance-cell", children: me }, void 0, !1, {
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: G }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 99,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission distance-cell", children: me }, void 0, !1, {
+              fileName: "/app/code/client/pages/RiderProfile.jsx",
+              lineNumber: 100,
               columnNumber: 21
             }, this)
           ] }, E.orderId || j, !0, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 93,
+            lineNumber: 94,
             columnNumber: 19
           }, this);
         }),
         !((A = p.riderOrders) != null && A.length) && (T || []).map((E, j) => /* @__PURE__ */ d.jsxDEV("tr", { children: [
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name order-cell", children: E.date }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 105,
+            lineNumber: 106,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-km date-cell", children: E.deliveries }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 106,
+            lineNumber: 107,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-start-time start-cell", children: "-" }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 107,
+            lineNumber: 108,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-expected expected-cell", children: E.avgTime ? `${E.avgTime} min` : "-" }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 108,
+            lineNumber: 109,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: "-" }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 109,
+            lineNumber: 110,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-commission distance-cell", children: Number.isFinite(Number(E.distanceKm)) ? `${Number(E.distanceKm).toFixed(2)} km` : E.distanceKm || "-" }, void 0, !1, {
             fileName: "/app/code/client/pages/RiderProfile.jsx",
-            lineNumber: 110,
+            lineNumber: 111,
             columnNumber: 19
           }, this)
         ] }, `h-${j}`, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
-          lineNumber: 104,
+          lineNumber: 105,
           columnNumber: 17
         }, this))
       ] }, void 0, !0, {
