@@ -462,16 +462,6 @@ module.exports = {
     const list = await riderModel.list();
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
 
-    // Build a map of all cached orders for quick lookup by various identifiers
-    const allOrders = await orderModel.getAll().catch(()=>[]);
-    const orderMap = new Map();
-    for (const o of allOrders){
-      const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
-      for (const id of ids){
-        if (id !== undefined && id !== null) orderMap.set(String(id), o);
-      }
-    }
-
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
       const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0 };
