@@ -233,7 +233,7 @@ export default function Riders(){
                     const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
                     const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
                     const orders = Array.isArray(r.orders) ? r.orders : [];
-                    const rideCount = countOrdersForMonth(orders, lastMonthKey);
+                    const rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
