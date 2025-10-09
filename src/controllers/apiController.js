@@ -594,7 +594,12 @@ module.exports = {
             }
             return null;
           })();
-          const startValue = (base && base.orders ? base.orders.deliveryStartTime ?? null : null);
+          const startValue = (() => {
+            if (!base) return null;
+            if (base.deliveryStartTime !== undefined && base.deliveryStartTime !== null) return base.deliveryStartTime;
+            if (base.orders && (base.orders.deliveryStartTime !== undefined && base.orders.deliveryStartTime !== null)) return base.orders.deliveryStartTime;
+            return null;
+          })();
           const rawDurationCandidates = [
             base.deliveryDuration,
             base.delivery_duration,
