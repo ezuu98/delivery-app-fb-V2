@@ -31,7 +31,12 @@ export function toDateOrNull(value) {
   if (typeof value === 'string') {
     const trimmed = value.trim();
     if (!trimmed) return null;
-    const parsed = Date.parse(trimmed);
+    let canonical = trimmed;
+    const match = canonical.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.(\d+)(.*)$/);
+    if (match && match[2].length > 3) {
+      canonical = `${match[1]}.${match[2].slice(0,3)}${match[3]}`;
+    }
+    const parsed = Date.parse(canonical);
     if (Number.isFinite(parsed)) return new Date(parsed);
   }
   if (isObject(value)) {
