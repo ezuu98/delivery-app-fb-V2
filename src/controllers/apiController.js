@@ -462,6 +462,14 @@ module.exports = {
     const list = await riderModel.list();
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
 
+    // Load all orders to resolve orders.onTime when riders.orders contains IDs
+    const allOrders = await orderModel.getAll().catch(()=>[]);
+    const orderMap = new Map();
+    for (const o of allOrders){
+      const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
+      for (const id of ids){ if (id !== undefined && id !== null) orderMap.set(String(id), o); }
+    }
+
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
       const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0 };
@@ -474,12 +482,19 @@ module.exports = {
       if (entry.ridesMonths && typeof entry.ridesMonths.forEach === 'function'){
         entry.ridesMonths.forEach((v,k)=>{ ridesObj[k] = v; });
       }
-      // Performance from riders.orders array using orders.onTime only
+      // Performance from riders.orders using orders.onTime
       const riderOrdersArr = Array.isArray(r.orders) ? r.orders : [];
       const perfTotal = riderOrdersArr.length;
       let perfOnTime = 0;
       for (const item of riderOrdersArr){
-        if (item && typeof item === 'object' && item.orders && item.orders.onTime === true) perfOnTime += 1;
+        if (item && typeof item === 'object'){
+          if (item.orders && item.orders.onTime === true) { perfOnTime += 1; continue; }
+          const oid = String(item.orderId || item.id || item.name || item.order_number || '').trim();
+          if (oid){ const ord = orderMap.get(oid); if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1; }
+        } else if (item != null) {
+          const ord = orderMap.get(String(item));
+          if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1;
+        }
       }
       const performancePct = perfTotal ? Math.round((perfOnTime / perfTotal) * 100) : 0;
 
