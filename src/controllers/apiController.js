@@ -345,8 +345,8 @@ function lastOf(list, type){
 }
 
 async function computeRiderAssignmentCounts(){
-  // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number> }>
-  // Totals represent kilometers traveled (sum of per-order distance)
+  // returns Map<riderId, { total: number, months: Map<'YYYY-MM', number>, ridesMonths: Map<'YYYY-MM', number>, totalRides: number }>
+  // Totals represent kilometers traveled (sum of per-order distance) and rides represent order counts per month
   const counts = new Map();
   const seenOrders = new Set();
 
@@ -361,9 +361,24 @@ async function computeRiderAssignmentCounts(){
 
   function ensureEntry(riderId){
     if (!counts.has(riderId)){
-      const m = new Map();
-      for(const k of monthKeys) m.set(k, 0);
-      counts.set(riderId, { total: 0, months: m });
+      const kmByMonth = new Map();
+      const ridesByMonth = new Map();
+      for(const k of monthKeys){
+        kmByMonth.set(k, 0);
+        ridesByMonth.set(k, 0);
+      }
+      // Keep backward-compatible fields (total, months) while adding explicit fields
+      counts.set(riderId, {
+        total: 0, // total kilometers
+        months: kmByMonth, // km per month (back-compat)
+        totalKm: 0,
+        monthsKm: kmByMonth,
+        totalRides: 0,
+        ridesMonths: ridesByMonth,
+        // Performance counters (strictly based on orders.onTime)
+        perfOnTime: 0,
+        perfTotal: 0,
+      });
     }
     return counts.get(riderId);
   }
@@ -382,12 +397,22 @@ async function computeRiderAssignmentCounts(){
         const kmRaw = (data.totalDistance ?? data.total_distance ?? data.distanceKm ?? data.distance_km ?? 0);
         const addKm = parseKm(kmRaw);
         entry.total = (entry.total || 0) + addKm;
+        entry.totalKm = (entry.totalKm || 0) + addKm;
         // determine month key from created_at or other date fields
         const created = data.created_at || data.createdAt || data.created || null;
         const dd = toDateOrNull(created);
         if (dd){
           const k = monthKeyLocal(dd);
           if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
+          if (entry.ridesMonths && entry.ridesMonths.has(k)){
+            entry.ridesMonths.set(k, (entry.ridesMonths.get(k) || 0) + 1);
+            entry.totalRides = (entry.totalRides || 0) + 1;
+          }
+        }
+        // Performance (strictly orders.onTime)
+        if (data && data.orders && Object.prototype.hasOwnProperty.call(data.orders, 'onTime')){
+          entry.perfTotal = (entry.perfTotal || 0) + 1;
+          if (data.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
         }
       });
     }
@@ -406,12 +431,22 @@ async function computeRiderAssignmentCounts(){
       const kmRaw = (order?.totalDistance ?? order?.total_distance ?? order?.distanceKm ?? order?.distance_km ?? 0);
       const addKm = parseKm(kmRaw);
       entry.total = (entry.total || 0) + addKm;
+      entry.totalKm = (entry.totalKm || 0) + addKm;
       if (orderId) seenOrders.add(orderId);
       const created = order?.created_at || order?.createdAt || order?.created || null;
       const dd = toDateOrNull(created);
       if (dd){
         const k = monthKeyLocal(dd);
         if (entry.months.has(k)) entry.months.set(k, (entry.months.get(k) || 0) + addKm);
+        if (entry.ridesMonths && entry.ridesMonths.has(k)){
+          entry.ridesMonths.set(k, (entry.ridesMonths.get(k) || 0) + 1);
+          entry.totalRides = (entry.totalRides || 0) + 1;
+        }
+      }
+      // Performance (strictly orders.onTime)
+      if (order && order.orders && Object.prototype.hasOwnProperty.call(order.orders, 'onTime')){
+        entry.perfTotal = (entry.perfTotal || 0) + 1;
+        if (order.orders.onTime === true) entry.perfOnTime = (entry.perfOnTime || 0) + 1;
       }
     }
   }catch(e){
@@ -426,15 +461,44 @@ module.exports = {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
+
+    // Load all orders to resolve orders.onTime when riders.orders contains IDs
+    const allOrders = await orderModel.getAll().catch(()=>[]);
+    const orderMap = new Map();
+    for (const o of allOrders){
+      const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
+      for (const id of ids){ if (id !== undefined && id !== null) orderMap.set(String(id), o); }
+    }
+
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
-      const entry = counts.get(key) || { total: 0, months: new Map() };
-      // convert months map to plain object { 'YYYY-MM': count }
+      const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0 };
+      // convert months map to plain object { 'YYYY-MM': value }
       const monthsObj = {};
       if (entry.months && typeof entry.months.forEach === 'function'){
         entry.months.forEach((v,k)=>{ monthsObj[k] = v; });
       }
-      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj };
+      const ridesObj = {};
+      if (entry.ridesMonths && typeof entry.ridesMonths.forEach === 'function'){
+        entry.ridesMonths.forEach((v,k)=>{ ridesObj[k] = v; });
+      }
+      // Performance from riders.orders using orders.onTime
+      const riderOrdersArr = Array.isArray(r.orders) ? r.orders : [];
+      const perfTotal = riderOrdersArr.length;
+      let perfOnTime = 0;
+      for (const item of riderOrdersArr){
+        if (item && typeof item === 'object'){
+          if (item.orders && item.orders.onTime === true) { perfOnTime += 1; continue; }
+          const oid = String(item.orderId || item.id || item.name || item.order_number || '').trim();
+          if (oid){ const ord = orderMap.get(oid); if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1; }
+        } else if (item != null) {
+          const ord = orderMap.get(String(item));
+          if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1;
+        }
+      }
+      const performancePct = perfTotal ? Math.round((perfOnTime / perfTotal) * 100) : 0;
+
+      return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj, monthlyRideCounts: ridesObj, performancePct };
     });
     const filtered = withTotals.filter(r => {
       if (q && !String(r.name || '').toLowerCase().includes(String(q).toLowerCase())) return false;

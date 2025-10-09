@@ -58,10 +58,6 @@ function countOrdersForMonth(orders, monthKey){
     const key = extractOrderMonthKey(order);
     if (key === monthKey) count += 1;
   }
-  if (count === 0 && Array.isArray(orders)){
-    const hasUnknown = orders.some(order => !extractOrderMonthKey(order));
-    if (hasUnknown) return orders.length;
-  }
   return count;
 }
 
@@ -237,11 +233,11 @@ export default function Riders(){
                     const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
                     const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
                     const orders = Array.isArray(r.orders) ? r.orders : [];
-                    const rideCount = countOrdersForMonth(orders, lastMonthKey);
+                    const rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
-                  {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ const flag = (it.onTime === true) || (it.on_time === true) || (it.metrics && it.metrics.onTime === true); if (flag) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
+                  <td className="rc-col-performance">{Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%'}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
