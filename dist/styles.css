@@ -47,6 +47,14 @@
 .rc-toolbar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:12px 0 18px}
 .rc-search{flex:1;position:relative}
 
+.fare-settings-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px}
+.fare-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fare-field{display:flex;flex-direction:column;gap:8px}
+.fare-field-label{font-weight:600;color:#111827}
+.fare-field-input{padding:12px 14px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc;font-size:16px}
+.fare-field-input:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
+.fare-actions{display:flex;gap:10px;justify-content:flex-end}
+
 /* Dashboard specific */
 .dashboard-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
     .riders-header{display:flex;justify-content:space-between;align-items:center;gap:16px}
@@ -72,6 +80,12 @@
   .dashboard-header-right{width:100%;display:flex;justify-content:space-between}
   .dashboard-table thead th.col-address{display:none}
   .dashboard-table tbody td.rc-col-address{display:none}
+}
+
+@media (max-width:680px){
+  .fare-fields{grid-template-columns:1fr}
+  .fare-actions{flex-direction:column;align-items:stretch}
+  .fare-actions button{width:100%}
 }
 
 /* Manage action */

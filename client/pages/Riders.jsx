@@ -1,6 +1,69 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
+import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
+
+function toDate(value){
+  if (!value) return null;
+  if (value instanceof Date){
+    return Number.isFinite(value.getTime()) ? value : null;
+  }
+  if (typeof value === 'string'){
+    const t = Date.parse(value);
+    return Number.isFinite(t) ? new Date(t) : null;
+  }
+  if (typeof value === 'number'){
+    const d = new Date(value);
+    return Number.isFinite(d.getTime()) ? d : null;
+  }
+  if (typeof value === 'object'){
+    if (typeof value.toDate === 'function'){
+      try{
+        const d = value.toDate();
+        if (d instanceof Date && Number.isFinite(d.getTime())) return d;
+      }catch(_){ }
+    }
+    if (typeof value.seconds === 'number'){
+      const ms = (value.seconds * 1000) + (typeof value.nanoseconds === 'number' ? Math.floor(value.nanoseconds / 1e6) : 0);
+      const d = new Date(ms);
+      if (Number.isFinite(d.getTime())) return d;
+    }
+  }
+  return null;
+}
+
+function monthKeyFromDate(date){
+  if (!(date instanceof Date) || !Number.isFinite(date.getTime())) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+const ORDER_DATE_FIELDS = [
+  'completedAt','completed_at','deliveredAt','delivered_at','createdAt','created_at','created','assignedAt','assigned_at','timestamp','orderedAt','ordered_at','updatedAt','updated_at'
+];
+
+function extractOrderMonthKey(order){
+  if (!order || typeof order !== 'object') return '';
+  for (const field of ORDER_DATE_FIELDS){
+    const value = order[field];
+    const date = toDate(value);
+    if (date) return monthKeyFromDate(date);
+  }
+  return '';
+}
+
+function countOrdersForMonth(orders, monthKey){
+  if (!Array.isArray(orders) || !monthKey) return 0;
+  let count = 0;
+  for (const order of orders){
+    const key = extractOrderMonthKey(order);
+    if (key === monthKey) count += 1;
+  }
+  if (count === 0 && Array.isArray(orders)){
+    const hasUnknown = orders.some(order => !extractOrderMonthKey(order));
+    if (hasUnknown) return orders.length;
+  }
+  return count;
+}
 
 export default function Riders(){
   const [riders, setRiders] = useState([]);
@@ -14,6 +77,29 @@ export default function Riders(){
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
+  const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
+
+  useEffect(()=>{
+    function syncFareSettings(){
+      setFareSettings(readFareSettings());
+    }
+    syncFareSettings();
+    function handleStorage(event){
+      if(event.key === FARE_SETTINGS_STORAGE_KEY){
+        syncFareSettings();
+      }
+    }
+    if(typeof window !== 'undefined'){
+      window.addEventListener('storage', handleStorage);
+      window.addEventListener('fare-settings-changed', syncFareSettings);
+    }
+    return ()=>{
+      if(typeof window !== 'undefined'){
+        window.removeEventListener('storage', handleStorage);
+        window.removeEventListener('fare-settings-changed', syncFareSettings);
+      }
+    };
+  },[]);
 
   useEffect(()=>{
     let alive = true;
@@ -53,6 +139,16 @@ export default function Riders(){
       return true;
     });
   },[riders,q,statusFilter,riderFilter,dateFilter]);
+
+  const farePerKm = useMemo(()=>{
+    const rate = Number(fareSettings.farePerKm);
+    return Number.isFinite(rate) ? rate : DEFAULT_FARE_SETTINGS.farePerKm;
+  },[fareSettings]);
+
+  const baseFare = useMemo(()=>{
+    const value = Number(fareSettings.baseFare);
+    return Number.isFinite(value) ? value : DEFAULT_FARE_SETTINGS.baseFare;
+  },[fareSettings]);
 
   // compute last three months keys and labels (YYYY-MM)
   const lastThreeMonths = useMemo(()=>{
@@ -137,7 +233,14 @@ export default function Riders(){
                   {lastThreeMonths.keys.map(k=> (
                     <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
                   ))}
-                  {(() => { const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const km = Number(r.monthlyCounts?.[lastMonthKey] || 0); const rs = km * 2; return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${Math.round(rs)} Rs.` : '0 Rs.'}</td>); })()}
+                  {(() => {
+                    const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
+                    const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
+                    const orders = Array.isArray(r.orders) ? r.orders : [];
+                    const rideCount = countOrdersForMonth(orders, lastMonthKey);
+                    const rs = (km * farePerKm) + (rideCount * baseFare);
+                    return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
+                  })()}
                   {(() => { const arr = Array.isArray(r.orders) ? r.orders : []; const total = arr.length; if (!total) return (<td className="rc-col-performance">0%</td>); let ot = 0; for (const it of arr){ if (it && typeof it === 'object'){ const flag = (it.onTime === true) || (it.on_time === true) || (it.metrics && it.metrics.onTime === true); if (flag) ot += 1; } } const rate = Math.round((ot/total)*100); return (<td className="rc-col-performance">{`${rate}%`}</td>); })()}
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
