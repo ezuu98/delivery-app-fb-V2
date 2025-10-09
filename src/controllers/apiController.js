@@ -461,9 +461,20 @@ module.exports = {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
     const counts = list.length ? await computeRiderAssignmentCounts() : new Map();
+
+    // Build a map of all cached orders for quick lookup by various identifiers
+    const allOrders = await orderModel.getAll().catch(()=>[]);
+    const orderMap = new Map();
+    for (const o of allOrders){
+      const ids = [o?.orderId, o?.id, o?.name, o?.order_number];
+      for (const id of ids){
+        if (id !== undefined && id !== null) orderMap.set(String(id), o);
+      }
+    }
+
     const withTotals = list.map(r => {
       const key = String(r.id || '').trim();
-      const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0, perfOnTime: 0, perfTotal: 0 };
+      const entry = counts.get(key) || { total: 0, months: new Map(), ridesMonths: new Map(), totalRides: 0 };
       // convert months map to plain object { 'YYYY-MM': value }
       const monthsObj = {};
       if (entry.months && typeof entry.months.forEach === 'function'){
@@ -473,7 +484,16 @@ module.exports = {
       if (entry.ridesMonths && typeof entry.ridesMonths.forEach === 'function'){
         entry.ridesMonths.forEach((v,k)=>{ ridesObj[k] = v; });
       }
-      const performancePct = entry.perfTotal ? Math.round((entry.perfOnTime / entry.perfTotal) * 100) : 0;
+      // Performance from rider.orders array using orders.onTime only
+      const riderOrderIds = Array.isArray(r.orders) ? r.orders : [];
+      const perfTotal = riderOrderIds.length;
+      let perfOnTime = 0;
+      for (const oid of riderOrderIds){
+        const ord = orderMap.get(String(oid)) || null;
+        if (ord && ord.orders && ord.orders.onTime === true) perfOnTime += 1;
+      }
+      const performancePct = perfTotal ? Math.round((perfOnTime / perfTotal) * 100) : 0;
+
       return { ...r, assignedOrders: entry.total || 0, monthlyCounts: monthsObj, monthlyRideCounts: ridesObj, performancePct };
     });
     const filtered = withTotals.filter(r => {
