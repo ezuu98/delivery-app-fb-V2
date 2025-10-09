@@ -18599,7 +18599,7 @@ function H_() {
       }, this),
       /* @__PURE__ */ d.jsxDEV("tbody", { children: [
         (p.riderOrders || []).map((E, j) => {
-          const k = E.name || E.orderId, Q = Ar(E.created_at), de = Q instanceof Date && !Number.isNaN(Q.getTime()) ? Q.toISOString().slice(0, 10) : "-", ee = UE(E.deliveryStartTime), he = zE(E), I = FE(he), Y = kE(E), G = HE(Y), P = Number(E.distance_km), me = Number.isFinite(P) ? `${P.toFixed(2)} km` : typeof E.distance_km == "string" && E.distance_km.trim() ? E.distance_km : "-";
+          const k = E.name || E.orderId, Q = Ar(E.created_at), de = Q instanceof Date && !Number.isNaN(Q.getTime()) ? Q.toISOString().slice(0, 10) : "-", ee = UE(E.assignedAt), he = zE(E), I = FE(he), Y = kE(E), G = HE(Y), P = Number(E.distance_km), me = Number.isFinite(P) ? `${P.toFixed(2)} km` : typeof E.distance_km == "string" && E.distance_km.trim() ? E.distance_km : "-";
           return /* @__PURE__ */ d.jsxDEV("tr", { children: [
             /* @__PURE__ */ d.jsxDEV("td", { className: "rc-col-name order-cell", children: k }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
