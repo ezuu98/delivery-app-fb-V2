@@ -147,29 +147,7 @@ function getStartFieldValue(order) {
 export function resolveStartTime(order) {
   if (!isObject(order)) return null;
   const direct = getStartFieldValue(order);
-  if (direct !== null && direct !== undefined) return direct;
-
-  const delivered = getDeliveredValue(order);
-  const duration = getDurationMinutes(order);
-  if (delivered !== null && delivered !== undefined && Number.isFinite(duration)) {
-    const deliveredDate = toDateOrNull(delivered);
-    if (deliveredDate instanceof Date) {
-      return new Date(deliveredDate.getTime() - (duration * 60000));
-    }
-  }
-
-  const createdCandidates = [
-    order.created_at,
-    order.createdAt,
-    order.created,
-    order.orders?.created_at,
-    order.orders?.createdAt,
-  ];
-  for (const candidate of createdCandidates) {
-    if (candidate !== null && candidate !== undefined) return candidate;
-  }
-
-  return null;
+  return (direct !== null && direct !== undefined) ? direct : null;
 }
 
 export function resolveActualDuration(order) {
