@@ -64,9 +64,6 @@ function countOrdersForMonth(orders, monthKey){
 export default function Riders(){
   const [riders, setRiders] = useState([]);
   const [q, setQ] = useState('');
-  const [dateFilter, setDateFilter] = useState('all');
-  const [riderFilter, setRiderFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
