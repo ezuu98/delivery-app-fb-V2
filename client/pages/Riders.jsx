@@ -119,17 +119,10 @@ export default function Riders(){
 
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
-      if(q && !r.name.toLowerCase().includes(q.toLowerCase().trim())) return false;
-      if(statusFilter !== 'all' && r.status !== statusFilter) return false;
-      if(riderFilter !== 'all' && String(r.id) !== String(riderFilter)) return false;
-      if(dateFilter !== 'all'){
-        const last = parseInt(r.lastActiveDays,10) || 9999;
-        const n = parseInt(dateFilter,10);
-        if(!(last <= n)) return false;
-      }
+      if(q && !String(r.name||'').toLowerCase().includes(q.toLowerCase().trim())) return false;
       return true;
     });
-  },[riders,q,statusFilter,riderFilter,dateFilter]);
+  },[riders,q]);
 
   const farePerKm = useMemo(()=>{
     const rate = Number(fareSettings.farePerKm);
