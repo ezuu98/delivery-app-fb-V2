@@ -101,8 +101,6 @@ export default function Riders(){
       try{
         const params = new URLSearchParams();
         if(q) params.set('q', q);
-        if(statusFilter !== 'all') params.set('status', statusFilter);
-        if(dateFilter !== 'all') params.set('lastDays', dateFilter);
         params.set('page', String(page));
         params.set('limit', String(limit));
         const res = await fetch(`/api/riders?${params.toString()}`, { credentials:'include' });
