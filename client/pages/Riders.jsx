@@ -115,7 +115,7 @@ export default function Riders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q,statusFilter,dateFilter,page,limit]);
+  },[q,page,limit]);
 
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
