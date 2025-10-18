@@ -19674,7 +19674,7 @@ function K_() {
               lineNumber: 127,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ p.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ p.jsxDEV("button", { className: "order-action btn-manage", onClick: () => me(String(F.id || F.name || F.order_number || Y)), children: "Assign Rider" }, void 0, !1, {
+            /* @__PURE__ */ p.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ p.jsxDEV("button", { className: "order-action btn-manage", onClick: () => me(String(F.id || F.name || F.order_number || Y)), children: "Assign" }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 128,
               columnNumber: 53
