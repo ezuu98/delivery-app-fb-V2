@@ -18699,7 +18699,7 @@ function BE({ orderId: o, onClose: d, onAssigned: m }) {
         const B = await k.json();
         _ && y(Array.isArray(B.riders) ? B.riders : B.riders || []);
       } catch (k) {
-        _ && R(k.message || "Failed to load riders");
+        _ && R(k.message || "Failed to load packers");
       } finally {
         _ && c(!1);
       }
@@ -18725,7 +18725,7 @@ function BE({ orderId: o, onClose: d, onAssigned: m }) {
         if (!k.ok) throw new Error(B && B.error ? B.error : "Assign failed");
         m && m({ orderId: o, riderId: _ }), d();
       } catch (k) {
-        alert(k.message || "Failed to assign rider");
+        alert(k.message || "Failed to assign packer");
       } finally {
         L(null);
       }
@@ -18733,7 +18733,7 @@ function BE({ orderId: o, onClose: d, onAssigned: m }) {
   }
   return /* @__PURE__ */ p.jsxDEV("div", { className: "assign-modal-backdrop", role: "dialog", "aria-modal": "true", children: /* @__PURE__ */ p.jsxDEV("div", { className: "assign-modal", children: [
     /* @__PURE__ */ p.jsxDEV("header", { className: "assign-modal-header", children: [
-      /* @__PURE__ */ p.jsxDEV("h3", { className: "assign-modal-title", children: "Assign Rider" }, void 0, !1, {
+      /* @__PURE__ */ p.jsxDEV("h3", { className: "assign-modal-title", children: "Assign Packers" }, void 0, !1, {
         fileName: "/app/code/client/components/AssignModal.jsx",
         lineNumber: 48,
         columnNumber: 11
@@ -18749,7 +18749,7 @@ function BE({ orderId: o, onClose: d, onAssigned: m }) {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ p.jsxDEV("div", { className: "assign-modal-body", children: [
-      E && /* @__PURE__ */ p.jsxDEV("div", { className: "section-note", children: "Loading riders…" }, void 0, !1, {
+      E && /* @__PURE__ */ p.jsxDEV("div", { className: "section-note", children: "Loading packers…" }, void 0, !1, {
         fileName: "/app/code/client/components/AssignModal.jsx",
         lineNumber: 52,
         columnNumber: 23
@@ -18811,7 +18811,7 @@ function BE({ orderId: o, onClose: d, onAssigned: m }) {
             lineNumber: 61,
             columnNumber: 19
           }, this)),
-          g.length === 0 && /* @__PURE__ */ p.jsxDEV("tr", { children: /* @__PURE__ */ p.jsxDEV("td", { colSpan: 3, className: "section-note", children: "No riders found." }, void 0, !1, {
+          g.length === 0 && /* @__PURE__ */ p.jsxDEV("tr", { children: /* @__PURE__ */ p.jsxDEV("td", { colSpan: 3, className: "section-note", children: "No packers found." }, void 0, !1, {
             fileName: "/app/code/client/components/AssignModal.jsx",
             lineNumber: 71,
             columnNumber: 46
