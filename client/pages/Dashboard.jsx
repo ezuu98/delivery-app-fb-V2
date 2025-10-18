@@ -125,7 +125,7 @@ export default function Dashboard(){
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                       <td className="rc-col-date">{dateStr}</td>
                       <td className="rc-col-time">{timeStr}</td>
-                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(String(o.id || o.name || o.order_number || i))}>Assign Rider</button></td>
+                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(String(o.id || o.name || o.order_number || i))}>Assign</button></td>
                     </tr>
                   );
                 });
