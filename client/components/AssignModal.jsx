@@ -16,7 +16,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
         if(!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
         if(alive) setRiders(Array.isArray(data.riders) ? data.riders : data.riders || []);
-      }catch(e){ if(alive) setError(e.message || 'Failed to load riders'); }
+      }catch(e){ if(alive) setError(e.message || 'Failed to load packers'); }
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
@@ -37,7 +37,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
       if(!res.ok) throw new Error((json && json.error) ? json.error : 'Assign failed');
       if(onAssigned) onAssigned({ orderId, riderId });
       onClose();
-    }catch(e){ alert(e.message || 'Failed to assign rider'); }
+    }catch(e){ alert(e.message || 'Failed to assign packer'); }
     finally{ setAssigning(null); }
   }
 
@@ -45,11 +45,11 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
     <div className="assign-modal-backdrop" role="dialog" aria-modal="true">
       <div className="assign-modal">
         <header className="assign-modal-header">
-          <h3 className="assign-modal-title">Assign Rider</h3>
+          <h3 className="assign-modal-title">Assign Packers</h3>
           <button className="assign-modal-close" onClick={onClose} aria-label="Close">✕</button>
         </header>
         <div className="assign-modal-body">
-          {loading && <div className="section-note">Loading riders…</div>}
+          {loading && <div className="section-note">Loading packers…</div>}
           {error && <div className="auth-error">{error}</div>}
           {!loading && !error && (
             <table className="assign-table">
@@ -68,7 +68,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                     </td>
                   </tr>
                 ))}
-                {riders.length === 0 && (<tr><td colSpan={3} className="section-note">No riders found.</td></tr>)}
+                {riders.length === 0 && (<tr><td colSpan={3} className="section-note">No packers found.</td></tr>)}
               </tbody>
             </table>
           )}
