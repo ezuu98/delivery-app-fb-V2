@@ -62,32 +62,6 @@ function countOrdersForMonth(orders, monthKey){
   return count;
 }
 
-function calculateKmInDateRange(orders, fromDate, toDate){
-  if (!Array.isArray(orders)) return 0;
-  let totalKm = 0;
-  for (const order of orders){
-    if (!order || typeof order !== 'object') continue;
-    const orderDate = toDate(order.distance ? order : order);
-    if (!orderDate) continue;
-
-    const fromCheck = fromDate ? new Date(fromDate) : null;
-    const toCheck = toDate ? new Date(toDate) : null;
-
-    let inRange = true;
-    if (fromCheck) inRange = inRange && orderDate >= fromCheck;
-    if (toCheck) {
-      const endOfDay = new Date(toCheck);
-      endOfDay.setHours(23, 59, 59, 999);
-      inRange = inRange && orderDate <= endOfDay;
-    }
-
-    if (inRange){
-      const distance = Number(order.distance || order.km || 0);
-      if (Number.isFinite(distance)) totalKm += distance;
-    }
-  }
-  return totalKm;
-}
 
 export default function Riders(){
   const getDefaultDateRange = () => {
