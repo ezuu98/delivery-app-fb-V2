@@ -210,9 +210,6 @@ export default function Riders(){
                 <button className="date-range-clear" onClick={()=>{ setDateRangeFrom(''); setDateRangeTo(''); setPage(1); }} title="Clear date range">✕</button>
               )}
             </div>
-            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
-              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
-            </select>
           </div>
         </div>
 
