@@ -63,6 +63,15 @@ function countOrdersForMonth(orders, monthKey){
 }
 
 export default function Riders(){
+  const getDefaultDateRange = () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const from = firstDay.toISOString().split('T')[0];
+    const to = now.toISOString().split('T')[0];
+    return { from, to };
+  };
+
+  const defaultDates = useMemo(()=> getDefaultDateRange(), []);
   const [riders, setRiders] = useState([]);
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
@@ -72,8 +81,8 @@ export default function Riders(){
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
-  const [dateRangeFrom, setDateRangeFrom] = useState('');
-  const [dateRangeTo, setDateRangeTo] = useState('');
+  const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
+  const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
 
   useEffect(()=>{
     function syncFareSettings(){
