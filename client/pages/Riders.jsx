@@ -274,16 +274,28 @@ export default function Riders(){
                   <td className="rc-col-month">{(() => {
                     if (dateRangeFrom && dateRangeTo) {
                       const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
-                      const km = riderKmCache.get(cacheKey) ?? 0;
+                      const data = riderRangeData.get(cacheKey);
+                      const km = data?.km ?? 0;
                       return `${Number(km).toFixed(2)} km`;
                     }
                     return `${Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km`;
                   })()}</td>
                   {(() => {
-                    const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
-                    const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
-                    const orders = Array.isArray(r.orders) ? r.orders : [];
-                    const rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
+                    let km = 0;
+                    let rideCount = 0;
+
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      km = data?.km ?? 0;
+                      rideCount = data?.rideCount ?? 0;
+                    } else {
+                      const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
+                      km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
+                      const orders = Array.isArray(r.orders) ? r.orders : [];
+                      rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
+                    }
+
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
