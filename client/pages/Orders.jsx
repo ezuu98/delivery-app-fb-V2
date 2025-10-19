@@ -73,7 +73,7 @@ export default function Orders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q, tab, page, limit]);
+  },[q, tab, page, limit, refreshTrigger]);
 
   const filtered = useMemo(()=> orders, [orders]);
 
