@@ -145,7 +145,11 @@ export default function Riders(){
           if (res.ok) {
             const data = await res.json();
             if (alive) {
-              cache.set(cacheKey, { km: data.totalKm || 0, rideCount: data.rideCount || 0 });
+              cache.set(cacheKey, {
+                km: data.totalKm || 0,
+                rideCount: data.rideCount || 0,
+                performancePct: data.performancePct || 0
+              });
               console.log(`km-in-range for ${rider.id}:`, data);
             }
           } else {
