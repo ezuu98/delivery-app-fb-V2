@@ -530,7 +530,18 @@ module.exports = {
           await pref.set({ orders: next }, { merge: true });
         }
       }catch(_){ /* ignore packer orders push errors */ }
-      return res.json(ok({ orderId: id, packerId }));
+
+      let packerName = null;
+      try{
+        const pref = db.collection('packers').doc(String(packerId));
+        const psnap = await pref.get();
+        if(psnap.exists){
+          const pdata = psnap.data() || {};
+          packerName = pdata.fullName || pdata.name || null;
+        }
+      }catch(_){ /* ignore packer name fetch errors */ }
+
+      return res.json(ok({ orderId: id, packerId, packerName }));
     }catch(e){
       return res.status(500).json(fail('Failed to assign packer'));
     }
