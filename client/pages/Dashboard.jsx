@@ -19,6 +19,7 @@ export default function Dashboard(){
         const params = new URLSearchParams();
         params.set('limit', String(limit));
         params.set('page', String(page));
+        params.set('status', 'new');
         const res = await fetch(`/api/orders?${params.toString()}`, { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load orders');
