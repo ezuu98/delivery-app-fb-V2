@@ -201,11 +201,20 @@ export default function Riders(){
             <span className="rc-search-icon" aria-hidden="true"></span>
             <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
-          <div className="rc-filters"></div>
+          <div className="rc-filters">
+            <div className="date-range-filter">
+              <input type="date" className="date-range-input" value={dateRangeFrom} onChange={e=>{ setDateRangeFrom(e.target.value); setPage(1); }} placeholder="From" title="Filter from date" />
+              <span className="date-range-separator">to</span>
+              <input type="date" className="date-range-input" value={dateRangeTo} onChange={e=>{ setDateRangeTo(e.target.value); setPage(1); }} placeholder="To" title="Filter to date" />
+              {(dateRangeFrom || dateRangeTo) && (
+                <button className="date-range-clear" onClick={()=>{ setDateRangeFrom(''); setDateRangeTo(''); setPage(1); }} title="Clear date range">✕</button>
+              )}
+            </div>
             <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
               {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
             </select>
           </div>
+        </div>
 
         <div className="rc-table-wrapper">
           {showCreateRider && (
