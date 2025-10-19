@@ -62,12 +62,13 @@ function countOrdersForMonth(orders, monthKey){
   return count;
 }
 
+
 export default function Riders(){
   const getDefaultDateRange = () => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const from = firstDay.toISOString().split('T')[0];
-    const to = now.toISOString().split('T')[0];
+    const from = `${firstDay.getFullYear()}-${String(firstDay.getMonth() + 1).padStart(2, '0')}-${String(firstDay.getDate()).padStart(2, '0')}`;
+    const to = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return { from, to };
   };
 
@@ -83,6 +84,7 @@ export default function Riders(){
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
   const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
   const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
+  const [riderRangeData, setRiderRangeData] = useState(new Map());
 
   useEffect(()=>{
     function syncFareSettings(){
@@ -128,6 +130,40 @@ export default function Riders(){
     })();
     return ()=>{ alive = false; };
   },[q,page,limit]);
+
+  useEffect(()=>{
+    if (!dateRangeFrom || !dateRangeTo || !riders.length) return;
+    let alive = true;
+    (async ()=>{
+      const cache = new Map();
+      for (const rider of riders) {
+        const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+
+        try{
+          const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include' });
+          if (res.status === 401) { window.location.href = '/auth/login'; return; }
+          if (res.ok) {
+            const data = await res.json();
+            if (alive) {
+              cache.set(cacheKey, {
+                km: data.totalKm || 0,
+                rideCount: data.rideCount || 0,
+                performancePct: data.performancePct || 0
+              });
+              console.log(`km-in-range for ${rider.id}:`, data);
+            }
+          } else {
+            const errText = await res.text();
+            console.error(`km-in-range error for ${rider.id}:`, res.status, errText);
+          }
+        }catch(e){ console.error(`km-in-range fetch error for ${rider.id}:`, e); }
+      }
+      if (alive) {
+        setRiderRangeData(cache);
+      }
+    })();
+    return ()=>{ alive = false; };
+  },[dateRangeFrom, dateRangeTo, riders]);
 
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
@@ -215,9 +251,6 @@ export default function Riders(){
               <input type="date" className="date-range-input" value={dateRangeFrom} onChange={e=>{ setDateRangeFrom(e.target.value); setPage(1); }} placeholder="From" title="Filter from date" />
               <span className="date-range-separator">to</span>
               <input type="date" className="date-range-input" value={dateRangeTo} onChange={e=>{ setDateRangeTo(e.target.value); setPage(1); }} placeholder="To" title="Filter to date" />
-              {(dateRangeFrom || dateRangeTo) && (
-                <button className="date-range-clear" onClick={()=>{ setDateRangeFrom(''); setDateRangeTo(''); setPage(1); }} title="Clear date range">✕</button>
-              )}
             </div>
           </div>
         </div>
@@ -246,16 +279,43 @@ export default function Riders(){
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  <td className="rc-col-month">{Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km</td>
+                  <td className="rc-col-month">{(() => {
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      const km = data?.km ?? 0;
+                      return `${Number(km).toFixed(2)} km`;
+                    }
+                    return `${Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km`;
+                  })()}</td>
                   {(() => {
-                    const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
-                    const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
-                    const orders = Array.isArray(r.orders) ? r.orders : [];
-                    const rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
+                    let km = 0;
+                    let rideCount = 0;
+
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      km = data?.km ?? 0;
+                      rideCount = data?.rideCount ?? 0;
+                    } else {
+                      const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
+                      km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
+                      const orders = Array.isArray(r.orders) ? r.orders : [];
+                      rideCount = Number(r.monthlyRideCounts?.[lastMonthKey] ?? countOrdersForMonth(orders, lastMonthKey) ?? 0);
+                    }
+
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
-                  <td className="rc-col-performance">{Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%'}</td>
+                  <td className="rc-col-performance">{(() => {
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      const perfPct = data?.performancePct ?? 0;
+                      return `${Number(perfPct)}%`;
+                    }
+                    return Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%';
+                  })()}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
