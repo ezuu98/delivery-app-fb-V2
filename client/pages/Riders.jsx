@@ -273,10 +273,10 @@ export default function Riders(){
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
                   <td className="rc-col-month">{(() => {
-                    if (dateRangeFrom || dateRangeTo) {
-                      const orders = Array.isArray(r.orders) ? r.orders : [];
-                      const rangeKm = calculateKmInDateRange(orders, dateRangeFrom, dateRangeTo);
-                      return `${rangeKm.toFixed(2)} km`;
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const km = riderKmCache.get(cacheKey) ?? 0;
+                      return `${Number(km).toFixed(2)} km`;
                     }
                     return `${Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km`;
                   })()}</td>
