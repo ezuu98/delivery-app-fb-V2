@@ -19790,7 +19790,7 @@ function Q_() {
       g(!0), S("");
       try {
         const F = new URLSearchParams();
-        F.set("limit", String(R)), F.set("page", String(f));
+        F.set("limit", String(R)), F.set("page", String(f)), F.set("status", "new");
         const ve = await fetch(`/api/orders?${F.toString()}`, { credentials: "include" });
         if (ve.status === 401) {
           window.location.href = "/auth/login";
@@ -19839,119 +19839,119 @@ function Q_() {
       /* @__PURE__ */ c.jsxDEV("div", { className: "dashboard-header-left", children: [
         /* @__PURE__ */ c.jsxDEV("h2", { className: "rc-title", children: "Recent Orders" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 72,
+          lineNumber: 73,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("p", { className: "rc-subtitle", children: "Latest orders synced from Shopify." }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 73,
+          lineNumber: 74,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 71,
+        lineNumber: 72,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ c.jsxDEV("div", { className: "dashboard-header-right", children: [
         /* @__PURE__ */ c.jsxDEV("div", { className: "stat-card", children: [
           /* @__PURE__ */ c.jsxDEV("div", { className: "stat-value", children: m ? "…" : O.total || o.length }, void 0, !1, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
-            lineNumber: 77,
+            lineNumber: 78,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ c.jsxDEV("div", { className: "stat-label", children: "Orders" }, void 0, !1, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
-            lineNumber: 78,
+            lineNumber: 79,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 76,
+          lineNumber: 77,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("button", { className: "btn-secondary btn-create-packer", onClick: () => G(!0), children: "Create Packer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 80,
+          lineNumber: 81,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("button", { className: "btn-primary", onClick: () => window.location.reload(), children: "Refresh" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 81,
+          lineNumber: 82,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 75,
+        lineNumber: 76,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 70,
+      lineNumber: 71,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ c.jsxDEV("div", { className: "rc-table-wrapper", children: /* @__PURE__ */ c.jsxDEV("table", { className: "rc-table dashboard-table", children: [
       /* @__PURE__ */ c.jsxDEV("thead", { children: /* @__PURE__ */ c.jsxDEV("tr", { children: [
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-order", children: "Order #" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 89,
+          lineNumber: 90,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-customer", children: "Customer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 90,
+          lineNumber: 91,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-address", children: "Address" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 91,
+          lineNumber: 92,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-status", children: "Status" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 92,
+          lineNumber: 93,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-date", children: "Date" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 93,
+          lineNumber: 94,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-time", children: "Time" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 94,
+          lineNumber: 95,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-action", children: "Action" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 95,
+          lineNumber: 96,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 88,
+        lineNumber: 89,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 87,
+        lineNumber: 88,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ c.jsxDEV("tbody", { children: [
         m && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 7, className: "section-note", children: "Loading…" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 99,
+          lineNumber: 100,
           columnNumber: 32
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 99,
+          lineNumber: 100,
           columnNumber: 28
         }, this),
         !m && y && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 7, className: "auth-error", children: y }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 100,
+          lineNumber: 101,
           columnNumber: 32
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 100,
+          lineNumber: 101,
           columnNumber: 28
         }, this),
         !m && !y && (Array.isArray(o) ? o.filter((_) => L(_) === "new") : []).map((_, te) => {
@@ -19962,80 +19962,80 @@ function Q_() {
           return /* @__PURE__ */ c.jsxDEV("tr", { "data-status": q, children: [
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-order", children: ve }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 125,
+              lineNumber: 126,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-customer", children: J || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 126,
+              lineNumber: 127,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-address", children: F }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 127,
+              lineNumber: 128,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-status", children: /* @__PURE__ */ c.jsxDEV("span", { className: `status-chip status-${q}`, children: q.replace("-", " ") }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 128,
+              lineNumber: 129,
               columnNumber: 53
             }, this) }, void 0, !1, {
-              fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 128,
-              columnNumber: 23
-            }, this),
-            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-date", children: Ve }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 129,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-time", children: ye }, void 0, !1, {
+            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-date", children: Ve }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 130,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ c.jsxDEV("button", { className: "order-action btn-manage", onClick: () => Y(String(_.id || _.name || _.order_number || te)), children: "Assign" }, void 0, !1, {
+            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-time", children: ye }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 131,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ c.jsxDEV("button", { className: "order-action btn-manage", onClick: () => Y(String(_.id || _.name || _.order_number || te)), children: "Assign" }, void 0, !1, {
+              fileName: "/app/code/client/pages/Dashboard.jsx",
+              lineNumber: 132,
               columnNumber: 53
             }, this) }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
-              lineNumber: 131,
+              lineNumber: 132,
               columnNumber: 23
             }, this)
           ] }, ae, !0, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
-            lineNumber: 124,
+            lineNumber: 125,
             columnNumber: 21
           }, this);
         }),
         !m && !y && o.length === 0 && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 7, className: "section-note", children: "No recent orders." }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 136,
+          lineNumber: 137,
           columnNumber: 66
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
-          lineNumber: 136,
+          lineNumber: 137,
           columnNumber: 62
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 98,
+        lineNumber: 99,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 86,
+      lineNumber: 87,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 85,
+      lineNumber: 86,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ c.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: /* @__PURE__ */ c.jsxDEV("div", { className: "rc-filters", children: [
       /* @__PURE__ */ c.jsxDEV("button", { className: "rc-select rc-chip", disabled: O.page <= 1 || m, onClick: () => V((z) => Math.max(1, z - 1)), children: "Prev" }, void 0, !1, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 143,
+        lineNumber: 144,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ c.jsxDEV("span", { className: "section-note", children: [
@@ -20048,26 +20048,26 @@ function Q_() {
         " total"
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 144,
+        lineNumber: 145,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ c.jsxDEV("button", { className: "rc-select rc-chip", disabled: O.page >= O.pages || m, onClick: () => V((z) => Math.min(O.pages, z + 1)), children: "Next" }, void 0, !1, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
-        lineNumber: 145,
+        lineNumber: 146,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 142,
+      lineNumber: 143,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 141,
+      lineNumber: 142,
       columnNumber: 9
     }, this),
     A && ie && /* @__PURE__ */ c.jsxDEV(BE, { orderId: ie, onClose: Z, onAssigned: X }, void 0, !1, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 150,
+      lineNumber: 151,
       columnNumber: 11
     }, this),
     de && /* @__PURE__ */ c.jsxDEV(K_, { onClose: () => G(!1), onCreated: () => {
@@ -20077,16 +20077,16 @@ function Q_() {
       }
     } }, void 0, !1, {
       fileName: "/app/code/client/pages/Dashboard.jsx",
-      lineNumber: 153,
+      lineNumber: 154,
       columnNumber: 11
     }, this)
   ] }, void 0, !0, {
     fileName: "/app/code/client/pages/Dashboard.jsx",
-    lineNumber: 69,
+    lineNumber: 70,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/pages/Dashboard.jsx",
-    lineNumber: 68,
+    lineNumber: 69,
     columnNumber: 5
   }, this);
 }
