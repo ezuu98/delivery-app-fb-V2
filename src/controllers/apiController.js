@@ -457,6 +457,68 @@ async function computeRiderAssignmentCounts(){
 }
 
 module.exports = {
+  packers: async (req, res) => {
+    try{
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const { limit = '200' } = req.query || {};
+      const n = parseIntParam(limit, 200);
+      const snap = await db.collection('packers').limit(Math.max(1, Math.min(500, n))).get();
+      const packers = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        packers.push({ id: doc.id, name: d.fullName || d.name || null, lastActiveDays: d.lastActiveDays, contactNumber: d.contactNumber || null, email: d.email || null });
+      });
+      return res.json(ok({ packers }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to load packers'));
+    }
+  },
+  createPacker: async (req, res) => {
+    try{
+      const { email = '', password = '', fullName = '', contactNumber = '' } = req.body || {};
+      const em = String(email).trim();
+      const pw = String(password);
+      const fn = String(fullName).trim();
+      const cn = String(contactNumber).trim();
+      const digits = cn.replace(/\D+/g, '');
+      if(!fn || !cn || !pw) return res.status(400).json(fail('Full name, mobile and password are required'));
+      if(digits.length < 7) return res.status(400).json(fail('Invalid contact number'));
+      if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return res.status(400).json(fail('Invalid email'));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const now = new Date().toISOString();
+      const payload = {
+        fullName: fn,
+        name: fn,
+        email: em || null,
+        contactNumber: cn,
+        plainPassword: pw,
+        createdAt: now,
+        status: 'active',
+      };
+      const ref = await db.collection('packers').add(payload);
+      return res.json(ok({ id: ref.id }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to create packer'));
+    }
+  },
+  assignPacker: async (req, res) => {
+    try{
+      const rawId = String(req.params.id);
+      const { packerId } = req.body || {};
+      if(!packerId) return res.status(400).json(fail('Missing packerId'));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const id = rawId.replace(/^#+/, '');
+      const orderRef = db.collection('orders').doc(id);
+      await orderRef.set({ orderId: id, packed_by: String(packerId) }, { merge: true });
+      try{ if (global && global.window && typeof global.window.showToast==='function'){ global.window.showToast(`Packer assigned: ${packerId}`, { type:'success' }); } }catch(_){ }
+      return res.json(ok({ orderId: id, packerId }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to assign packer'));
+    }
+  },
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
