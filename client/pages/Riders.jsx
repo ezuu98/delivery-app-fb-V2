@@ -66,8 +66,8 @@ export default function Riders(){
   const getDefaultDateRange = () => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const from = firstDay.toISOString().split('T')[0];
-    const to = now.toISOString().split('T')[0];
+    const from = `${firstDay.getFullYear()}-${String(firstDay.getMonth() + 1).padStart(2, '0')}-${String(firstDay.getDate()).padStart(2, '0')}`;
+    const to = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return { from, to };
   };
 
