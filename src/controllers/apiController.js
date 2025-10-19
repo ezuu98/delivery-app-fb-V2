@@ -933,6 +933,16 @@ module.exports = {
       const riders = await riderModel.list().catch(()=>[]);
       const rmap = new Map(riders.map(r => [String(r.id), r.name]));
 
+      const packers = [];
+      try{
+        const psnap = await db.collection('packers').get();
+        psnap.forEach(doc => {
+          const d = doc.data() || {};
+          packers.push({ id: doc.id, fullName: d.fullName || d.name || null });
+        });
+      }catch(_){ /* ignore packer load errors */ }
+      const pmap = new Map(packers.map(p => [String(p.id), p.fullName]));
+
       // Merge delivery events (expected times and actual delivered time) into orders
       const evAll = await deliveryModel.listAll();
       const etaMap = new Map();
