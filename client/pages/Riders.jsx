@@ -135,10 +135,9 @@ export default function Riders(){
     if (!dateRangeFrom || !dateRangeTo || !riders.length) return;
     let alive = true;
     (async ()=>{
-      const cache = new Map(riderKmCache);
+      const cache = new Map();
       for (const rider of riders) {
         const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
-        if (cache.has(cacheKey)) continue;
 
         try{
           const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include' });
