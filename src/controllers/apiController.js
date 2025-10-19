@@ -548,7 +548,8 @@ module.exports = {
   },
   riderKmInRange: async (req, res) => {
     try{
-      const { riderId, fromDate, toDate } = req.query || {};
+      const riderId = String(req.params.id || '').trim();
+      const { fromDate, toDate } = req.query || {};
       if (!riderId) return res.status(400).json(fail('Missing riderId'));
       if (!fromDate || !toDate) return res.status(400).json(fail('Missing fromDate or toDate'));
 
