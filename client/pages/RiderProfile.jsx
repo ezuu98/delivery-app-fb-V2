@@ -2,12 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout.jsx';
 import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, toDateOrNull } from '../utils/orderTime.js';
+import { readRiderPerformance } from '../utils/riderPerformanceStorage.js';
 
 export default function RiderProfile(){
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [savedPerformance, setSavedPerformance] = useState(null);
+
+  useEffect(()=>{
+    const stored = readRiderPerformance(id);
+    if(typeof stored === 'number' && Number.isFinite(stored)){
+      setSavedPerformance(stored);
+    }else if(typeof stored === 'string'){
+      const numeric = Number(stored);
+      if(Number.isFinite(numeric)){
+        setSavedPerformance(numeric);
+      }else{
+        setSavedPerformance(null);
+      }
+    }else{
+      setSavedPerformance(null);
+    }
+  },[id]);
 
   useEffect(()=>{
     let alive = true;
@@ -36,6 +54,7 @@ export default function RiderProfile(){
   }
 
   const { rider, metrics, history } = data;
+  const onTimeRateValue = savedPerformance ?? (Number.isFinite(Number(metrics?.onTimeRate)) ? Math.round(Number(metrics.onTimeRate)) : 0);
 
   return (
     <SiteLayout>
@@ -58,7 +77,7 @@ export default function RiderProfile(){
         <div className="rc-toolbar rp-stats">
           <div className="rc-filters rp-stats-wrap">
             <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{Array.isArray(rider.orders) ? rider.orders.length : 0}</strong></div>
-            <div className="rc-select rc-chip">On-Time Rate&nbsp;<strong>{metrics.onTimeRate}%</strong></div>
+            <div className="rc-select rc-chip">On-Time Rate&nbsp;<strong>{onTimeRateValue}%</strong></div>
             <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{Number(rider.totalKm || 0)} km</strong></div>
           </div>
         </div>
@@ -81,7 +100,6 @@ export default function RiderProfile(){
                 const createdDate = toDateOrNull(o.created_at);
                 const dateDisplay = (createdDate instanceof Date && !Number.isNaN(createdDate.getTime())) ? createdDate.toISOString().slice(0,10) : '-';
                 const startDisplay = formatTimeOfDay(o.deliveryStartTime);
-                console.log("deliveryStartTime") 
                 const expectedValue = resolveExpectedValue(o);
                 const expectedDisplay = formatExpectedTime(expectedValue);
                 const actualDuration = resolveActualDuration(o);

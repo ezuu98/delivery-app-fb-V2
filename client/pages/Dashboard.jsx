@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
+import CreatePackerModal from '../components/CreatePackerModal.jsx';
 
 export default function Dashboard(){
   const [orders, setOrders] = useState([]);
@@ -18,6 +19,7 @@ export default function Dashboard(){
         const params = new URLSearchParams();
         params.set('limit', String(limit));
         params.set('page', String(page));
+        params.set('status', 'new');
         const res = await fetch(`/api/orders?${params.toString()}`, { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load orders');
@@ -40,6 +42,7 @@ export default function Dashboard(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [showCreatePacker, setShowCreatePacker] = useState(false);
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
@@ -75,6 +78,7 @@ export default function Dashboard(){
               <div className="stat-value">{loading ? '…' : meta.total || orders.length}</div>
               <div className="stat-label">Orders</div>
             </div>
+            <button className="btn-secondary btn-create-packer" onClick={()=>setShowCreatePacker(true)}>Create Packer</button>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
           </div>
         </header>
@@ -125,7 +129,7 @@ export default function Dashboard(){
                       <td className="rc-col-status"><span className={`status-chip status-${status}`}>{status.replace('-',' ')}</span></td>
                       <td className="rc-col-date">{dateStr}</td>
                       <td className="rc-col-time">{timeStr}</td>
-                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(String(o.id || o.name || o.order_number || i))}>Assign Rider</button></td>
+                      <td className="rc-col-action"><button className="order-action btn-manage" onClick={()=>openAssign(String(o.id || o.name || o.order_number || i))}>Assign</button></td>
                     </tr>
                   );
                 });
@@ -145,6 +149,9 @@ export default function Dashboard(){
 
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
+        )}
+        {showCreatePacker && (
+          <CreatePackerModal onClose={()=>setShowCreatePacker(false)} onCreated={()=>{ try{ if(window && typeof window.showToast==='function'){ window.showToast('Packer created', { type:'success' }); } }catch(_){} }} />
         )}
       </section>
     </SiteLayout>

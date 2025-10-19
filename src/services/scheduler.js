@@ -48,6 +48,7 @@ function buildFirestoreOrderPayload(order, id){
     phone: order?.phone || billing.phone || shipping.phone || null,
     email: order?.email || client.contact_email || null,
     riderId: null,
+    packed_by: null,
     shipping_address: shippingStr,
     billing_address: billingStr,
     latitude,
@@ -85,6 +86,7 @@ async function ensureFirestoreStatusNew(orders){
         if (!Object.prototype.hasOwnProperty.call(existing, 'order_status')) payload.order_status = 'new';
         if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) payload.expected_delivery_time = null;
         if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
+        if (!Object.prototype.hasOwnProperty.call(existing, 'packed_by')) payload.packed_by = null;
         if (Object.keys(payload).length > 1) await ref.set(payload, { merge: true });
       }catch(_){ /* continue next */ }
     }

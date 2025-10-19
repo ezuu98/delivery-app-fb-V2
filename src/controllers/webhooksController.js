@@ -57,6 +57,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       phone: order.phone || billing.phone || shipping.phone || null,
       email: order.email || client.contact_email || null,
       riderId: undefined, // set below according to logic
+      packed_by: undefined,
       shipping_address: shippingStr,
       billing_address: billingStr,
       latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
@@ -89,6 +90,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
       const snap = await ref.get();
       const existing = snap.exists ? (snap.data() || {}) : {};
       if (payload.riderId === undefined && !Object.prototype.hasOwnProperty.call(existing, 'riderId')) payload.riderId = null;
+      if (payload.packed_by === undefined && !Object.prototype.hasOwnProperty.call(existing, 'packed_by')) payload.packed_by = null;
       // Also ensure delivery time fields exist on initial create without overwriting existing values
       if (!Object.prototype.hasOwnProperty.call(existing, 'expected_delivery_time')) payload.expected_delivery_time = null;
       if (!Object.prototype.hasOwnProperty.call(existing, 'actual_delivery_time')) payload.actual_delivery_time = null;
@@ -100,6 +102,7 @@ async function upsertFirestore(order, { ensureRiderField = false } = {}){
     payload.order_status = 'new';
 
     if (payload.riderId === undefined) delete payload.riderId;
+    if (payload.packed_by === undefined) delete payload.packed_by;
     if (payload.expected_delivery_time === undefined) delete payload.expected_delivery_time;
     if (payload.actual_delivery_time === undefined) delete payload.actual_delivery_time;
     if (payload.current_status === undefined) delete payload.current_status;

@@ -35,11 +35,14 @@ router.get('/reports', ensureAuthenticated, sendSpa);
 // API routes
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
 router.get('/api/riders/:id', ensureAuthenticatedJson, apiController.riderProfile);
+router.get('/api/packers', ensureAuthenticatedJson, apiController.packers);
+router.post('/api/packers', ensureAuthenticatedJson, validate({ body: { fullName: 'string', password: 'string', contactNumber: 'string' } }), apiController.createPacker);
 router.get('/api/orders', ensureAuthenticatedJson, apiController.orders);
 router.get('/api/orders/:id', ensureAuthenticatedJson, apiController.getOrder);
 router.get('/api/orders/:id/delivery-events', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.getDeliveryEvents);
 router.post('/api/orders/:id/delivery-events', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { type: 'string' } }), apiController.addDeliveryEvent);
 router.post('/api/orders/:id/assign', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { riderId: 'string' } }), apiController.assignOrder);
+router.post('/api/orders/:id/assign-packer', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { packerId: 'string' } }), apiController.assignPacker);
 router.post('/api/orders/:id/unassign', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.unassignOrder);
 router.get('/api/reports', ensureAuthenticatedJson, apiController.reports);
 router.post('/api/debug/seed-order', ensureAuthenticatedJson, apiController.seedOrder);

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
 import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
+import { writeRiderPerformance } from '../utils/riderPerformanceStorage.js';
 
 function toDate(value){
   if (!value) return null;
@@ -133,6 +134,19 @@ export default function Riders(){
     const value = Number(fareSettings.baseFare);
     return Number.isFinite(value) ? value : DEFAULT_FARE_SETTINGS.baseFare;
   },[fareSettings]);
+
+  useEffect(()=>{
+    if(!Array.isArray(riders) || riders.length === 0) return;
+    const entries = {};
+    for (const rider of riders){
+      if(!rider || rider.id === undefined || rider.id === null) continue;
+      const performance = Number(rider.performancePct);
+      if(!Number.isFinite(performance)) continue;
+      entries[rider.id] = Math.round(performance);
+    }
+    if(Object.keys(entries).length === 0) return;
+    writeRiderPerformance(entries);
+  },[riders]);
 
   // compute last three months keys and labels (YYYY-MM)
   const lastThreeMonths = useMemo(()=>{

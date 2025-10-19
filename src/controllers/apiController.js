@@ -457,6 +457,84 @@ async function computeRiderAssignmentCounts(){
 }
 
 module.exports = {
+  packers: async (req, res) => {
+    try{
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const { limit = '200' } = req.query || {};
+      const n = parseIntParam(limit, 200);
+      const snap = await db.collection('packers').limit(Math.max(1, Math.min(500, n))).get();
+      const packers = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        packers.push({ id: doc.id, name: d.fullName || d.name || null, lastActiveDays: d.lastActiveDays, contactNumber: d.contactNumber || null, email: d.email || null });
+      });
+      return res.json(ok({ packers }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to load packers'));
+    }
+  },
+  createPacker: async (req, res) => {
+    try{
+      const { email = '', password = '', fullName = '', contactNumber = '' } = req.body || {};
+      const em = String(email).trim();
+      const pw = String(password);
+      const fn = String(fullName).trim();
+      const cn = String(contactNumber).trim();
+      const digits = cn.replace(/\D+/g, '');
+      if(!fn || !cn || !pw) return res.status(400).json(fail('Full name, mobile and password are required'));
+      if(digits.length < 7) return res.status(400).json(fail('Invalid contact number'));
+      if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return res.status(400).json(fail('Invalid email'));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const now = new Date().toISOString();
+      const payload = {
+        fullName: fn,
+        name: fn,
+        email: em || null,
+        contactNumber: cn,
+        plainPassword: pw,
+        createdAt: now,
+        status: 'active',
+        orders: [],
+      };
+      const ref = await db.collection('packers').add(payload);
+      return res.json(ok({ id: ref.id }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to create packer'));
+    }
+  },
+  assignPacker: async (req, res) => {
+    try{
+      const rawId = String(req.params.id);
+      const { packerId } = req.body || {};
+      if(!packerId) return res.status(400).json(fail('Missing packerId'));
+      const db = getFirestore();
+      if (!db) return res.status(503).json(fail('Firestore not configured'));
+      const id = rawId.replace(/^#+/, '');
+      const orderRef = db.collection('orders').doc(id);
+      await orderRef.set({ orderId: id, packed_by: String(packerId) }, { merge: true });
+      // Also add order id into packer's orders array
+      try{
+        const admin = require('../services/firebaseAdmin').initFirebaseAdmin();
+        const FV = admin && admin.firestore && admin.firestore.FieldValue ? admin.firestore.FieldValue : null;
+        if (FV){
+          await db.collection('packers').doc(String(packerId)).set({ orders: FV.arrayUnion(id) }, { merge: true });
+        } else {
+          // Fallback: ensure orders array exists and push manually (not atomic)
+          const pref = db.collection('packers').doc(String(packerId));
+          const snap = await pref.get();
+          const data = snap.exists ? (snap.data() || {}) : {};
+          const next = Array.isArray(data.orders) ? data.orders.slice() : [];
+          if (!next.includes(id)) next.push(id);
+          await pref.set({ orders: next }, { merge: true });
+        }
+      }catch(_){ /* ignore packer orders push errors */ }
+      return res.json(ok({ orderId: id, packerId }));
+    }catch(e){
+      return res.status(500).json(fail('Failed to assign packer'));
+    }
+  },
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
@@ -1050,6 +1128,7 @@ module.exports = {
             phone: order.phone || billing.phone || shipping.phone || null,
             email: order.email || client.contact_email || null,
             riderId: null,
+            packed_by: null,
             shipping_address: shippingStr,
             billing_address: billingStr,
             latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
@@ -1101,6 +1180,7 @@ module.exports = {
           if (!Object.prototype.hasOwnProperty.call(data, 'expected_delivery_time')) payload.expected_delivery_time = null;
           if (!Object.prototype.hasOwnProperty.call(data, 'actual_delivery_time')) payload.actual_delivery_time = null;
           if (!Object.prototype.hasOwnProperty.call(data, 'order_status')) payload.order_status = 'new';
+          if (!Object.prototype.hasOwnProperty.call(data, 'packed_by')) payload.packed_by = null;
           const nextStatus = deriveStatus(data);
           if (data.current_status !== nextStatus) payload.current_status = nextStatus;
           if (Object.keys(payload).length > 1){

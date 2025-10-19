@@ -163,7 +163,7 @@ export default function Orders(){
                   addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
                     .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
                 }
-                const action = statusKey === 'new' ? 'Assign Rider' : statusKey === 'assigned' ? 'View' : statusKey === 'in_progress' ? 'Track' : 'Details';
+                const action = statusKey === 'new' ? 'Assign' : statusKey === 'assigned' ? 'View' : statusKey === 'in_progress' ? 'Track' : 'Details';
                 const orderId = o.name || o.order_number || o.id;
                 const orderReference = orderId !== undefined && orderId !== null ? String(orderId).replace(/^#+/, '').trim() : '';
                 const displayOrderId = orderReference || '-';
