@@ -84,7 +84,7 @@ export default function Riders(){
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
   const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
   const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
-  const [riderKmCache, setRiderKmCache] = useState(new Map());
+  const [riderRangeData, setRiderRangeData] = useState(new Map());
 
   useEffect(()=>{
     function syncFareSettings(){
