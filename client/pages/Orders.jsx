@@ -108,7 +108,7 @@ export default function Orders(){
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
       if(!res.ok) throw new Error('Failed to unassign order');
       try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order unassigned: ${orderId}`, { type: 'success' }); } }catch(_){}
-      setPage(1);
+      setRefreshTrigger(prev => prev + 1);
     }catch(e){
       try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to unassign order', { type: 'error' }); } }catch(_){}
     }
