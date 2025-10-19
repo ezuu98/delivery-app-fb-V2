@@ -145,13 +145,13 @@ export default function Riders(){
           if (res.ok) {
             const data = await res.json();
             if (alive) {
-              cache.set(cacheKey, data.totalKm || 0);
+              cache.set(cacheKey, { km: data.totalKm || 0, rideCount: data.rideCount || 0 });
             }
           }
         }catch(_){ /* ignore fetch errors */ }
       }
       if (alive) {
-        setRiderKmCache(cache);
+        setRiderRangeData(cache);
       }
     })();
     return ()=>{ alive = false; };
