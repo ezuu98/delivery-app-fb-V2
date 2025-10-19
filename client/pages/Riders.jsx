@@ -307,7 +307,15 @@ export default function Riders(){
                     const rs = (km * farePerKm) + (rideCount * baseFare);
                     return (<td className="rc-col-earnings">{Number.isFinite(rs) ? `${rs.toFixed(2)} Rs.` : '0 Rs.'}</td>);
                   })()}
-                  <td className="rc-col-performance">{Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%'}</td>
+                  <td className="rc-col-performance">{(() => {
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      const perfPct = data?.performancePct ?? 0;
+                      return `${Number(perfPct)}%`;
+                    }
+                    return Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%';
+                  })()}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                 </tr>
               ))}
