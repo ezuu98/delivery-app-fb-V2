@@ -134,9 +134,6 @@ export default function Orders(){
                 {label}
               </button>
             ))}
-            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
-              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
-            </select>
           </div>
         </div>
 
