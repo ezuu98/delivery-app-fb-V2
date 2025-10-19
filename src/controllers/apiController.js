@@ -562,6 +562,8 @@ module.exports = {
       toEnd.setHours(23, 59, 59, 999);
 
       let totalKm = 0;
+      const debug = { ordersChecked: 0, ordersMatched: 0, errors: [] };
+
       try{
         const db = getFirestore();
         if (db){
@@ -570,9 +572,11 @@ module.exports = {
           if (riderSnap.exists){
             const riderData = riderSnap.data() || {};
             const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
+            debug.riderOrderCount = orderIds.length;
 
             // For each order, get the order doc and check assignedAt
             for (const orderId of orderIds){
+              debug.ordersChecked += 1;
               try{
                 const orderSnap = await db.collection('orders').doc(String(orderId)).get();
                 if (orderSnap.exists){
@@ -580,20 +584,24 @@ module.exports = {
                   const assignedAt = toDateOrNull(orderData.assignedAt);
 
                   if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
+                    debug.ordersMatched += 1;
                     const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
                     const km = parseKm(distanceRaw);
                     if (km > 0) totalKm += km;
                   }
                 }
-              }catch(_){ /* ignore individual order fetch errors */ }
+              }catch(e){ debug.errors.push(String(e.message)); }
             }
+          } else {
+            debug.errors.push('Rider document not found');
           }
         }
       }catch(e){
+        debug.errors.push(String(e.message));
         log.warn('rider.km.range.firestore.failed', { riderId: String(riderId), message: e?.message });
       }
 
-      return res.json(ok({ riderId, fromDate, toDate, totalKm }));
+      return res.json(ok({ riderId, fromDate, toDate, totalKm, debug }));
     }catch(e){
       log.error('rider.km.range.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to calculate rider km'));
