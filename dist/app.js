@@ -19080,7 +19080,7 @@ function G_() {
           window && typeof window.showToast == "function" && window.showToast(`Order unassigned: ${Y}`, { type: "success" });
         } catch {
         }
-        J((Ee) => Ee + 1);
+        V(1), J((Ee) => Ee + 1);
       } catch (Ne) {
         try {
           window && typeof window.showToast == "function" && window.showToast(Ne.message || "Failed to unassign order", { type: "error" });
@@ -19092,36 +19092,36 @@ function G_() {
     /* @__PURE__ */ c.jsxDEV("header", { className: "rc-header", children: [
       /* @__PURE__ */ c.jsxDEV("h2", { className: "rc-title", children: "Order Management" }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 121,
+        lineNumber: 122,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ c.jsxDEV("p", { className: "rc-subtitle", children: "Manage orders synced from Shopify." }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 122,
+        lineNumber: 123,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 120,
+      lineNumber: 121,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ c.jsxDEV("div", { className: "rc-toolbar", children: [
       /* @__PURE__ */ c.jsxDEV("div", { className: "rc-search", children: [
         /* @__PURE__ */ c.jsxDEV("span", { className: "rc-search-icon", "aria-hidden": "true" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 127,
+          lineNumber: 128,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("input", { className: "rc-search-input", type: "search", placeholder: "Search", value: m, onChange: (Y) => {
           g(Y.target.value), V(1);
         } }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 128,
+          lineNumber: 129,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 126,
+        lineNumber: 127,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ c.jsxDEV("div", { className: "rc-filters", children: [
@@ -19129,7 +19129,7 @@ function G_() {
           S(Y), V(1);
         }, "data-filter": Y, children: Ne }, Y, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 132,
+          lineNumber: 133,
           columnNumber: 15
         }, this)),
         /* @__PURE__ */ c.jsxDEV("select", { className: "rc-select rc-select-arrow rc-chip", value: R, onChange: (Y) => {
@@ -19139,101 +19139,101 @@ function G_() {
           "/page"
         ] }, Y, !0, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 137,
+          lineNumber: 138,
           columnNumber: 39
         }, this)) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 136,
+          lineNumber: 137,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 130,
+        lineNumber: 131,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 125,
+      lineNumber: 126,
       columnNumber: 9
     }, this),
     !G && /* @__PURE__ */ c.jsxDEV("div", { className: "section-note", children: "Shopify is not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN to enable orders sync." }, void 0, !1, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 143,
+      lineNumber: 144,
       columnNumber: 11
     }, this),
     ne && /* @__PURE__ */ c.jsxDEV("div", { className: "auth-error", children: ne }, void 0, !1, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 145,
+      lineNumber: 146,
       columnNumber: 25
     }, this),
     /* @__PURE__ */ c.jsxDEV("div", { className: "rc-table-wrapper", children: /* @__PURE__ */ c.jsxDEV("table", { className: "rc-table", children: [
       /* @__PURE__ */ c.jsxDEV("thead", { children: /* @__PURE__ */ c.jsxDEV("tr", { children: [
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-name order-id-heading", children: "Order" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 151,
+          lineNumber: 152,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-km customer-heading", children: "Customer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 152,
+          lineNumber: 153,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-perf address-heading", children: "Address" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 153,
+          lineNumber: 154,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-rider rider-heading", children: "Rider" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 154,
+          lineNumber: 155,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-start-time start-heading", children: "Start" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 155,
+          lineNumber: 156,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-expected expected-heading", children: "Expected" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 156,
+          lineNumber: 157,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-actual actual-heading", children: "Actual" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 157,
+          lineNumber: 158,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ c.jsxDEV("th", { className: "col-status status-heading", children: "Status" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 158,
+          lineNumber: 159,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 150,
+        lineNumber: 151,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 149,
+        lineNumber: 150,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ c.jsxDEV("tbody", { children: [
         L && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 8, className: "section-note", children: "Loading…" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 163,
+          lineNumber: 164,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 163,
+          lineNumber: 164,
           columnNumber: 17
         }, this),
         !L && $ && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 8, className: "auth-error", children: $ }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 166,
+          lineNumber: 167,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 166,
+          lineNumber: 167,
           columnNumber: 17
         }, this),
         !L && !$ && X.map((Y, Ne) => {
@@ -19245,43 +19245,43 @@ function G_() {
           return /* @__PURE__ */ c.jsxDEV("tr", { "data-status": ve, children: [
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-name order-id-cell", children: xt }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 197,
+              lineNumber: 198,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-km customer-cell", children: Ze || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 198,
+              lineNumber: 199,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-perf address-cell", children: ot }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 199,
+              lineNumber: 200,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-rider rider-cell", children: kt }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 200,
+              lineNumber: 201,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-start-time start-cell", children: nn }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 201,
+              lineNumber: 202,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-expected expected-cell", children: na }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 202,
+              lineNumber: 203,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: xn }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 203,
+              lineNumber: 204,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ c.jsxDEV("td", { className: "rc-col-status status-cell", children: /* @__PURE__ */ c.jsxDEV("div", { className: "status-container", children: [
               /* @__PURE__ */ c.jsxDEV("span", { className: `status-chip status-${ve}`, children: Ee }, void 0, !1, {
                 fileName: "/app/code/client/pages/Orders.jsx",
-                lineNumber: 206,
+                lineNumber: 207,
                 columnNumber: 25
               }, this),
               ve === "assigned" && /* @__PURE__ */ c.jsxDEV(
@@ -19297,59 +19297,59 @@ function G_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 208,
+                  lineNumber: 209,
                   columnNumber: 27
                 },
                 this
               )
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 205,
+              lineNumber: 206,
               columnNumber: 23
             }, this) }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 204,
+              lineNumber: 205,
               columnNumber: 21
             }, this)
           ] }, ht || Ne, !0, {
             fileName: "/app/code/client/pages/Orders.jsx",
-            lineNumber: 196,
+            lineNumber: 197,
             columnNumber: 19
           }, this);
         }),
         !L && !$ && X.length === 0 && /* @__PURE__ */ c.jsxDEV("tr", { children: /* @__PURE__ */ c.jsxDEV("td", { colSpan: 8, className: "section-note", children: "No orders to display." }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 223,
+          lineNumber: 224,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 223,
+          lineNumber: 224,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 161,
+        lineNumber: 162,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 148,
+      lineNumber: 149,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 147,
+      lineNumber: 148,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ c.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: [
       F && ae && /* @__PURE__ */ c.jsxDEV(BE, { orderId: ae, onClose: Z, onAssigned: ye }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 230,
+        lineNumber: 231,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ c.jsxDEV("div", { className: "rc-filters", children: [
         /* @__PURE__ */ c.jsxDEV("button", { className: "rc-select rc-chip", disabled: O.page <= 1 || L, onClick: () => V((Y) => Math.max(1, Y - 1)), children: "Prev" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 234,
+          lineNumber: 235,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("span", { className: "section-note", children: [
@@ -19362,31 +19362,31 @@ function G_() {
           " total"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 235,
+          lineNumber: 236,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ c.jsxDEV("button", { className: "rc-select rc-chip", disabled: O.page >= O.pages || L, onClick: () => V((Y) => Math.min(O.pages, Y + 1)), children: "Next" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 236,
+          lineNumber: 237,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 233,
+        lineNumber: 234,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 228,
+      lineNumber: 229,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
     fileName: "/app/code/client/pages/Orders.jsx",
-    lineNumber: 119,
+    lineNumber: 120,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/pages/Orders.jsx",
-    lineNumber: 118,
+    lineNumber: 119,
     columnNumber: 5
   }, this);
 }
