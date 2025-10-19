@@ -496,6 +496,7 @@ module.exports = {
         plainPassword: pw,
         createdAt: now,
         status: 'active',
+        orders: [],
       };
       const ref = await db.collection('packers').add(payload);
       return res.json(ok({ id: ref.id }));
@@ -513,7 +514,22 @@ module.exports = {
       const id = rawId.replace(/^#+/, '');
       const orderRef = db.collection('orders').doc(id);
       await orderRef.set({ orderId: id, packed_by: String(packerId) }, { merge: true });
-      try{ if (global && global.window && typeof global.window.showToast==='function'){ global.window.showToast(`Packer assigned: ${packerId}`, { type:'success' }); } }catch(_){ }
+      // Also add order id into packer's orders array
+      try{
+        const admin = require('../services/firebaseAdmin').initFirebaseAdmin();
+        const FV = admin && admin.firestore && admin.firestore.FieldValue ? admin.firestore.FieldValue : null;
+        if (FV){
+          await db.collection('packers').doc(String(packerId)).set({ orders: FV.arrayUnion(id) }, { merge: true });
+        } else {
+          // Fallback: ensure orders array exists and push manually (not atomic)
+          const pref = db.collection('packers').doc(String(packerId));
+          const snap = await pref.get();
+          const data = snap.exists ? (snap.data() || {}) : {};
+          const next = Array.isArray(data.orders) ? data.orders.slice() : [];
+          if (!next.includes(id)) next.push(id);
+          await pref.set({ orders: next }, { merge: true });
+        }
+      }catch(_){ /* ignore packer orders push errors */ }
       return res.json(ok({ orderId: id, packerId }));
     }catch(e){
       return res.status(500).json(fail('Failed to assign packer'));
