@@ -237,9 +237,7 @@ export default function Riders(){
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  {lastThreeMonths.keys.map(k=> (
-                    <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
-                  ))}
+                  <td className="rc-col-month">{Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km</td>
                   {(() => {
                     const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
                     const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);
