@@ -546,6 +546,59 @@ module.exports = {
       return res.status(500).json(fail('Failed to assign packer'));
     }
   },
+  riderKmInRange: async (req, res) => {
+    try{
+      const { riderId, fromDate, toDate } = req.query || {};
+      if (!riderId) return res.status(400).json(fail('Missing riderId'));
+      if (!fromDate || !toDate) return res.status(400).json(fail('Missing fromDate or toDate'));
+
+      const from = toDateOrNull(fromDate);
+      const to = toDateOrNull(toDate);
+      if (!from || !to) return res.status(400).json(fail('Invalid date format'));
+
+      // Set toDate to end of day
+      const toEnd = new Date(to);
+      toEnd.setHours(23, 59, 59, 999);
+
+      let totalKm = 0;
+      try{
+        const db = getFirestore();
+        if (db){
+          // Get rider orders from riders collection
+          const riderSnap = await db.collection('riders').doc(String(riderId)).get();
+          if (riderSnap.exists){
+            const riderData = riderSnap.data() || {};
+            const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
+
+            // For each order, get the order doc and check assignedAt
+            for (const orderId of orderIds){
+              try{
+                const orderSnap = await db.collection('orders').doc(String(orderId)).get();
+                if (orderSnap.exists){
+                  const orderData = orderSnap.data() || {};
+                  const assignedAt = toDateOrNull(orderData.assignedAt);
+
+                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
+                    const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
+                    const km = parseKm(distanceRaw);
+                    if (km > 0) totalKm += km;
+                  }
+                }
+              }catch(_){ /* ignore individual order fetch errors */ }
+            }
+          }
+        }
+      }catch(e){
+        log.warn('rider.km.range.firestore.failed', { riderId: String(riderId), message: e?.message });
+      }
+
+      return res.json(ok({ riderId, fromDate, toDate, totalKm }));
+    }catch(e){
+      log.error('rider.km.range.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to calculate rider km'));
+    }
+  },
+
   riders: async (req, res) => {
     const { q = '', status = 'all', lastDays = 'all', page = '1', limit = '20' } = req.query || {};
     const list = await riderModel.list();
