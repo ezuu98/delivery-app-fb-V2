@@ -41,6 +41,7 @@ export default function Orders(){
   const [error, setError] = useState('');
   const [shopifyErr, setShopifyErr] = useState('');
   const [shopifyConfigured, setShopifyConfigured] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
