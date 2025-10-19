@@ -1005,12 +1005,17 @@ module.exports = {
           return null;
         })();
 
+        const packedById = o.packed_by ? String(o.packed_by).trim() : null;
+        const resolvedPackerName = packedById ? (pmap.get(packedById) || packedById) : null;
+
         const base = { ...o };
         return {
           ...base,
           assignment,
           riderId: normalizedRiderId,
           rider: resolvedRiderName,
+          packed_by: packedById,
+          packerName: resolvedPackerName,
           expected_delivery_time: resolvedExpected !== null ? resolvedExpected : (o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
