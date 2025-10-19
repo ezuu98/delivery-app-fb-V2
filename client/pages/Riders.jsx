@@ -72,6 +72,8 @@ export default function Riders(){
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
+  const [dateRangeFrom, setDateRangeFrom] = useState('');
+  const [dateRangeTo, setDateRangeTo] = useState('');
 
   useEffect(()=>{
     function syncFareSettings(){
