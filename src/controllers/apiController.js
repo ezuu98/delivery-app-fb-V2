@@ -563,6 +563,7 @@ module.exports = {
 
       let totalKm = 0;
       let rideCount = 0;
+      let onTimeCount = 0;
       const debug = { ordersChecked: 0, ordersMatched: 0, errors: [] };
 
       try{
@@ -590,6 +591,11 @@ module.exports = {
                     const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
                     const km = parseKm(distanceRaw);
                     if (km > 0) totalKm += km;
+
+                    // Check if order was on time
+                    if (orderData.onTime === true) {
+                      onTimeCount += 1;
+                    }
                   }
                 }
               }catch(e){ debug.errors.push(String(e.message)); }
@@ -603,7 +609,8 @@ module.exports = {
         log.warn('rider.km.range.firestore.failed', { riderId: String(riderId), message: e?.message });
       }
 
-      return res.json(ok({ riderId, fromDate, toDate, totalKm, rideCount, debug }));
+      const performancePct = rideCount > 0 ? Math.round((onTimeCount / rideCount) * 100) : 0;
+      return res.json(ok({ riderId, fromDate, toDate, totalKm, rideCount, onTimeCount, performancePct, debug }));
     }catch(e){
       log.error('rider.km.range.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to calculate rider km'));
