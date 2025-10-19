@@ -123,9 +123,27 @@ export default function Riders(){
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
       if(q && !String(r.name||'').toLowerCase().includes(q.toLowerCase().trim())) return false;
+
+      if(dateRangeFrom || dateRangeTo){
+        const lastActiveDays = Number(r.lastActiveDays ?? 0);
+        const fromDate = dateRangeFrom ? new Date(dateRangeFrom) : null;
+        const toDate = dateRangeTo ? new Date(dateRangeTo) : null;
+
+        if(fromDate && toDate){
+          const daysAgo = Math.floor((Date.now() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
+          const daysFrom = Math.floor((Date.now() - toDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays < daysFrom || lastActiveDays > daysAgo) return false;
+        } else if(fromDate){
+          const daysAgo = Math.floor((Date.now() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays > daysAgo) return false;
+        } else if(toDate){
+          const daysFrom = Math.floor((Date.now() - toDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays < daysFrom) return false;
+        }
+      }
       return true;
     });
-  },[riders,q]);
+  },[riders,q,dateRangeFrom,dateRangeTo]);
 
   const farePerKm = useMemo(()=>{
     const rate = Number(fareSettings.farePerKm);
