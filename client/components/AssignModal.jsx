@@ -76,8 +76,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
       const json = await res.json().catch(()=>null);
       if(!res.ok) throw new Error((json && json.error) ? json.error : 'Assign failed');
-      const packer = packers.find(p => p.id === packerId);
-      const packerName = packer ? packer.name : packerId;
+      const packerName = (json && json.data && json.data.packerName) ? json.data.packerName : (packers.find(p => p.id === packerId)?.name || packerId);
       try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Packer assigned: ${packerName}`, { type: 'success' }); } }catch(_){ }
       onClose();
     }catch(e){ alert(e.message || 'Failed to assign packer'); }
