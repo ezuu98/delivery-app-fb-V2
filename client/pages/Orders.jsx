@@ -96,6 +96,23 @@ export default function Orders(){
     }catch(e){}
   }
 
+  async function handleUnassign(orderId){
+    if(!orderId) return;
+    try{
+      const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/unassign`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if(res.status === 401){ window.location.href = '/auth/login'; return; }
+      if(!res.ok) throw new Error('Failed to unassign order');
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order unassigned: ${orderId}`, { type: 'success' }); } }catch(_){}
+      setPage(1);
+    }catch(e){
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to unassign order', { type: 'error' }); } }catch(_){}
+    }
+  }
+
   return (
     <SiteLayout>
       <section className="rider-commissions">
