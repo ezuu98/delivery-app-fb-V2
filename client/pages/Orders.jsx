@@ -200,7 +200,21 @@ export default function Orders(){
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
-                    <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
+                    <td className="rc-col-status status-cell">
+                      <div className="status-container">
+                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                        {statusKey === 'assigned' && (
+                          <button
+                            className="status-unassign-btn"
+                            onClick={() => handleUnassign(orderReference)}
+                            aria-label="Unassign order"
+                            title="Unassign order"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
