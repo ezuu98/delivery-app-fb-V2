@@ -131,6 +131,33 @@ export default function Riders(){
     return ()=>{ alive = false; };
   },[q,page,limit]);
 
+  useEffect(()=>{
+    if (!dateRangeFrom || !dateRangeTo || !riders.length) return;
+    let alive = true;
+    (async ()=>{
+      const cache = new Map(riderKmCache);
+      for (const rider of riders) {
+        const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+        if (cache.has(cacheKey)) continue;
+
+        try{
+          const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include' });
+          if (res.status === 401) { window.location.href = '/auth/login'; return; }
+          if (res.ok) {
+            const data = await res.json();
+            if (alive) {
+              cache.set(cacheKey, data.totalKm || 0);
+            }
+          }
+        }catch(_){ /* ignore fetch errors */ }
+      }
+      if (alive) {
+        setRiderKmCache(cache);
+      }
+    })();
+    return ()=>{ alive = false; };
+  },[dateRangeFrom, dateRangeTo, riders]);
+
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
       if(q && !String(r.name||'').toLowerCase().includes(q.toLowerCase().trim())) return false;
