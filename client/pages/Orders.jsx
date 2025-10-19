@@ -41,6 +41,7 @@ export default function Orders(){
   const [error, setError] = useState('');
   const [shopifyErr, setShopifyErr] = useState('');
   const [shopifyConfigured, setShopifyConfigured] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
@@ -72,7 +73,7 @@ export default function Orders(){
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[q, tab, page, limit]);
+  },[q, tab, page, limit, refreshTrigger]);
 
   const filtered = useMemo(()=> orders, [orders]);
 
@@ -96,6 +97,24 @@ export default function Orders(){
     }catch(e){}
   }
 
+  async function handleUnassign(orderId){
+    if(!orderId) return;
+    try{
+      const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/unassign`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if(res.status === 401){ window.location.href = '/auth/login'; return; }
+      if(!res.ok) throw new Error('Failed to unassign order');
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order unassigned: ${orderId}`, { type: 'success' }); } }catch(_){}
+      setPage(1);
+      setRefreshTrigger(prev => prev + 1);
+    }catch(e){
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to unassign order', { type: 'error' }); } }catch(_){}
+    }
+  }
+
   return (
     <SiteLayout>
       <section className="rider-commissions">
@@ -115,9 +134,6 @@ export default function Orders(){
                 {label}
               </button>
             ))}
-            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
-              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
-            </select>
           </div>
         </div>
 
@@ -183,7 +199,21 @@ export default function Orders(){
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
-                    <td className="rc-col-status status-cell"><span className={`status-chip status-${statusKey}`}>{statusRaw}</span></td>
+                    <td className="rc-col-status status-cell">
+                      <div className="status-container">
+                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                        {statusKey === 'assigned' && (
+                          <button
+                            className="status-unassign-btn"
+                            onClick={() => handleUnassign(orderReference)}
+                            aria-label="Unassign order"
+                            title="Unassign order"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

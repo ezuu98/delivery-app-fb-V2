@@ -224,3 +224,17 @@
 .rc-filters .rc-chip:focus{background-color:#eef6ff;border-color:#cfe0ff;color:#1f5fbf;outline:none}
 .rc-select.rc-select-arrow:hover,
 .rc-select.rc-select-arrow:focus{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%231f5fbf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>')}
+
+/* Status container and unassign button */
+.status-container{display:flex;align-items:center;gap:8px}
+.status-unassign-btn{background:transparent;border:none;color:#dc2626;cursor:pointer;padding:4px 6px;border-radius:6px;font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease}
+.status-unassign-btn:hover{background:#fee2e2;color:#b91c1c}
+.status-unassign-btn:active{background:#fecaca}
+
+/* Date range filter */
+.date-range-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.date-range-input{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;font-size:14px;height:40px}
+.date-range-input:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
+.date-range-separator{color:#9ca3af;font-size:14px;font-weight:500}
+.date-range-clear{background:transparent;border:none;color:#dc2626;cursor:pointer;padding:4px 6px;border-radius:6px;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease}
+.date-range-clear:hover{background:#fee2e2;color:#b91c1c}

@@ -63,6 +63,15 @@ function countOrdersForMonth(orders, monthKey){
 }
 
 export default function Riders(){
+  const getDefaultDateRange = () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const from = firstDay.toISOString().split('T')[0];
+    const to = now.toISOString().split('T')[0];
+    return { from, to };
+  };
+
+  const defaultDates = useMemo(()=> getDefaultDateRange(), []);
   const [riders, setRiders] = useState([]);
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
@@ -72,6 +81,8 @@ export default function Riders(){
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
+  const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
+  const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
 
   useEffect(()=>{
     function syncFareSettings(){
@@ -121,9 +132,27 @@ export default function Riders(){
   const filtered = useMemo(()=>{
     return riders.filter(r=>{
       if(q && !String(r.name||'').toLowerCase().includes(q.toLowerCase().trim())) return false;
+
+      if(dateRangeFrom || dateRangeTo){
+        const lastActiveDays = Number(r.lastActiveDays ?? 0);
+        const fromDate = dateRangeFrom ? new Date(dateRangeFrom) : null;
+        const toDate = dateRangeTo ? new Date(dateRangeTo) : null;
+
+        if(fromDate && toDate){
+          const daysAgo = Math.floor((Date.now() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
+          const daysFrom = Math.floor((Date.now() - toDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays < daysFrom || lastActiveDays > daysAgo) return false;
+        } else if(fromDate){
+          const daysAgo = Math.floor((Date.now() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays > daysAgo) return false;
+        } else if(toDate){
+          const daysFrom = Math.floor((Date.now() - toDate.getTime()) / (1000 * 60 * 60 * 24));
+          if(lastActiveDays < daysFrom) return false;
+        }
+      }
       return true;
     });
-  },[riders,q]);
+  },[riders,q,dateRangeFrom,dateRangeTo]);
 
   const farePerKm = useMemo(()=>{
     const rate = Number(fareSettings.farePerKm);
@@ -181,11 +210,17 @@ export default function Riders(){
             <span className="rc-search-icon" aria-hidden="true"></span>
             <input className="rc-search-input" type="search" placeholder="Search" value={q} onChange={e=>{ setQ(e.target.value); setPage(1); }} />
           </div>
-          <div className="rc-filters"></div>
-            <select className="rc-select rc-select-arrow rc-chip" value={limit} onChange={e=>{ setLimit(parseInt(e.target.value,10)); setPage(1); }}>
-              {[10,20,50,100].map(n=> <option key={n} value={n}>{n}/page</option>)}
-            </select>
+          <div className="rc-filters">
+            <div className="date-range-filter">
+              <input type="date" className="date-range-input" value={dateRangeFrom} onChange={e=>{ setDateRangeFrom(e.target.value); setPage(1); }} placeholder="From" title="Filter from date" />
+              <span className="date-range-separator">to</span>
+              <input type="date" className="date-range-input" value={dateRangeTo} onChange={e=>{ setDateRangeTo(e.target.value); setPage(1); }} placeholder="To" title="Filter to date" />
+              {(dateRangeFrom || dateRangeTo) && (
+                <button className="date-range-clear" onClick={()=>{ setDateRangeFrom(''); setDateRangeTo(''); setPage(1); }} title="Clear date range">✕</button>
+              )}
+            </div>
           </div>
+        </div>
 
         <div className="rc-table-wrapper">
           {showCreateRider && (
@@ -195,9 +230,7 @@ export default function Riders(){
             <thead>
               <tr>
                 <th className="col-name">Rider Name</th>
-                {lastThreeMonths.labels.map((l,idx)=> (
-                  <th key={lastThreeMonths.keys[idx]} className="col-month">{l}</th>
-                ))}
+                <th key={lastThreeMonths.keys[lastThreeMonths.keys.length - 1]} className="col-month">Range</th>
                 <th className="col-earnings">{(() => { const k = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const parts = String(k).split('-'); const y = parseInt(parts[0],10); const m = parseInt(parts[1],10); const d = new Date(Number.isFinite(y)?y:new Date().getFullYear(), Number.isFinite(m)?(m-1):new Date().getMonth()-1, 1); const ml = d.toLocaleString(undefined, { month: 'short' }); return `Earnings (${ml}, Rs)`; })()}</th>
                 <th className="col-perf">Performance</th>
                 <th className="col-total">Total</th>
@@ -213,9 +246,7 @@ export default function Riders(){
               {!loading && !error && filtered.map(r => (
                 <tr key={r.id} data-rider-id={r.id} data-status={r.status} data-last-days={r.lastActiveDays}>
                   <td className="rc-col-name"><a className="rider-name-link" href={`/riders/${r.id}`}>{r.name}</a></td>
-                  {lastThreeMonths.keys.map(k=> (
-                    <td key={k} className="rc-col-month">{Number(r.monthlyCounts?.[k] || 0).toFixed(2)} km</td>
-                  ))}
+                  <td className="rc-col-month">{Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km</td>
                   {(() => {
                     const lastMonthKey = lastThreeMonths.keys[lastThreeMonths.keys.length - 2];
                     const km = Number(r.monthlyCounts?.[lastMonthKey] || 0);

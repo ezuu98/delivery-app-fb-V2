@@ -530,7 +530,18 @@ module.exports = {
           await pref.set({ orders: next }, { merge: true });
         }
       }catch(_){ /* ignore packer orders push errors */ }
-      return res.json(ok({ orderId: id, packerId }));
+
+      let packerName = null;
+      try{
+        const pref = db.collection('packers').doc(String(packerId));
+        const psnap = await pref.get();
+        if(psnap.exists){
+          const pdata = psnap.data() || {};
+          packerName = pdata.fullName || pdata.name || null;
+        }
+      }catch(_){ /* ignore packer name fetch errors */ }
+
+      return res.json(ok({ orderId: id, packerId, packerName }));
     }catch(e){
       return res.status(500).json(fail('Failed to assign packer'));
     }
@@ -933,6 +944,16 @@ module.exports = {
       const riders = await riderModel.list().catch(()=>[]);
       const rmap = new Map(riders.map(r => [String(r.id), r.name]));
 
+      const packers = [];
+      try{
+        const psnap = await db.collection('packers').get();
+        psnap.forEach(doc => {
+          const d = doc.data() || {};
+          packers.push({ id: doc.id, fullName: d.fullName || d.name || null });
+        });
+      }catch(_){ /* ignore packer load errors */ }
+      const pmap = new Map(packers.map(p => [String(p.id), p.fullName]));
+
       // Merge delivery events (expected times and actual delivered time) into orders
       const evAll = await deliveryModel.listAll();
       const etaMap = new Map();
@@ -995,12 +1016,17 @@ module.exports = {
           return null;
         })();
 
+        const packedById = o.packed_by ? String(o.packed_by).trim() : null;
+        const resolvedPackerName = packedById ? (pmap.get(packedById) || packedById) : null;
+
         const base = { ...o };
         return {
           ...base,
           assignment,
           riderId: normalizedRiderId,
           rider: resolvedRiderName,
+          packed_by: packedById,
+          packerName: resolvedPackerName,
           expected_delivery_time: resolvedExpected !== null ? resolvedExpected : (o.expected_delivery_time || null),
           actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null),
         };
