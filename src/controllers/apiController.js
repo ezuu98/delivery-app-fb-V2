@@ -1050,6 +1050,7 @@ module.exports = {
             phone: order.phone || billing.phone || shipping.phone || null,
             email: order.email || client.contact_email || null,
             riderId: null,
+            packed_by: null,
             shipping_address: shippingStr,
             billing_address: billingStr,
             latitude: (billing.latitude !== undefined ? Number(billing.latitude) : (shipping.latitude !== undefined ? Number(shipping.latitude) : undefined)),
@@ -1101,6 +1102,7 @@ module.exports = {
           if (!Object.prototype.hasOwnProperty.call(data, 'expected_delivery_time')) payload.expected_delivery_time = null;
           if (!Object.prototype.hasOwnProperty.call(data, 'actual_delivery_time')) payload.actual_delivery_time = null;
           if (!Object.prototype.hasOwnProperty.call(data, 'order_status')) payload.order_status = 'new';
+          if (!Object.prototype.hasOwnProperty.call(data, 'packed_by')) payload.packed_by = null;
           const nextStatus = deriveStatus(data);
           if (data.current_status !== nextStatus) payload.current_status = nextStatus;
           if (Object.keys(payload).length > 1){
