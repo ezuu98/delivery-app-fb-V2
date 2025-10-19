@@ -215,9 +215,6 @@ export default function Riders(){
               <input type="date" className="date-range-input" value={dateRangeFrom} onChange={e=>{ setDateRangeFrom(e.target.value); setPage(1); }} placeholder="From" title="Filter from date" />
               <span className="date-range-separator">to</span>
               <input type="date" className="date-range-input" value={dateRangeTo} onChange={e=>{ setDateRangeTo(e.target.value); setPage(1); }} placeholder="To" title="Filter to date" />
-              {(dateRangeFrom || dateRangeTo) && (
-                <button className="date-range-clear" onClick={()=>{ setDateRangeFrom(''); setDateRangeTo(''); setPage(1); }} title="Clear date range">✕</button>
-              )}
             </div>
           </div>
         </div>
