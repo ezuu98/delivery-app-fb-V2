@@ -210,6 +210,7 @@ export default function Orders(){
                     <td className="rc-col-payment payment-cell">{o.assignment?.paymentMethod || '-'}</td>
                     <td className="rc-col-status status-cell">
                       <div className="status-container">
+                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
                         {statusKey === 'assigned' && (
                           <button
                             className="status-unassign-btn"
@@ -236,7 +237,6 @@ export default function Orders(){
                         >
                           ✏️
                         </button>
-                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
                       </div>
                     </td>
                   </tr>
