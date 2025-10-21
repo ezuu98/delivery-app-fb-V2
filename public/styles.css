@@ -112,6 +112,7 @@
 .btn-assign{background:#0070f3;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
 .btn-assign:disabled{opacity:0.6;cursor:not-allowed}
 .assign-form{display:flex;flex-direction:column;gap:14px}
+.edit-form{display:flex;flex-direction:column;gap:14px}
 .form-group{display:flex;flex-direction:column;gap:8px}
 .assign-dropdown{padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:14px;cursor:pointer}
 .assign-dropdown:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
