@@ -45,6 +45,8 @@ export default function Orders(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
 
   useEffect(()=>{
     let alive = true;
