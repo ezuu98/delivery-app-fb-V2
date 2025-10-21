@@ -210,8 +210,10 @@ export default function Orders(){
                     <td className="rc-col-amount amount-cell">{o.assignment?.amount || '-'}</td>
                     <td className="rc-col-payment payment-cell">{o.assignment?.paymentMethod || '-'}</td>
                     <td className="rc-col-status status-cell">
-                      <div className="status-container">
-                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                      <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                    </td>
+                    <td className="rc-col-actions actions-cell">
+                      <div className="actions-container">
                         {statusKey === 'assigned' && (
                           <button
                             className="status-unassign-btn"
