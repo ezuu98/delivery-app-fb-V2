@@ -142,6 +142,32 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                   {packerError && <div className="auth-error">{packerError}</div>}
                   {packers.length === 0 && !packerError && <div className="section-note">No packers available</div>}
                 </div>
+
+                <div className="form-group">
+                  <label className="field-label">Payment Method
+                    <input
+                      type="text"
+                      className="field-input assign-dropdown"
+                      placeholder="e.g., Cash, Card, Online"
+                      value={paymentMethod}
+                      onChange={e=>setPaymentMethod(e.target.value)}
+                      disabled={submitting}
+                    />
+                  </label>
+                </div>
+
+                <div className="form-group">
+                  <label className="field-label">Amount
+                    <input
+                      type="text"
+                      className="field-input assign-dropdown"
+                      placeholder="e.g., 500"
+                      value={amount}
+                      onChange={e=>setAmount(e.target.value)}
+                      disabled={submitting}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="assign-modal-actions">
