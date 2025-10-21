@@ -232,7 +232,8 @@ export default function Orders(){
                           className="status-photo-btn"
                           aria-label="View photo"
                           title="View photo"
-                          disabled
+                          disabled={statusKey !== 'delivered'}
+                          onClick={() => statusKey === 'delivered' && openImage(o)}
                         >
                           📷
                         </button>
