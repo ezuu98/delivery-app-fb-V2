@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
+import EditRiderModal from '../components/EditRiderModal.jsx';
 import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
 import { writeRiderPerformance } from '../utils/riderPerformanceStorage.js';
 
