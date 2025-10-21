@@ -132,37 +132,64 @@ export default function Riders(){
   },[q,page,limit]);
 
   useEffect(()=>{
-    if (!dateRangeFrom || !dateRangeTo || !riders.length) return;
-    let alive = true;
-    (async ()=>{
-      const cache = new Map();
-      for (const rider of riders) {
-        const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+    if (!dateRangeFrom || !dateRangeTo || !riders.length) { setRiderRangeData(new Map()); return; }
 
-        try{
-          const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include' });
-          if (res.status === 401) { window.location.href = '/auth/login'; return; }
-          if (res.ok) {
-            const data = await res.json();
-            if (alive) {
-              cache.set(cacheKey, {
-                km: data.totalKm || 0,
-                rideCount: data.rideCount || 0,
-                performancePct: data.performancePct || 0
-              });
-              console.log(`km-in-range for ${rider.id}:`, data);
-            }
-          } else {
-            const errText = await res.text();
-            console.error(`km-in-range error for ${rider.id}:`, res.status, errText);
-          }
-        }catch(e){ console.error(`km-in-range fetch error for ${rider.id}:`, e); }
-      }
-      if (alive) {
-        setRiderRangeData(cache);
-      }
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let cancelled = false;
+
+    const limit = (() => {
+      const hc = (typeof navigator !== 'undefined' && Number.isFinite(Number(navigator.hardwareConcurrency))) ? Number(navigator.hardwareConcurrency) : 8;
+      return Math.max(2, Math.min(8, Math.floor(hc / 2)));
     })();
-    return ()=>{ alive = false; };
+
+    setRiderRangeData(new Map());
+
+    const tasks = riders.map(rider => async () => {
+      const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+      try{
+        const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include', signal });
+        if (res.status === 401) { window.location.href = '/auth/login'; return; }
+        if (!res.ok) {
+          const errText = await res.text().catch(()=>String(res.status));
+          console.error(`km-in-range error for ${rider.id}:`, res.status, errText);
+          return;
+        }
+        const data = await res.json();
+        if (cancelled || signal.aborted) return;
+        setRiderRangeData(prev => {
+          const next = new Map(prev);
+          next.set(cacheKey, {
+            km: data.totalKm || 0,
+            rideCount: data.rideCount || 0,
+            performancePct: data.performancePct || 0
+          });
+          return next;
+        });
+      }catch(e){
+        if (e && e.name === 'AbortError') return;
+        console.error(`km-in-range fetch error for ${rider.id}:`, e);
+      }
+    });
+
+    async function runPool(list, concurrency){
+      let idx = 0;
+      const workers = new Array(Math.min(concurrency, list.length)).fill(0).map(async ()=>{
+        while(!cancelled && !signal.aborted){
+          const current = idx++;
+          if (current >= list.length) break;
+          await list[current]();
+        }
+      });
+      await Promise.all(workers);
+    }
+
+    runPool(tasks, limit);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   },[dateRangeFrom, dateRangeTo, riders]);
 
   const filtered = useMemo(()=>{
