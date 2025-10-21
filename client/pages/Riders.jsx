@@ -287,6 +287,17 @@ export default function Riders(){
           {showCreateRider && (
             <CreateRiderModal onClose={()=>setShowCreateRider(false)} onCreated={()=>{ window.location.reload(); }} />
           )}
+          {editingRider && (
+            <EditRiderModal
+              rider={editingRider}
+              onClose={()=> setEditingRider(null)}
+              onUpdated={(serverRider)=>{
+                if (!serverRider){ setEditingRider(null); return; }
+                setRiders(prev => prev.map(x => String(x.id) === String(serverRider.id) ? { ...x, name: serverRider.displayName || serverRider.name || x.name, contactNumber: serverRider.contactNumber ?? x.contactNumber } : x));
+                setEditingRider(null);
+              }}
+            />
+          )}
           <table className="rc-table">
             <thead>
               <tr>
@@ -346,6 +357,22 @@ export default function Riders(){
                     return Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%';
                   })()}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
+                  <td className="rc-col-actions">
+                    <div className="actions-container">
+                      <button className="rc-select rc-chip" onClick={()=> setEditingRider(r)}>Edit</button>
+                      <button className="rc-select rc-chip" onClick={async ()=>{
+                        const yes = window.confirm('Delete this rider?');
+                        if (!yes) return;
+                        try{
+                          const res = await fetch(`/api/riders/${encodeURIComponent(r.id)}`, { method:'DELETE', credentials:'include' });
+                          if (res.status === 401){ window.location.href = '/auth/login'; return; }
+                          if (!res.ok){ const t = await res.text().catch(()=>'' ); alert(t || 'Failed to delete'); return; }
+                          setRiders(prev => prev.filter(x => String(x.id) !== String(r.id)));
+                          setMeta(m => ({ ...m, total: Math.max(0, (m.total||1) - 1) }));
+                        }catch(e){ alert(String(e?.message || 'Failed to delete')); }
+                      }}>Delete</button>
+                    </div>
+                  </td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (
