@@ -19708,12 +19708,12 @@ function W_() {
               lineNumber: 209,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-amount amount-cell", children: ((wn = ne.assignment) == null ? void 0 : wn.amount) || "-" }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-amount amount-cell", children: ne.amount || ((wn = ne.assignment) == null ? void 0 : wn.amount) || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 210,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-payment payment-cell", children: ((la = ne.assignment) == null ? void 0 : la.paymentMethod) || "-" }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-payment payment-cell", children: ne.paymentMethod || ((la = ne.assignment) == null ? void 0 : la.paymentMethod) || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 211,
               columnNumber: 21
