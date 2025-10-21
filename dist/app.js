@@ -19756,12 +19756,12 @@ function K_({ onClose: o, onCreated: p }) {
   async function _e() {
     S(""), P(""), le(!0);
     const ne = String(m), Z = String(y).trim(), ae = String(f).trim(), je = ae.replace(/\D+/g, ""), Y = { fn: !Z, cn: !ae, pw: !ne };
-    if (se(Y.fn), ce(Y.cn || je.length < 7), $(Y.pw), Y.fn || Y.cn || Y.pw) {
+    if (se(Y.fn), ce(Y.cn || je.length !== 10), $(Y.pw), Y.fn || Y.cn || Y.pw) {
       S("Full name, mobile and password are required");
       return;
     }
-    if (je.length < 7) {
-      S("Please enter a valid mobile number"), ce(!0);
+    if (je.length !== 10) {
+      S("numbers should be 10 digit"), ce(!0);
       return;
     }
     if (ne.length < 6) {
@@ -19779,11 +19779,11 @@ function K_({ onClose: o, onCreated: p }) {
       if (!q.ok) {
         const X = String(re && (re.error || re.message) || ""), xe = X.toUpperCase();
         if (/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(X) || /MISSING\s*PASSWORD/i.test(X))
-          S("Full name, mobile and password are required"), se(!Z), ce(!ae || je.length < 7), $(!ne);
+          S("Full name, mobile and password are required"), se(!Z), ce(!ae || je.length !== 10), $(!ne);
         else if (xe.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(X))
           $(!0), S("Password must be at least 6 characters");
-        else if (/INVALID CONTACT NUMBER/i.test(X))
-          ce(!0), S("Please enter a valid mobile number");
+        else if (/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(X))
+          ce(!0), S("numbers should be 10 digit");
         else if (/FIREBASE NOT CONFIGURED/i.test(X))
           S("Service temporarily unavailable. Please try again later.");
         else
@@ -19795,7 +19795,7 @@ function K_({ onClose: o, onCreated: p }) {
       }, 600);
     } catch (j) {
       const q = String((j == null ? void 0 : j.message) || "");
-      /Missing\s*(fullName\/contactNumber|password)/i.test(q) ? S("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(q) || /AT LEAST 6 CHARACTERS/i.test(q) ? ($(!0), S("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER/i.test(q) ? (ce(!0), S("Please enter a valid mobile number")) : S(q || "Failed to create packer");
+      /Missing\s*(fullName\/contactNumber|password)/i.test(q) ? S("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(q) || /AT LEAST 6 CHARACTERS/i.test(q) ? ($(!0), S("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(q) ? (ce(!0), S("numbers should be 10 digit")) : S(q || "Failed to create packer");
     } finally {
       T(!1);
     }
@@ -19862,15 +19862,15 @@ function K_({ onClose: o, onCreated: p }) {
           /* @__PURE__ */ c.jsxDEV(
             "input",
             {
-              className: "field-input phone-input-field" + (I && String(f).trim().replace(/\D+/g, "").length < 7 ? " input-error" : ""),
+              className: "field-input phone-input-field" + (I && String(f).trim().replace(/\D+/g, "").length !== 10 ? " input-error" : ""),
               type: "tel",
               inputMode: "tel",
-              pattern: "[0-9]{7,}",
+              pattern: "[0-9]{10}",
               placeholder: "3001234567",
               value: f,
               onChange: (ne) => {
                 const Z = ne.target.value.replace(/\D+/g, "").slice(0, 10);
-                O(Z), I && ce(!(Z.length >= 7));
+                O(Z), I && ce(Z.length !== 10);
               },
               required: !0
             },
