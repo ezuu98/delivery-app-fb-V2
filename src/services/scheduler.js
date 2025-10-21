@@ -100,9 +100,14 @@ async function syncOnce(){
       log.warn('scheduler.orders.error', { error });
       return;
     }
-    await orderModel.upsertMany(orders);
+    const normalized = orders.map(o => ({
+      ...o,
+      current_status: o.current_status || 'new',
+      order_status: o.order_status || 'new',
+    }));
+    await orderModel.upsertMany(normalized);
     await ensureFirestoreStatusNew(orders);
-    log.info('scheduler.orders.synced', { count: orders.length, lastSyncAt: await orderModel.getLastSync() });
+    log.info('scheduler.orders.synced', { count: normalized.length, lastSyncAt: await orderModel.getLastSync() });
   }catch(e){
     log.error('scheduler.orders.exception', { message: e?.message });
   }
