@@ -89,6 +89,8 @@ export default function Orders(){
 
   function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function openEdit(order){ setEditingOrder(order); setShowEdit(true); }
+  function closeEdit(){ setEditingOrder(null); setShowEdit(false); }
   function onAssigned(payload){
     try{
       const { orderId } = payload || {};
