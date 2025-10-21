@@ -209,7 +209,6 @@ export default function Orders(){
                     <td className="rc-col-payment payment-cell">{o.assignment?.paymentMethod || '-'}</td>
                     <td className="rc-col-status status-cell">
                       <div className="status-container">
-                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
                         {statusKey === 'assigned' && (
                           <button
                             className="status-unassign-btn"
@@ -220,6 +219,23 @@ export default function Orders(){
                             ✕
                           </button>
                         )}
+                        <button
+                          className="status-photo-btn"
+                          aria-label="View photo"
+                          title="View photo"
+                          disabled
+                        >
+                          📷
+                        </button>
+                        <button
+                          className="status-edit-btn"
+                          onClick={() => openEdit(o)}
+                          aria-label="Edit order"
+                          title="Edit order"
+                        >
+                          ✏️
+                        </button>
+                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
                       </div>
                     </td>
                   </tr>
