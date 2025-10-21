@@ -27,7 +27,6 @@ export default function CreateRiderModal({ onClose, onCreated }){
 
   async function create(){
     setError(''); setOk(''); setSubmitted(true);
-    const em = String(email).trim();
     const pw = String(password);
     const fn = String(fullName).trim();
     const cn = String(contactNumber).trim();
@@ -38,7 +37,6 @@ export default function CreateRiderModal({ onClose, onCreated }){
     setPasswordErr(missing.pw);
     if(missing.fn || missing.cn || missing.pw){ setError('Full name, mobile and password are required'); return; }
     if(digits.length < 7){ setError('Please enter a valid mobile number'); setContactErr(true); return; }
-    if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ setError('Please enter a valid email'); return; }
     if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
     setLoading(true);
     try{
@@ -47,21 +45,17 @@ export default function CreateRiderModal({ onClose, onCreated }){
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: em, password: pw, fullName: fn, contactNumber: formattedPhone }),
+        body: JSON.stringify({ password: pw, fullName: fn, contactNumber: formattedPhone }),
       });
       const json = await res.json().catch(()=>null);
       if(!res.ok){
         const raw = String((json && (json.error || json.message)) || '');
         const msg = raw.toUpperCase();
-        if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*EMAIL\/PASSWORD/i.test(raw)){
+        if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*PASSWORD/i.test(raw)){
           setError('Full name, mobile and password are required');
           setFullNameErr(!fn);
           setContactErr(!cn || digits.length < 7);
           setPasswordErr(!pw);
-        } else if (msg.includes('EMAIL_EXISTS')) {
-          setError('An account with this email already exists. Use a different email or leave email blank.');
-        } else if (msg.includes('INVALID_EMAIL')) {
-          setError('Please enter a valid email');
         } else if (msg.includes('WEAK_PASSWORD') || /AT LEAST 6 CHARACTERS/i.test(raw)) {
           setPasswordErr(true);
           setError('Password must be at least 6 characters');
@@ -80,12 +74,8 @@ export default function CreateRiderModal({ onClose, onCreated }){
       setTimeout(()=>{ if(onClose) onClose(); }, 600);
     }catch(e){
       const m = String(e?.message||'');
-      if(/Missing\s*(fullName\/contactNumber|email\/password)/i.test(m)){
+      if(/Missing\s*(fullName\/contactNumber|password)/i.test(m)){
         setError('Full name, mobile and password are required');
-      } else if(/EMAIL_EXISTS/i.test(m)){
-        setError('An account with this email already exists. Use a different email or leave email blank.');
-      } else if(/INVALID_EMAIL/i.test(m)){
-        setError('Please enter a valid email');
       } else if(/WEAK_PASSWORD/i.test(m) || /AT LEAST 6 CHARACTERS/i.test(m)){
         setPasswordErr(true);
         setError('Password must be at least 6 characters');
