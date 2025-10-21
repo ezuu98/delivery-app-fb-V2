@@ -153,6 +153,8 @@ export default function Orders(){
                 <th className="col-start-time start-heading">Start</th>
                 <th className="col-expected expected-heading">Expected</th>
                 <th className="col-actual actual-heading">Actual</th>
+                <th className="col-amount amount-heading">Amount</th>
+                <th className="col-payment payment-heading">Payment Method</th>
                 <th className="col-status status-heading">Status</th>
               </tr>
             </thead>
