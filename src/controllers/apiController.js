@@ -507,13 +507,19 @@ module.exports = {
   assignPacker: async (req, res) => {
     try{
       const rawId = String(req.params.id);
-      const { packerId } = req.body || {};
+      const { packerId, paymentMethod, amount } = req.body || {};
       if(!packerId) return res.status(400).json(fail('Missing packerId'));
       const db = getFirestore();
       if (!db) return res.status(503).json(fail('Firestore not configured'));
       const id = rawId.replace(/^#+/, '');
       const orderRef = db.collection('orders').doc(id);
-      await orderRef.set({ orderId: id, packed_by: String(packerId) }, { merge: true });
+
+      const updateData = { orderId: id, packed_by: String(packerId) };
+      if (paymentMethod) updateData.paymentMethod = String(paymentMethod).trim();
+      if (amount) updateData.amount = String(amount).trim();
+
+      await orderRef.set(updateData, { merge: true });
+
       // Also add order id into packer's orders array
       try{
         const admin = require('../services/firebaseAdmin').initFirebaseAdmin();
@@ -906,21 +912,11 @@ module.exports = {
   orders: async (req, res) => {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
+      const pageNum = parseIntParam(page, 1);
+      const limitNum = parseIntParam(limit, 20);
 
-      // Fetch Firestore docs (authoritative for current_status/time fields)
-      let fsDocs = [];
-      try{
-        const db = getFirestore();
-        if (db) {
-          const snap = await db.collection('orders').get();
-          snap.forEach(doc => { const d = doc.data() || {}; fsDocs.push({ ...d, __docId: String(doc.id) }); });
-        }
-      }catch(e){ /* firestore might not be available */ }
-      const fsMap = new Map(fsDocs.map(d => [String(d.orderId || d.id || d.name || d.order_number || d.__docId || ''), d]));
-
-      // Base list from cached Shopify orders (redis/in-memory); if empty, fallback to Firestore list
+      // Base list from cached Shopify orders (redis/in-memory); if empty, fetch fresh
       let cached = await orderModel.getAll();
-      if (!cached.length && fsDocs.length) cached = fsDocs.slice();
       if (!cached.length) {
         const { orders = [], error } = await listOrders({ limit: 100 });
         if (error) log.warn('orders.fetch.error', { error });
@@ -928,52 +924,7 @@ module.exports = {
         cached = await orderModel.getAll();
       }
 
-      // Overlay Firestore status/time onto cached items when available and include FS-only docs
-      const seen = new Set();
-      const merged = cached.map(o => {
-        const key = String(o.orderId || o.id || o.name || o.order_number || '');
-        seen.add(key);
-        const f = fsMap.get(key);
-        if (!f) return o;
-        return {
-          ...o,
-          current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
-          full_name: (typeof f.full_name === 'string' && f.full_name) ? f.full_name : o.full_name,
-          email: f.email ?? o.email,
-          phone: f.phone ?? o.phone,
-          shipping_address: f.shipping_address ?? o.shipping_address,
-          billing_address: f.billing_address ?? o.billing_address,
-          deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
-          deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
-          expected_delivery_time: f.expected_delivery_time ?? o.expected_delivery_time,
-          expectedDeliveryTime: f.expectedDeliveryTime ?? o.expectedDeliveryTime,
-          expected_time: f.expected_time ?? o.expected_time,
-          expectedTime: f.expectedTime ?? o.expectedTime,
-          actual_delivery_time: f.actual_delivery_time ?? o.actual_delivery_time,
-          actualDeliveryTime: f.actualDeliveryTime ?? o.actualDeliveryTime,
-          delivery_events: Array.isArray(f.delivery_events) ? f.delivery_events : o.delivery_events,
-          deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
-          events: Array.isArray(f.events) ? f.events : o.events,
-          riderId: f.riderId ?? o.riderId,
-          // Pass-through nested Firestore 'orders' object (e.g., orders.deliveryDuration)
-          orders: (() => {
-            const base = (f && typeof f.orders === 'object') ? f.orders : o.orders;
-            const hasBase = base && typeof base === 'object';
-            const merged = hasBase ? { ...base } : {};
-            if (f && (f.deliveryDuration !== undefined) && merged.deliveryDuration === undefined) {
-              merged.deliveryDuration = f.deliveryDuration;
-            }
-            return hasBase || merged.deliveryDuration !== undefined ? merged : base;
-          })(),
-          // Also expose a top-level convenience field if present in Firestore
-          deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
-        };
-      });
-      for (const [key, f] of fsMap.entries()){
-        if (!seen.has(key)) merged.push(f);
-      }
-      cached = merged;
-
+      // Get only Firestore docs for orders we need (after pagination), not all of them
       const ql = String(q).toLowerCase().trim();
       const normalizedStatus = normalizeStatus(status) || 'all';
       function getOrderStatus(o){
@@ -982,7 +933,7 @@ module.exports = {
       const fromTs = created_at_min ? Date.parse(created_at_min) : null;
       const toTs = created_at_max ? Date.parse(created_at_max) : null;
 
-
+      // Filter and sort before pagination
       const filtered = cached.filter(o => {
         if (normalizedStatus !== 'all' && getOrderStatus(o) !== normalizedStatus) return false;
         if (ql){
@@ -1008,8 +959,73 @@ module.exports = {
         return (Number.isFinite(tb) ? tb : 0) - (Number.isFinite(ta) ? ta : 0);
       });
 
-      const { items, meta } = paginate(filtered, parseIntParam(page, 1), parseIntParam(limit, 20));
+      // Paginate BEFORE fetching enrichment data from Firestore
+      const { items, meta } = paginate(filtered, pageNum, limitNum);
 
+      // Now fetch Firestore docs only for paginated items
+      const db = getFirestore();
+      const fsMap = new Map();
+      if (db) {
+        try {
+          for (const o of items) {
+            const orderId = String(o.orderId || o.id || o.name || o.order_number || '');
+            if (!orderId) continue;
+            try {
+              const snap = await db.collection('orders').doc(orderId).get();
+              if (snap.exists) {
+                fsMap.set(orderId, { ...snap.data(), __docId: String(snap.id) });
+              }
+            } catch (e) {
+              // Skip individual doc fetch errors
+            }
+          }
+        } catch (e) {
+          log.warn('firestore.batch.fetch.failed', { message: e?.message });
+        }
+      }
+
+      // Merge Firestore data into cached items
+      const merged = items.map(o => {
+        const key = String(o.orderId || o.id || o.name || o.order_number || '');
+        const f = fsMap.get(key);
+        if (!f) return o;
+        return {
+          ...o,
+          current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
+          full_name: (typeof f.full_name === 'string' && f.full_name) ? f.full_name : o.full_name,
+          email: f.email ?? o.email,
+          phone: f.phone ?? o.phone,
+          shipping_address: f.shipping_address ?? o.shipping_address,
+          billing_address: f.billing_address ?? o.billing_address,
+          deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
+          deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
+          expected_delivery_time: f.expected_delivery_time ?? o.expected_delivery_time,
+          expectedDeliveryTime: f.expectedDeliveryTime ?? o.expectedDeliveryTime,
+          expected_time: f.expected_time ?? o.expected_time,
+          expectedTime: f.expectedTime ?? o.expectedTime,
+          actual_delivery_time: f.actual_delivery_time ?? o.actual_delivery_time,
+          actualDeliveryTime: f.actualDeliveryTime ?? o.actualDeliveryTime,
+          delivery_events: Array.isArray(f.delivery_events) ? f.delivery_events : o.delivery_events,
+          deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
+          events: Array.isArray(f.events) ? f.events : o.events,
+          riderId: f.riderId ?? o.riderId,
+          packed_by: f.packed_by ?? o.packed_by,
+          paymentMethod: f.paymentMethod ?? o.paymentMethod,
+          amount: f.amount ?? o.amount,
+          orders: (() => {
+            const base = (f && typeof f.orders === 'object') ? f.orders : o.orders;
+            const hasBase = base && typeof base === 'object';
+            const merged = hasBase ? { ...base } : {};
+            if (f && (f.deliveryDuration !== undefined) && merged.deliveryDuration === undefined) {
+              merged.deliveryDuration = f.deliveryDuration;
+            }
+            return hasBase || merged.deliveryDuration !== undefined ? merged : base;
+          })(),
+          deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
+        };
+      });
+
+      // Fetch reference data (riders, packers, assignments) ONLY for the paginated items
       const assigns = await orderModel.listAssignments();
       const amap = new Map(assigns.map(a => [String(a.orderId), a]));
       const riders = await riderModel.list().catch(()=>[]);
@@ -1017,21 +1033,23 @@ module.exports = {
 
       const packers = [];
       try{
-        const psnap = await db.collection('packers').get();
-        psnap.forEach(doc => {
-          const d = doc.data() || {};
-          packers.push({ id: doc.id, fullName: d.fullName || d.name || null });
-        });
+        if (db) {
+          const psnap = await db.collection('packers').get();
+          psnap.forEach(doc => {
+            const d = doc.data() || {};
+            packers.push({ id: doc.id, fullName: d.fullName || d.name || null });
+          });
+        }
       }catch(_){ /* ignore packer load errors */ }
       const pmap = new Map(packers.map(p => [String(p.id), p.fullName]));
 
-      // Merge delivery events (expected times and actual delivered time) into orders
+      // Fetch delivery events only for items on this page
       const evAll = await deliveryModel.listAll();
       const etaMap = new Map();
       const actualMap = new Map();
+      const pageOrderIds = new Set(merged.map(o => String(o.orderId || o.id || o.name || o.order_number || '')));
       for (const { orderId, events } of evAll){
-        if (!orderId || !Array.isArray(events)) continue;
-        // find last 'eta' event and last 'delivered' event
+        if (!pageOrderIds.has(String(orderId)) || !Array.isArray(events)) continue;
         for (let i = events.length - 1; i >= 0; i--){
           const ev = events[i];
           if (!ev) continue;
@@ -1041,7 +1059,7 @@ module.exports = {
         }
       }
 
-      const withAssignments = items.map(o => {
+      const withAssignments = merged.map(o => {
         const idKey = String(o.orderId || o.id || o.name || o.order_number || '');
         const assignment = amap.get(idKey) || null;
         const eta = etaMap.get(idKey) || null;
@@ -1298,11 +1316,25 @@ module.exports = {
     const found = await findOrderByAnyId(rawId);
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
-    const { riderId } = req.body || {};
+    const { riderId, paymentMethod, amount } = req.body || {};
     const rider = await riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
     const assignment = await orderModel.assign(id, riderId);
-    log.info('order.assigned', { orderId: id, riderId });
+
+    // Save payment method and amount to Firestore
+    try {
+      const db = getFirestore();
+      if (db) {
+        const updateData = { orderId: id };
+        if (paymentMethod) updateData.paymentMethod = String(paymentMethod).trim();
+        if (amount) updateData.amount = String(amount).trim();
+        await db.collection('orders').doc(id).set(updateData, { merge: true });
+      }
+    } catch (e) {
+      log.warn('firestore.payment.save.failed', { message: e?.message });
+    }
+
+    log.info('order.assigned', { orderId: id, riderId, paymentMethod, amount });
     return res.json(ok({ assignment }));
   },
 

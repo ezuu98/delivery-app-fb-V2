@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export default function CreatePackerModal({ onClose, onCreated }){
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
@@ -13,9 +12,19 @@ export default function CreatePackerModal({ onClose, onCreated }){
   const [passwordErr, setPasswordErr] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const COUNTRY_CODE = '+92';
+
+  function formatPhoneNumber(value){
+    const digits = String(value || '').replace(/\D+/g, '');
+    if (digits.length === 0) return '';
+    if (digits.startsWith('92')) {
+      return COUNTRY_CODE + digits.slice(2);
+    }
+    return COUNTRY_CODE + digits;
+  }
+
   async function create(){
     setError(''); setOk(''); setSubmitted(true);
-    const em = String(email).trim();
     const pw = String(password);
     const fn = String(fullName).trim();
     const cn = String(contactNumber).trim();
@@ -26,30 +35,26 @@ export default function CreatePackerModal({ onClose, onCreated }){
     setPasswordErr(missing.pw);
     if(missing.fn || missing.cn || missing.pw){ setError('Full name, mobile and password are required'); return; }
     if(digits.length < 7){ setError('Please enter a valid mobile number'); setContactErr(true); return; }
-    if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ setError('Please enter a valid email'); return; }
     if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
 
     setLoading(true);
     try{
+      const formattedPhone = formatPhoneNumber(cn);
       const res = await fetch('/api/packers', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: em, password: pw, fullName: fn, contactNumber: cn }),
+        body: JSON.stringify({ password: pw, fullName: fn, contactNumber: formattedPhone }),
       });
       const json = await res.json().catch(()=>null);
       if(!res.ok){
         const raw = String((json && (json.error || json.message)) || '');
         const msg = raw.toUpperCase();
-        if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*EMAIL\/PASSWORD/i.test(raw)){
+        if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*PASSWORD/i.test(raw)){
           setError('Full name, mobile and password are required');
           setFullNameErr(!fn);
           setContactErr(!cn || digits.length < 7);
           setPasswordErr(!pw);
-        } else if (msg.includes('EMAIL_EXISTS')) {
-          setError('An account with this email already exists. Use a different email or leave email blank.');
-        } else if (msg.includes('INVALID_EMAIL')) {
-          setError('Please enter a valid email');
         } else if (msg.includes('WEAK_PASSWORD') || /AT LEAST 6 CHARACTERS/i.test(raw)) {
           setPasswordErr(true);
           setError('Password must be at least 6 characters');
@@ -68,12 +73,8 @@ export default function CreatePackerModal({ onClose, onCreated }){
       setTimeout(()=>{ if(onClose) onClose(); }, 600);
     }catch(e){
       const m = String(e?.message||'');
-      if(/Missing\s*(fullName\/contactNumber|email\/password)/i.test(m)){
+      if(/Missing\s*(fullName\/contactNumber|password)/i.test(m)){
         setError('Full name, mobile and password are required');
-      } else if(/EMAIL_EXISTS/i.test(m)){
-        setError('An account with this email already exists. Use a different email or leave email blank.');
-      } else if(/INVALID_EMAIL/i.test(m)){
-        setError('Please enter a valid email');
       } else if(/WEAK_PASSWORD/i.test(m) || /AT LEAST 6 CHARACTERS/i.test(m)){
         setPasswordErr(true);
         setError('Password must be at least 6 characters');
@@ -99,14 +100,29 @@ export default function CreatePackerModal({ onClose, onCreated }){
           <label className="field-label">Full name
             <input className={"field-input" + (submitted && (!String(fullName).trim()) ? ' input-error' : '')} value={fullName} onChange={e=>{ setFullName(e.target.value); if(submitted) setFullNameErr(!String(e.target.value).trim()); }} required />
           </label>
-          <label className="field-label">Email
-            <input className="field-input" type="email" value={email} onChange={e=>{ setEmail(e.target.value); }} />
-          </label>
           <label className="field-label">Password
             <input className={"field-input" + (submitted && (!String(password)) ? ' input-error' : '')} type="password" value={password} onChange={e=>{ setPassword(e.target.value); if(submitted) setPasswordErr(!String(e.target.value)); }} required />
           </label>
           <label className="field-label">Contact number
-            <input className={"field-input" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length < 7)) ? ' input-error' : '')} type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>{ setContactNumber(e.target.value); if(submitted){ const digits = String(e.target.value).trim().replace(/\D+/g,''); setContactErr(!(digits.length >= 7)); } }} required />
+            <div className="phone-input-wrapper">
+              <span className="phone-prefix">+92</span>
+              <input
+                className={"field-input phone-input-field" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length < 7)) ? ' input-error' : '')}
+                type="tel"
+                inputMode="tel"
+                pattern="[0-9]{7,}"
+                placeholder="3001234567"
+                value={contactNumber}
+                onChange={e=>{
+                  const val = e.target.value.replace(/\D+/g, '').slice(0, 10);
+                  setContactNumber(val);
+                  if(submitted){
+                    setContactErr(!(val.length >= 7));
+                  }
+                }}
+                required
+              />
+            </div>
           </label>
           {error && <div className="auth-error">{error}</div>}
           <div className="create-rider-actions">
