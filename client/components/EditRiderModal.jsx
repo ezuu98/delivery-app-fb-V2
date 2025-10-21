@@ -25,6 +25,25 @@ export default function EditRiderModal({ rider, onClose, onUpdated }){
     return COUNTRY_CODE + digits;
   }
 
+  React.useEffect(()=>{
+    let alive = true;
+    (async ()=>{
+      try{
+        const res = await fetch(`/api/riders/${encodeURIComponent(rider.id)}`, { credentials: 'include' });
+        if (res.status === 401){ window.location.href = '/auth/login'; return; }
+        const json = await res.json().catch(()=>null);
+        const data = json && (json.data || json) || {};
+        const r = data.rider || data || {};
+        if (!alive) return;
+        const nm = String(r.displayName || r.name || '').trim();
+        const cn = String(r.contactNumber || '').replace(/\D+/g,'');
+        if (nm) setFullName(nm);
+        if (cn) setContactNumber(cn.slice(-10));
+      }catch(_){ /* silent */ }
+    })();
+    return ()=>{ alive = false; };
+  }, [rider?.id]);
+
   async function save(){
     setSubmitted(true); setError(''); setOk('');
     const fn = String(fullName).trim();
