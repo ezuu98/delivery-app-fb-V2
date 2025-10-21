@@ -31,10 +31,10 @@ export default function CreatePackerModal({ onClose, onCreated }){
     const digits = cn.replace(/\D+/g, '');
     const missing = { fn: !fn, cn: !cn, pw: !pw };
     setFullNameErr(missing.fn);
-    setContactErr(missing.cn || digits.length < 7);
+    setContactErr(missing.cn || digits.length !== 10);
     setPasswordErr(missing.pw);
     if(missing.fn || missing.cn || missing.pw){ setError('Full name, mobile and password are required'); return; }
-    if(digits.length < 7){ setError('Please enter a valid mobile number'); setContactErr(true); return; }
+    if(digits.length !== 10){ setError('Mobile number must be exactly 10 digits'); setContactErr(true); return; }
     if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
 
     setLoading(true);
