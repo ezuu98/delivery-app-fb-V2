@@ -221,30 +221,30 @@ export default function Orders(){
                       <div className="actions-container">
                         {statusKey === 'assigned' && (
                           <button
-                            className="status-unassign-btn"
+                            className="status-unassign-btn icon-black"
                             onClick={() => handleUnassign(orderReference)}
                             aria-label="Unassign order"
                             title="Unassign order"
                           >
-                            ✕
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4z"/></svg>
                           </button>
                         )}
                         <button
-                          className="status-photo-btn"
+                          className="status-photo-btn icon-black"
                           aria-label="View photo"
                           title="View photo"
                           disabled={statusKey !== 'delivered'}
                           onClick={() => statusKey === 'delivered' && openImage(o)}
                         >
-                          📷
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 5h-3.17l-1.41-1.41A2 2 0 0 0 15 3H9a2 2 0 0 0-1.41.59L6.17 5H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 13H3V7h4.05l1.41-1.41.01-.01L9 5h6l.53.58L17.95 7H21v11z"/><path d="M12 8a5 5 0 1 0 .001 10.001A5 5 0 0 0 12 8zm0 8a3 3 0 1 1 .001-6.001A3 3 0 0 1 12 16z"/></svg>
                         </button>
                         <button
-                          className="status-edit-btn"
+                          className="status-edit-btn icon-black"
                           onClick={() => openEdit(o)}
                           aria-label="Edit order"
                           title="Edit order"
                         >
-                          ⋯
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
                         </button>
                       </div>
                     </td>
