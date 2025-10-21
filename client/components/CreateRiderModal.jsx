@@ -119,7 +119,8 @@ export default function CreateRiderModal({ onClose, onCreated }){
             <input className={"field-input" + (submitted && (!String(password)) ? ' input-error' : '')} type="password" value={password} onChange={e=>{ setPassword(e.target.value); if(submitted) setPasswordErr(!String(e.target.value)); }} required />
           </label>
           <label className="field-label">Contact number
-            <input className={"field-input" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length < 7)) ? ' input-error' : '')} type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" value={contactNumber} onChange={e=>{ setContactNumber(e.target.value); if(submitted){ const digits = String(e.target.value).trim().replace(/\D+/g,''); setContactErr(!(digits.length >= 7)); } }} required />
+            <input className={"field-input" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length < 7)) ? ' input-error' : '')} type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,}" placeholder="3001234567" value={contactNumber} onChange={e=>{ setContactNumber(e.target.value); if(submitted){ const digits = String(e.target.value).trim().replace(/\D+/g,''); setContactErr(!(digits.length >= 7)); } }} required />
+            {displayPhoneNumber && <div className="phone-preview">Preview: {displayPhoneNumber}</div>}
           </label>
           {error && <div className="auth-error">{error}</div>}
           <div className="create-rider-actions">
