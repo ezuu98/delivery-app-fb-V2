@@ -95,19 +95,25 @@ async function ensureFirestoreStatusNew(orders){
 
 async function syncOnce(){
   try{
-    const { orders = [], error } = await fetchAllOrders({ limit: 100, maxPages: 500 });
-    if (error) {
-      log.warn('scheduler.orders.error', { error });
+    const db = getFirestore();
+    if (!db) {
+      log.warn('scheduler.firestore.notConfigured');
       return;
     }
-    const normalized = orders.map(o => ({
-      ...o,
-      current_status: o.current_status || 'new',
-      order_status: o.order_status || 'new',
-    }));
-    await orderModel.upsertMany(normalized);
-    await ensureFirestoreStatusNew(orders);
-    log.info('scheduler.orders.synced', { count: normalized.length, lastSyncAt: await orderModel.getLastSync() });
+
+    const snap = await db.collection('orders').get();
+    const orders = [];
+    snap.forEach(doc => {
+      const data = doc.data() || {};
+      orders.push({
+        id: data.orderId || doc.id,
+        orderId: data.orderId || doc.id,
+        ...data,
+      });
+    });
+
+    await orderModel.upsertMany(orders);
+    log.info('scheduler.orders.synced', { count: orders.length, source: 'firestore', lastSyncAt: await orderModel.getLastSync() });
   }catch(e){
     log.error('scheduler.orders.exception', { message: e?.message });
   }
