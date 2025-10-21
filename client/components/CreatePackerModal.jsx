@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export default function CreatePackerModal({ onClose, onCreated }){
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
@@ -12,6 +11,17 @@ export default function CreatePackerModal({ onClose, onCreated }){
   const [contactErr, setContactErr] = useState(false);
   const [passwordErr, setPasswordErr] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const COUNTRY_CODE = '+92';
+
+  function formatPhoneNumber(value){
+    const digits = String(value || '').replace(/\D+/g, '');
+    if (digits.length === 0) return '';
+    if (digits.startsWith('92')) {
+      return COUNTRY_CODE + digits.slice(2);
+    }
+    return COUNTRY_CODE + digits;
+  }
 
   async function create(){
     setError(''); setOk(''); setSubmitted(true);
