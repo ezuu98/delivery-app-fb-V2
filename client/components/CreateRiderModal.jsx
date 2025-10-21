@@ -64,8 +64,10 @@ export default function CreateRiderModal({ onClose, onCreated }){
           setError('numbers should be 10 digit');
         } else if (/FIREBASE NOT CONFIGURED/i.test(raw)) {
           setError('Service temporarily unavailable. Please try again later.');
+        } else if (raw) {
+          setError(raw);
         } else {
-          throw new Error(raw || 'Failed to create rider');
+          setError('Failed to create rider');
         }
         return;
       }
@@ -82,8 +84,10 @@ export default function CreateRiderModal({ onClose, onCreated }){
       } else if(/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(m)){
         setContactErr(true);
         setError('numbers should be 10 digit');
+      } else if (m) {
+        setError(m);
       } else {
-        setError(m || 'Failed to create rider');
+        setError('Failed to create rider');
       }
     }
     finally{ setLoading(false); }
