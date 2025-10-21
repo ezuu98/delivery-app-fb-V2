@@ -118,6 +118,7 @@
 .assign-dropdown:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
 .assign-dropdown:disabled{opacity:0.6;cursor:not-allowed;background:#f9fafb}
 .assign-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid #eef2f7}
+.edit-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid #eef2f7}
 
 /* Secondary button */
 .btn-secondary{background:#fff;color:#374151;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer}
