@@ -207,8 +207,8 @@ export default function Orders(){
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
-                    <td className="rc-col-amount amount-cell">{o.assignment?.amount || '-'}</td>
-                    <td className="rc-col-payment payment-cell">{o.assignment?.paymentMethod || '-'}</td>
+                    <td className="rc-col-amount amount-cell">{o.amount || o.assignment?.amount || '-'}</td>
+                    <td className="rc-col-payment payment-cell">{o.paymentMethod || o.assignment?.paymentMethod || '-'}</td>
                     <td className="rc-col-status status-cell">
                       <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
                     </td>
