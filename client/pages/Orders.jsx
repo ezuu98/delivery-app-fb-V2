@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
+import EditOrderModal from '../components/EditOrderModal.jsx';
+import ImageModal from '../components/ImageModal.jsx';
 import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, resolveStartTime } from '../utils/orderTime.js';
 
 function normalizeStatus(value){
@@ -45,6 +47,10 @@ export default function Orders(){
 
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [showImage, setShowImage] = useState(false);
+  const [imageOrder, setImageOrder] = useState(null);
 
   useEffect(()=>{
     let alive = true;
@@ -87,6 +93,10 @@ export default function Orders(){
 
   function openAssign(orderId){ setActiveOrder(orderId); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function openEdit(order){ setEditingOrder(order); setShowEdit(true); }
+  function closeEdit(){ setEditingOrder(null); setShowEdit(false); }
+  function openImage(order){ setImageOrder(order); setShowImage(true); }
+  function closeImage(){ setImageOrder(null); setShowImage(false); }
   function onAssigned(payload){
     try{
       const { orderId } = payload || {};
@@ -153,15 +163,18 @@ export default function Orders(){
                 <th className="col-start-time start-heading">Start</th>
                 <th className="col-expected expected-heading">Expected</th>
                 <th className="col-actual actual-heading">Actual</th>
+                <th className="col-amount amount-heading">Amount</th>
+                <th className="col-payment payment-heading">Payment Method</th>
                 <th className="col-status status-heading">Status</th>
+                <th className="col-actions actions-heading">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={8} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={11} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={8} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={11} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const statusRaw = getRawStatus(o);
@@ -199,9 +212,13 @@ export default function Orders(){
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
+                    <td className="rc-col-amount amount-cell">{o.amount || o.assignment?.amount || '-'}</td>
+                    <td className="rc-col-payment payment-cell">{o.paymentMethod || o.assignment?.paymentMethod || '-'}</td>
                     <td className="rc-col-status status-cell">
-                      <div className="status-container">
-                        <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                      <span className={`status-chip status-${statusKey}`}>{statusRaw}</span>
+                    </td>
+                    <td className="rc-col-actions actions-cell">
+                      <div className="actions-container">
                         {statusKey === 'assigned' && (
                           <button
                             className="status-unassign-btn"
@@ -212,13 +229,30 @@ export default function Orders(){
                             ✕
                           </button>
                         )}
+                        <button
+                          className="status-photo-btn"
+                          aria-label="View photo"
+                          title="View photo"
+                          disabled={statusKey !== 'delivered'}
+                          onClick={() => statusKey === 'delivered' && openImage(o)}
+                        >
+                          📷
+                        </button>
+                        <button
+                          className="status-edit-btn"
+                          onClick={() => openEdit(o)}
+                          aria-label="Edit order"
+                          title="Edit order"
+                        >
+                          ⋯
+                        </button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
               {!loading && !error && visible.length === 0 && (
-                <tr><td colSpan={8} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={11} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>
@@ -226,8 +260,13 @@ export default function Orders(){
         <div className="rc-toolbar" aria-label="pagination">
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
-        )
-        }
+        )}
+        {showEdit && editingOrder && (
+          <EditOrderModal order={editingOrder} onClose={closeEdit} onUpdated={() => { setRefreshTrigger(prev => prev + 1); closeEdit(); }} />
+        )}
+        {showImage && imageOrder && (
+          <ImageModal order={imageOrder} onClose={closeImage} />
+        )}
           <div className="rc-filters">
             <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
             <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>

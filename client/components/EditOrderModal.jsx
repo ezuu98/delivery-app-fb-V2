@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function AssignModal({ orderId, onClose, onAssigned }){
+export default function EditOrderModal({ order, onClose, onUpdated }){
   const [riders, setRiders] = useState([]);
   const [packers, setPackers] = useState([]);
   const [selectedRider, setSelectedRider] = useState('');
@@ -8,9 +8,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
   const [paymentMethod, setPaymentMethod] = useState('');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(true);
-  const [loadingPackers, setLoadingPackers] = useState(true);
   const [error, setError] = useState('');
-  const [errorPackers, setErrorPackers] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(()=>{
@@ -23,29 +21,41 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        if(alive) setRiders(Array.isArray(data.riders) ? data.riders : []);
+        if(alive){
+          setRiders(Array.isArray(data.riders) ? data.riders : []);
+          const riderId = order.assignment?.riderId || order.riderId || order.rider_id || '';
+          setSelectedRider(String(riderId));
+        }
       }catch(e){ if(alive) setError(e.message || 'Failed to load riders'); }
       finally{ if(alive) setLoading(false); }
     })();
     return ()=>{ alive = false; };
-  },[]);
+  },[order]);
 
   useEffect(()=>{
     let alive = true;
     (async ()=>{
-      setLoadingPackers(true);
-      setErrorPackers('');
       try{
         const res = await fetch('/api/packers?limit=200', { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load packers');
         const data = await res.json();
-        if(alive) setPackers(Array.isArray(data.packers) ? data.packers : []);
-      }catch(e){ if(alive) setErrorPackers(e.message || 'Failed to load packers'); }
-      finally{ if(alive) setLoadingPackers(false); }
+        if(alive){
+          setPackers(Array.isArray(data.packers) ? data.packers : []);
+          const packerId = order.assignment?.packerId || order.packed_by || order.packer_id || '';
+          setSelectedPacker(String(packerId));
+        }
+      }catch(e){ if(alive) setError(e.message || 'Failed to load packers'); }
     })();
     return ()=>{ alive = false; };
-  },[]);
+  },[order]);
+
+  useEffect(()=>{
+    const pm = order.assignment?.paymentMethod || order.paymentMethod || '';
+    const amt = order.assignment?.amount || order.amount || '';
+    setPaymentMethod(String(pm));
+    setAmount(String(amt));
+  },[order]);
 
   async function handleSubmit(){
     if(!selectedRider || !selectedPacker){
@@ -63,6 +73,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
 
     setSubmitting(true);
     try{
+      const orderId = order.name || order.order_number || order.id;
       const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/assign`, {
         method: 'POST',
         credentials: 'include',
@@ -71,7 +82,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
       });
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
       const json = await res.json().catch(()=>null);
-      if(!res.ok) throw new Error((json && json.error) ? json.error : 'Assign failed');
+      if(!res.ok) throw new Error((json && json.error) ? json.error : 'Update failed');
 
       const res2 = await fetch(`/api/orders/${encodeURIComponent(orderId)}/assign-packer`, {
         method: 'POST',
@@ -81,36 +92,33 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
       });
       if(res2.status === 401){ window.location.href = '/auth/login'; return; }
       const json2 = await res2.json().catch(()=>null);
-      if(!res2.ok) throw new Error((json2 && json2.error) ? json2.error : 'Assign failed');
+      if(!res2.ok) throw new Error((json2 && json2.error) ? json2.error : 'Update failed');
 
-      if(onAssigned) onAssigned({ orderId, riderId: selectedRider, packerId: selectedPacker, paymentMethod: paymentMethod.trim(), amount: amount.trim() });
-      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned successfully`, { type: 'success' }); } }catch(_){}
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order updated successfully`, { type: 'success' }); } }catch(_){}
+      if(onUpdated) onUpdated();
       onClose();
-    }catch(e){ alert(e.message || 'Failed to assign'); }
+    }catch(e){ alert(e.message || 'Failed to update order'); }
     finally{ setSubmitting(false); }
   }
 
-  const riderError = error || '';
-  const packerError = errorPackers || '';
-  const isLoading = loading || loadingPackers;
-
   return (
-    <div className="assign-modal-backdrop" role="dialog" aria-modal="true">
-      <div className="assign-modal">
-        <header className="assign-modal-header">
-          <h3 className="assign-modal-title">Assign Rider & Packer</h3>
-          <button className="assign-modal-close" onClick={onClose} aria-label="Close">✕</button>
+    <div className="edit-modal-backdrop" role="dialog" aria-modal="true">
+      <div className="edit-modal">
+        <header className="edit-modal-header">
+          <h3 className="edit-modal-title">Edit Order Assignment</h3>
+          <button className="edit-modal-close" onClick={onClose} aria-label="Close">✕</button>
         </header>
-        <div className="assign-modal-body">
-          {isLoading ? (
+        <div className="edit-modal-body">
+          {loading ? (
             <div className="section-note">Loading…</div>
           ) : (
             <>
-              <div className="assign-form">
+              {error && <div className="auth-error">{error}</div>}
+              <div className="edit-form">
                 <div className="form-group">
                   <label className="field-label">Select Rider
                     <select
-                      className="field-input assign-dropdown"
+                      className="field-input edit-dropdown"
                       value={selectedRider}
                       onChange={e=>setSelectedRider(e.target.value)}
                       disabled={submitting}
@@ -121,14 +129,13 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                       ))}
                     </select>
                   </label>
-                  {riderError && <div className="auth-error">{riderError}</div>}
-                  {riders.length === 0 && !riderError && <div className="section-note">No riders available</div>}
+                  {riders.length === 0 && !error && <div className="section-note">No riders available</div>}
                 </div>
 
                 <div className="form-group">
                   <label className="field-label">Select Packer
                     <select
-                      className="field-input assign-dropdown"
+                      className="field-input edit-dropdown"
                       value={selectedPacker}
                       onChange={e=>setSelectedPacker(e.target.value)}
                       disabled={submitting}
@@ -139,15 +146,14 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                       ))}
                     </select>
                   </label>
-                  {packerError && <div className="auth-error">{packerError}</div>}
-                  {packers.length === 0 && !packerError && <div className="section-note">No packers available</div>}
+                  {packers.length === 0 && !error && <div className="section-note">No packers available</div>}
                 </div>
 
                 <div className="form-group">
                   <label className="field-label">Payment Method
                     <input
                       type="text"
-                      className="field-input assign-dropdown"
+                      className="field-input edit-dropdown"
                       placeholder="e.g., Cash, Card, Online"
                       value={paymentMethod}
                       onChange={e=>setPaymentMethod(e.target.value)}
@@ -160,7 +166,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                   <label className="field-label">Amount
                     <input
                       type="text"
-                      className="field-input assign-dropdown"
+                      className="field-input edit-dropdown"
                       placeholder="e.g., 500"
                       value={amount}
                       onChange={e=>setAmount(e.target.value)}
@@ -170,10 +176,10 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                 </div>
               </div>
 
-              <div className="assign-modal-actions">
+              <div className="edit-modal-actions">
                 <button className="btn-secondary" onClick={onClose} disabled={submitting}>Cancel</button>
                 <button className="btn-primary" onClick={handleSubmit} disabled={submitting || !selectedRider || !selectedPacker}>
-                  {submitting ? 'Assigning…' : 'Assign'}
+                  {submitting ? 'Updating…' : 'Update'}
                 </button>
               </div>
             </>
