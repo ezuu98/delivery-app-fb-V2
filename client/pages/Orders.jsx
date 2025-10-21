@@ -161,6 +161,7 @@ export default function Orders(){
                 <th className="col-amount amount-heading">Amount</th>
                 <th className="col-payment payment-heading">Payment Method</th>
                 <th className="col-status status-heading">Status</th>
+                <th className="col-actions actions-heading">Actions</th>
               </tr>
             </thead>
             <tbody>
