@@ -507,13 +507,19 @@ module.exports = {
   assignPacker: async (req, res) => {
     try{
       const rawId = String(req.params.id);
-      const { packerId } = req.body || {};
+      const { packerId, paymentMethod, amount } = req.body || {};
       if(!packerId) return res.status(400).json(fail('Missing packerId'));
       const db = getFirestore();
       if (!db) return res.status(503).json(fail('Firestore not configured'));
       const id = rawId.replace(/^#+/, '');
       const orderRef = db.collection('orders').doc(id);
-      await orderRef.set({ orderId: id, packed_by: String(packerId) }, { merge: true });
+
+      const updateData = { orderId: id, packed_by: String(packerId) };
+      if (paymentMethod) updateData.paymentMethod = String(paymentMethod).trim();
+      if (amount) updateData.amount = String(amount).trim();
+
+      await orderRef.set(updateData, { merge: true });
+
       // Also add order id into packer's orders array
       try{
         const admin = require('../services/firebaseAdmin').initFirebaseAdmin();
