@@ -51,8 +51,10 @@ export default function EditOrderModal({ order, onClose, onUpdated }){
   },[order]);
 
   useEffect(()=>{
-    setPaymentMethod(order.assignment?.paymentMethod || '');
-    setAmount(order.assignment?.amount || '');
+    const pm = order.assignment?.paymentMethod || order.paymentMethod || '';
+    const amt = order.assignment?.amount || order.amount || '';
+    setPaymentMethod(String(pm));
+    setAmount(String(amt));
   },[order]);
 
   async function handleSubmit(){
