@@ -134,7 +134,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                       disabled={submitting}
                     >
                       <option value="">-- Choose a packer --</option>
-                      {packers.map(p => (
+                      {[...packers].sort((a, b) => a.name.localeCompare(b.name)).map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>
                       ))}
                     </select>
