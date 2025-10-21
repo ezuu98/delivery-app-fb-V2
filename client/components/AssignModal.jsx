@@ -2,25 +2,26 @@ import React, { useEffect, useState } from 'react';
 
 export default function AssignModal({ orderId, onClose, onAssigned }){
   const [riders, setRiders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [assigning, setAssigning] = useState(null);
-  const [step, setStep] = useState('rider');
   const [packers, setPackers] = useState([]);
-  const [loadingPackers, setLoadingPackers] = useState(false);
+  const [selectedRider, setSelectedRider] = useState('');
+  const [selectedPacker, setSelectedPacker] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [loadingPackers, setLoadingPackers] = useState(true);
+  const [error, setError] = useState('');
   const [errorPackers, setErrorPackers] = useState('');
-  const [assigningPacker, setAssigningPacker] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(()=>{
     let alive = true;
     (async ()=>{
-      setLoading(true); setError('');
+      setLoading(true);
+      setError('');
       try{
         const res = await fetch('/api/riders?limit=200', { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        if(alive) setRiders(Array.isArray(data.riders) ? data.riders : data.riders || []);
+        if(alive) setRiders(Array.isArray(data.riders) ? data.riders : []);
       }catch(e){ if(alive) setError(e.message || 'Failed to load riders'); }
       finally{ if(alive) setLoading(false); }
     })();
@@ -28,120 +29,117 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
   },[]);
 
   useEffect(()=>{
-    if(step !== 'packer') return;
     let alive = true;
     (async ()=>{
-      setLoadingPackers(true); setErrorPackers('');
+      setLoadingPackers(true);
+      setErrorPackers('');
       try{
         const res = await fetch('/api/packers?limit=200', { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
         if(!res.ok) throw new Error('Failed to load packers');
         const data = await res.json();
-        if(alive) setPackers(Array.isArray(data.packers) ? data.packers : data.packers || []);
+        if(alive) setPackers(Array.isArray(data.packers) ? data.packers : []);
       }catch(e){ if(alive) setErrorPackers(e.message || 'Failed to load packers'); }
       finally{ if(alive) setLoadingPackers(false); }
     })();
     return ()=>{ alive = false; };
-  },[step]);
+  },[]);
 
-  async function assignTo(riderId){
-    if(!orderId || !riderId) return;
-    setAssigning(riderId);
+  async function handleSubmit(){
+    if(!selectedRider || !selectedPacker){
+      alert('Please select both a rider and a packer');
+      return;
+    }
+
+    setSubmitting(true);
     try{
       const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/assign`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ riderId }),
+        body: JSON.stringify({ riderId: selectedRider }),
       });
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
       const json = await res.json().catch(()=>null);
       if(!res.ok) throw new Error((json && json.error) ? json.error : 'Assign failed');
-      if(onAssigned) onAssigned({ orderId, riderId });
-      setStep('packer');
-    }catch(e){ alert(e.message || 'Failed to assign rider'); }
-    finally{ setAssigning(null); }
-  }
 
-  async function assignToPacker(packerId){
-    if(!orderId || !packerId) return;
-    setAssigningPacker(packerId);
-    try{
-      const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/assign-packer`, {
+      const res2 = await fetch(`/api/orders/${encodeURIComponent(orderId)}/assign-packer`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packerId }),
+        body: JSON.stringify({ packerId: selectedPacker }),
       });
-      if(res.status === 401){ window.location.href = '/auth/login'; return; }
-      const json = await res.json().catch(()=>null);
-      if(!res.ok) throw new Error((json && json.error) ? json.error : 'Assign failed');
-      const packerName = (json && json.data && json.data.packerName) ? json.data.packerName : (packers.find(p => p.id === packerId)?.name || packerId);
-      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Packer assigned: ${packerName}`, { type: 'success' }); } }catch(_){ }
+      if(res2.status === 401){ window.location.href = '/auth/login'; return; }
+      const json2 = await res2.json().catch(()=>null);
+      if(!res2.ok) throw new Error((json2 && json2.error) ? json2.error : 'Assign failed');
+
+      if(onAssigned) onAssigned({ orderId, riderId: selectedRider, packerId: selectedPacker });
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned successfully`, { type: 'success' }); } }catch(_){}
       onClose();
-    }catch(e){ alert(e.message || 'Failed to assign packer'); }
-    finally{ setAssigningPacker(null); }
+    }catch(e){ alert(e.message || 'Failed to assign'); }
+    finally{ setSubmitting(false); }
   }
+
+  const riderError = error || '';
+  const packerError = errorPackers || '';
+  const isLoading = loading || loadingPackers;
 
   return (
     <div className="assign-modal-backdrop" role="dialog" aria-modal="true">
       <div className="assign-modal">
         <header className="assign-modal-header">
-          <h3 className="assign-modal-title">{step === 'packer' ? 'Assign Packers' : 'Assign Rider'}</h3>
+          <h3 className="assign-modal-title">Assign Rider & Packer</h3>
           <button className="assign-modal-close" onClick={onClose} aria-label="Close">✕</button>
         </header>
         <div className="assign-modal-body">
-          {step !== 'packer' ? (
-            <>
-              {loading && <div className="section-note">Loading riders…</div>}
-              {error && <div className="auth-error">{error}</div>}
-              {!loading && !error && (
-                <table className="assign-table">
-                  <thead>
-                    <tr><th>Name</th><th>Last Active (days)</th><th>Action</th></tr>
-                  </thead>
-                  <tbody>
-                    {riders.map(r => (
-                      <tr key={r.id}>
-                        <td>{r.name}</td>
-                        <td>{r.lastActiveDays ?? '-'}</td>
-                        <td>
-                          <button className="btn-assign" onClick={()=>assignTo(r.id)} disabled={assigning && assigning!==r.id}>
-                            {assigning===r.id ? 'Assigning…' : 'Assign'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {riders.length === 0 && (<tr><td colSpan={3} className="section-note">No riders found.</td></tr>)}
-                  </tbody>
-                </table>
-              )}
-            </>
+          {isLoading ? (
+            <div className="section-note">Loading…</div>
           ) : (
             <>
-              {loadingPackers && <div className="section-note">Loading packers…</div>}
-              {errorPackers && <div className="auth-error">{errorPackers}</div>}
-              {!loadingPackers && !errorPackers && (
-                <table className="assign-table">
-                  <thead>
-                    <tr><th>Name</th><th>Last Active (days)</th><th>Action</th></tr>
-                  </thead>
-                  <tbody>
-                    {packers.map(p => (
-                      <tr key={p.id}>
-                        <td>{p.name}</td>
-                        <td>{p.lastActiveDays ?? '-'}</td>
-                        <td>
-                          <button className="btn-assign" onClick={()=>assignToPacker(p.id)} disabled={assigningPacker && assigningPacker!==p.id}>
-                            {assigningPacker===p.id ? 'Assigning…' : 'Assign'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {packers.length === 0 && (<tr><td colSpan={3} className="section-note">No packers found.</td></tr>)}
-                  </tbody>
-                </table>
-              )}
+              <div className="assign-form">
+                <div className="form-group">
+                  <label className="field-label">Select Rider
+                    <select
+                      className="field-input assign-dropdown"
+                      value={selectedRider}
+                      onChange={e=>setSelectedRider(e.target.value)}
+                      disabled={submitting}
+                    >
+                      <option value="">-- Choose a rider --</option>
+                      {riders.map(r => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {riderError && <div className="auth-error">{riderError}</div>}
+                  {riders.length === 0 && !riderError && <div className="section-note">No riders available</div>}
+                </div>
+
+                <div className="form-group">
+                  <label className="field-label">Select Packer
+                    <select
+                      className="field-input assign-dropdown"
+                      value={selectedPacker}
+                      onChange={e=>setSelectedPacker(e.target.value)}
+                      disabled={submitting}
+                    >
+                      <option value="">-- Choose a packer --</option>
+                      {packers.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {packerError && <div className="auth-error">{packerError}</div>}
+                  {packers.length === 0 && !packerError && <div className="section-note">No packers available</div>}
+                </div>
+              </div>
+
+              <div className="assign-modal-actions">
+                <button className="btn-secondary" onClick={onClose} disabled={submitting}>Cancel</button>
+                <button className="btn-primary" onClick={handleSubmit} disabled={submitting || !selectedRider || !selectedPacker}>
+                  {submitting ? 'Assigning…' : 'Assign'}
+                </button>
+              </div>
             </>
           )}
         </div>
