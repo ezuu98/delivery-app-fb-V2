@@ -220,7 +220,7 @@ export default function Orders(){
                 );
               })}
               {!loading && !error && visible.length === 0 && (
-                <tr><td colSpan={8} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={10} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>
