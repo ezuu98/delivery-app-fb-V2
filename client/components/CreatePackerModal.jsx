@@ -31,10 +31,10 @@ export default function CreatePackerModal({ onClose, onCreated }){
     const digits = cn.replace(/\D+/g, '');
     const missing = { fn: !fn, cn: !cn, pw: !pw };
     setFullNameErr(missing.fn);
-    setContactErr(missing.cn || digits.length < 7);
+    setContactErr(missing.cn || digits.length !== 10);
     setPasswordErr(missing.pw);
     if(missing.fn || missing.cn || missing.pw){ setError('Full name, mobile and password are required'); return; }
-    if(digits.length < 7){ setError('Please enter a valid mobile number'); setContactErr(true); return; }
+    if(digits.length !== 10){ setError('numbers should be 10 digit'); setContactErr(true); return; }
     if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
 
     setLoading(true);
@@ -53,14 +53,14 @@ export default function CreatePackerModal({ onClose, onCreated }){
         if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*PASSWORD/i.test(raw)){
           setError('Full name, mobile and password are required');
           setFullNameErr(!fn);
-          setContactErr(!cn || digits.length < 7);
+          setContactErr(!cn || digits.length !== 10);
           setPasswordErr(!pw);
         } else if (msg.includes('WEAK_PASSWORD') || /AT LEAST 6 CHARACTERS/i.test(raw)) {
           setPasswordErr(true);
           setError('Password must be at least 6 characters');
-        } else if (/INVALID CONTACT NUMBER/i.test(raw)) {
+        } else if (/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(raw)) {
           setContactErr(true);
-          setError('Please enter a valid mobile number');
+          setError('numbers should be 10 digit');
         } else if (/FIREBASE NOT CONFIGURED/i.test(raw)) {
           setError('Service temporarily unavailable. Please try again later.');
         } else {
@@ -78,9 +78,9 @@ export default function CreatePackerModal({ onClose, onCreated }){
       } else if(/WEAK_PASSWORD/i.test(m) || /AT LEAST 6 CHARACTERS/i.test(m)){
         setPasswordErr(true);
         setError('Password must be at least 6 characters');
-      } else if(/INVALID CONTACT NUMBER/i.test(m)){
+      } else if(/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(m)){
         setContactErr(true);
-        setError('Please enter a valid mobile number');
+        setError('numbers should be 10 digit');
       } else {
         setError(m || 'Failed to create packer');
       }
@@ -107,17 +107,17 @@ export default function CreatePackerModal({ onClose, onCreated }){
             <div className="phone-input-wrapper">
               <span className="phone-prefix">+92</span>
               <input
-                className={"field-input phone-input-field" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length < 7)) ? ' input-error' : '')}
+                className={"field-input phone-input-field" + (submitted && ((String(contactNumber).trim().replace(/\D+/g,'').length !== 10)) ? ' input-error' : '')}
                 type="tel"
                 inputMode="tel"
-                pattern="[0-9]{7,}"
+                pattern="[0-9]{10}"
                 placeholder="3001234567"
                 value={contactNumber}
                 onChange={e=>{
                   const val = e.target.value.replace(/\D+/g, '').slice(0, 10);
                   setContactNumber(val);
                   if(submitted){
-                    setContactErr(!(val.length >= 7));
+                    setContactErr(!(val.length === 10));
                   }
                 }}
                 required
