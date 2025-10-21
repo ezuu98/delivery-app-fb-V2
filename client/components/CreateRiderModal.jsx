@@ -43,11 +43,12 @@ export default function CreateRiderModal({ onClose, onCreated }){
     if(pw.length < 6){ setPasswordErr(true); setError('Password must be at least 6 characters'); return; }
     setLoading(true);
     try{
+      const formattedPhone = formatPhoneNumber(cn);
       const res = await fetch('/api/mobile/register', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: em, password: pw, fullName: fn, contactNumber: cn }),
+        body: JSON.stringify({ email: em, password: pw, fullName: fn, contactNumber: formattedPhone }),
       });
       const json = await res.json().catch(()=>null);
       if(!res.ok){
