@@ -52,6 +52,14 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
       alert('Please select both a rider and a packer');
       return;
     }
+    if(!paymentMethod.trim()){
+      alert('Please enter a payment method');
+      return;
+    }
+    if(!amount.trim()){
+      alert('Please enter an amount');
+      return;
+    }
 
     setSubmitting(true);
     try{
@@ -59,7 +67,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ riderId: selectedRider }),
+        body: JSON.stringify({ riderId: selectedRider, paymentMethod: paymentMethod.trim(), amount: amount.trim() }),
       });
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
       const json = await res.json().catch(()=>null);
@@ -69,13 +77,13 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packerId: selectedPacker }),
+        body: JSON.stringify({ packerId: selectedPacker, paymentMethod: paymentMethod.trim(), amount: amount.trim() }),
       });
       if(res2.status === 401){ window.location.href = '/auth/login'; return; }
       const json2 = await res2.json().catch(()=>null);
       if(!res2.ok) throw new Error((json2 && json2.error) ? json2.error : 'Assign failed');
 
-      if(onAssigned) onAssigned({ orderId, riderId: selectedRider, packerId: selectedPacker });
+      if(onAssigned) onAssigned({ orderId, riderId: selectedRider, packerId: selectedPacker, paymentMethod: paymentMethod.trim(), amount: amount.trim() });
       try{ if(window && typeof window.showToast === 'function'){ window.showToast(`Order assigned successfully`, { type: 'success' }); } }catch(_){}
       onClose();
     }catch(e){ alert(e.message || 'Failed to assign'); }
