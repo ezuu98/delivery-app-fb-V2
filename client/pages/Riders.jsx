@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import CreateRiderModal from '../components/CreateRiderModal.jsx';
+import EditRiderModal from '../components/EditRiderModal.jsx';
 import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } from '../utils/fareSettings.js';
 import { writeRiderPerformance } from '../utils/riderPerformanceStorage.js';
 
@@ -81,6 +82,7 @@ export default function Riders(){
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
+  const [editingRider, setEditingRider] = useState(null);
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
   const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
   const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
@@ -132,37 +134,64 @@ export default function Riders(){
   },[q,page,limit]);
 
   useEffect(()=>{
-    if (!dateRangeFrom || !dateRangeTo || !riders.length) return;
-    let alive = true;
-    (async ()=>{
-      const cache = new Map();
-      for (const rider of riders) {
-        const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+    if (!dateRangeFrom || !dateRangeTo || !riders.length) { setRiderRangeData(new Map()); return; }
 
-        try{
-          const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include' });
-          if (res.status === 401) { window.location.href = '/auth/login'; return; }
-          if (res.ok) {
-            const data = await res.json();
-            if (alive) {
-              cache.set(cacheKey, {
-                km: data.totalKm || 0,
-                rideCount: data.rideCount || 0,
-                performancePct: data.performancePct || 0
-              });
-              console.log(`km-in-range for ${rider.id}:`, data);
-            }
-          } else {
-            const errText = await res.text();
-            console.error(`km-in-range error for ${rider.id}:`, res.status, errText);
-          }
-        }catch(e){ console.error(`km-in-range fetch error for ${rider.id}:`, e); }
-      }
-      if (alive) {
-        setRiderRangeData(cache);
-      }
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let cancelled = false;
+
+    const limit = (() => {
+      const hc = (typeof navigator !== 'undefined' && Number.isFinite(Number(navigator.hardwareConcurrency))) ? Number(navigator.hardwareConcurrency) : 8;
+      return Math.max(2, Math.min(8, Math.floor(hc / 2)));
     })();
-    return ()=>{ alive = false; };
+
+    setRiderRangeData(new Map());
+
+    const tasks = riders.map(rider => async () => {
+      const cacheKey = `${rider.id}:${dateRangeFrom}:${dateRangeTo}`;
+      try{
+        const res = await fetch(`/api/riders/${rider.id}/km-in-range?fromDate=${dateRangeFrom}&toDate=${dateRangeTo}`, { credentials:'include', signal });
+        if (res.status === 401) { window.location.href = '/auth/login'; return; }
+        if (!res.ok) {
+          const errText = await res.text().catch(()=>String(res.status));
+          console.error(`km-in-range error for ${rider.id}:`, res.status, errText);
+          return;
+        }
+        const data = await res.json();
+        if (cancelled || signal.aborted) return;
+        setRiderRangeData(prev => {
+          const next = new Map(prev);
+          next.set(cacheKey, {
+            km: data.totalKm || 0,
+            rideCount: data.rideCount || 0,
+            performancePct: data.performancePct || 0
+          });
+          return next;
+        });
+      }catch(e){
+        if (e && e.name === 'AbortError') return;
+        console.error(`km-in-range fetch error for ${rider.id}:`, e);
+      }
+    });
+
+    async function runPool(list, concurrency){
+      let idx = 0;
+      const workers = new Array(Math.min(concurrency, list.length)).fill(0).map(async ()=>{
+        while(!cancelled && !signal.aborted){
+          const current = idx++;
+          if (current >= list.length) break;
+          await list[current]();
+        }
+      });
+      await Promise.all(workers);
+    }
+
+    runPool(tasks, limit);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   },[dateRangeFrom, dateRangeTo, riders]);
 
   const filtered = useMemo(()=>{
@@ -259,6 +288,17 @@ export default function Riders(){
           {showCreateRider && (
             <CreateRiderModal onClose={()=>setShowCreateRider(false)} onCreated={()=>{ window.location.reload(); }} />
           )}
+          {editingRider && (
+            <EditRiderModal
+              rider={editingRider}
+              onClose={()=> setEditingRider(null)}
+              onUpdated={(serverRider)=>{
+                if (!serverRider){ setEditingRider(null); return; }
+                setRiders(prev => prev.map(x => String(x.id) === String(serverRider.id) ? { ...x, name: serverRider.displayName || serverRider.name || x.name, contactNumber: serverRider.contactNumber ?? x.contactNumber } : x));
+                setEditingRider(null);
+              }}
+            />
+          )}
           <table className="rc-table">
             <thead>
               <tr>
@@ -267,6 +307,7 @@ export default function Riders(){
                 <th className="col-earnings">{(() => { const k = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const parts = String(k).split('-'); const y = parseInt(parts[0],10); const m = parseInt(parts[1],10); const d = new Date(Number.isFinite(y)?y:new Date().getFullYear(), Number.isFinite(m)?(m-1):new Date().getMonth()-1, 1); const ml = d.toLocaleString(undefined, { month: 'short' }); return `Earnings (${ml}, Rs)`; })()}</th>
                 <th className="col-perf">Performance</th>
                 <th className="col-total">Total</th>
+                <th className="col-action">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -283,12 +324,19 @@ export default function Riders(){
                     if (dateRangeFrom && dateRangeTo) {
                       const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
                       const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<span className="cell-loader loader-sm" aria-busy="true" aria-label="Loading range"></span>);
                       const km = data?.km ?? 0;
                       return `${Number(km).toFixed(2)} km`;
                     }
                     return `${Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km`;
                   })()}</td>
                   {(() => {
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<td className="rc-col-earnings"><span className="cell-loader loader-md" aria-busy="true" aria-label="Loading earnings"></span></td>);
+                    }
+
                     let km = 0;
                     let rideCount = 0;
 
@@ -311,12 +359,33 @@ export default function Riders(){
                     if (dateRangeFrom && dateRangeTo) {
                       const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
                       const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<span className="cell-loader loader-sm" aria-busy="true" aria-label="Loading performance"></span>);
                       const perfPct = data?.performancePct ?? 0;
                       return `${Number(perfPct)}%`;
                     }
                     return Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%';
                   })()}</td>
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
+                  <td className="rc-col-actions">
+                    <div className="actions-container">
+                      <button className="rc-select rc-chip btn-edit-rider" aria-label="Edit rider" title="Edit rider" onClick={()=> setEditingRider(r)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
+                      </button>
+                      <button className="rc-select rc-chip btn-delete-rider" aria-label="Delete rider" title="Delete rider" onClick={async ()=>{
+                        const yes = window.confirm('Delete this rider?');
+                        if (!yes) return;
+                        try{
+                          const res = await fetch(`/api/riders/${encodeURIComponent(r.id)}`, { method:'DELETE', credentials:'include' });
+                          if (res.status === 401){ window.location.href = '/auth/login'; return; }
+                          if (!res.ok){ const t = await res.text().catch(()=>'' ); alert(t || 'Failed to delete'); return; }
+                          setRiders(prev => prev.filter(x => String(x.id) !== String(r.id)));
+                          setMeta(m => ({ ...m, total: Math.max(0, (m.total||1) - 1) }));
+                        }catch(e){ alert(String(e?.message || 'Failed to delete')); }
+                      }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 7h12v2H6V7zm2 3h8l-.8 9.6c-.06.75-.69 1.32-1.44 1.32H10.24c-.75 0-1.38-.57-1.44-1.32L8 10zM9 4h6l1 2H8l1-2z"/></svg>
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
               {!loading && !error && filtered.length === 0 && (

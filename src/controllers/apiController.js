@@ -456,6 +456,28 @@ async function computeRiderAssignmentCounts(){
   return counts;
 }
 
+async function updateRiderDoc(id, patch){
+  const db = getFirestore();
+  if (!db) throw new Error('Firestore not configured');
+  const ref = db.collection('riders').doc(String(id));
+  const now = new Date().toISOString();
+  const data = { updatedAt: now };
+  if (patch.displayName !== undefined) data.displayName = String(patch.displayName).trim().slice(0,120) || null;
+  if (patch.contactNumber !== undefined) data.contactNumber = String(patch.contactNumber).trim().slice(0,40) || null;
+  if (patch.email !== undefined) data.email = String(patch.email).trim() || null;
+  await ref.set(data, { merge: true });
+  const snap = await ref.get();
+  return { id: String(ref.id), ...(snap.data() || {}) };
+}
+
+async function deleteRiderDoc(id){
+  const db = getFirestore();
+  if (!db) throw new Error('Firestore not configured');
+  const ref = db.collection('riders').doc(String(id));
+  await ref.delete();
+  return true;
+}
+
 module.exports = {
   packers: async (req, res) => {
     try{
@@ -620,6 +642,30 @@ module.exports = {
     }catch(e){
       log.error('rider.km.range.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to calculate rider km'));
+    }
+  },
+
+  updateRider: async (req, res) => {
+    try{
+      const id = String(req.params.id || '').trim();
+      if (!id) return res.status(400).json(fail('Missing rider id'));
+      const { displayName, contactNumber, email } = req.body || {};
+      if (displayName == null && contactNumber == null && email == null) return res.status(400).json(fail('No fields to update'));
+      const rider = await updateRiderDoc(id, { displayName, contactNumber, email });
+      return res.json(ok({ rider }, 'Updated'));
+    }catch(e){
+      return res.status(500).json(fail('Failed to update rider'));
+    }
+  },
+
+  deleteRider: async (req, res) => {
+    try{
+      const id = String(req.params.id || '').trim();
+      if (!id) return res.status(400).json(fail('Missing rider id'));
+      await deleteRiderDoc(id);
+      return res.json(ok({ deleted: true }, 'Deleted'));
+    }catch(e){
+      return res.status(500).json(fail('Failed to delete rider'));
     }
   },
 

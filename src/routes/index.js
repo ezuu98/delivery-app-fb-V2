@@ -35,6 +35,8 @@ router.get('/reports', ensureAuthenticated, sendSpa);
 // API routes
 router.get('/api/riders', ensureAuthenticatedJson, apiController.riders);
 router.get('/api/riders/:id/km-in-range', ensureAuthenticatedJson, apiController.riderKmInRange);
+router.patch('/api/riders/:id', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { displayName: 'string?', contactNumber: 'string?', email: 'string?' } }), apiController.updateRider);
+router.delete('/api/riders/:id', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.deleteRider);
 router.get('/api/riders/:id', ensureAuthenticatedJson, apiController.riderProfile);
 router.get('/api/packers', ensureAuthenticatedJson, apiController.packers);
 router.post('/api/packers', ensureAuthenticatedJson, validate({ body: { fullName: 'string', password: 'string', contactNumber: 'string' } }), apiController.createPacker);

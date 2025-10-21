@@ -18,7 +18,9 @@ function mapRider(doc){
   const status = lastActiveDays <= 30 ? 'Active' : 'Inactive';
   const thisMonthKm = Number(d.this_month_kms ?? 0);
   const orders = Array.isArray(d.orders) ? d.orders.slice() : [];
-  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays, thisMonthKm, orders };
+  const contactNumber = d.contactNumber || null;
+  const email = d.email || null;
+  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays, thisMonthKm, orders, contactNumber, email };
 }
 
 async function list() {
