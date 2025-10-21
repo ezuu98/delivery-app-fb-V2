@@ -23,7 +23,8 @@ export default function EditOrderModal({ order, onClose, onUpdated }){
         const data = await res.json();
         if(alive){
           setRiders(Array.isArray(data.riders) ? data.riders : []);
-          setSelectedRider(order.assignment?.riderId || '');
+          const riderId = order.assignment?.riderId || order.riderId || order.rider_id || '';
+          setSelectedRider(String(riderId));
         }
       }catch(e){ if(alive) setError(e.message || 'Failed to load riders'); }
       finally{ if(alive) setLoading(false); }
