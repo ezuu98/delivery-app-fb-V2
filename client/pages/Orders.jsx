@@ -94,6 +94,8 @@ export default function Orders(){
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
   function openEdit(order){ setEditingOrder(order); setShowEdit(true); }
   function closeEdit(){ setEditingOrder(null); setShowEdit(false); }
+  function openImage(order){ setImageOrder(order); setShowImage(true); }
+  function closeImage(){ setImageOrder(null); setShowImage(false); }
   function onAssigned(payload){
     try{
       const { orderId } = payload || {};
