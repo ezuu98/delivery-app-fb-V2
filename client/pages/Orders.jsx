@@ -238,7 +238,7 @@ export default function Orders(){
                           aria-label="Edit order"
                           title="Edit order"
                         >
-                          ✏️
+                          ⋯
                         </button>
                       </div>
                     </td>
