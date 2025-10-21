@@ -101,9 +101,6 @@ export default function CreateRiderModal({ onClose, onCreated }){
           <label className="field-label">Full name
             <input className={"field-input" + (submitted && (!String(fullName).trim()) ? ' input-error' : '')} value={fullName} onChange={e=>{ setFullName(e.target.value); if(submitted) setFullNameErr(!String(e.target.value).trim()); }} required />
           </label>
-          <label className="field-label">Email
-            <input className="field-input" type="email" value={email} onChange={e=>{ setEmail(e.target.value); }} />
-          </label>
           <label className="field-label">Password
             <input className={"field-input" + (submitted && (!String(password)) ? ' input-error' : '')} type="password" value={password} onChange={e=>{ setPassword(e.target.value); if(submitted) setPasswordErr(!String(e.target.value)); }} required />
           </label>
