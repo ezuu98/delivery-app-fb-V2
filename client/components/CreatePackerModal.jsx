@@ -53,14 +53,14 @@ export default function CreatePackerModal({ onClose, onCreated }){
         if(/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(raw) || /MISSING\s*PASSWORD/i.test(raw)){
           setError('Full name, mobile and password are required');
           setFullNameErr(!fn);
-          setContactErr(!cn || digits.length < 7);
+          setContactErr(!cn || digits.length !== 10);
           setPasswordErr(!pw);
         } else if (msg.includes('WEAK_PASSWORD') || /AT LEAST 6 CHARACTERS/i.test(raw)) {
           setPasswordErr(true);
           setError('Password must be at least 6 characters');
-        } else if (/INVALID CONTACT NUMBER/i.test(raw)) {
+        } else if (/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS/i.test(raw)) {
           setContactErr(true);
-          setError('Please enter a valid mobile number');
+          setError('Mobile number must be exactly 10 digits');
         } else if (/FIREBASE NOT CONFIGURED/i.test(raw)) {
           setError('Service temporarily unavailable. Please try again later.');
         } else {
