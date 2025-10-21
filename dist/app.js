@@ -19705,6 +19705,11 @@ function W_() {
               columnNumber: 21
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-status status-cell", children: /* @__PURE__ */ u.jsxDEV("div", { className: "status-container", children: [
+              /* @__PURE__ */ u.jsxDEV("span", { className: `status-chip status-${zt}`, children: ut }, void 0, !1, {
+                fileName: "/app/code/client/pages/Orders.jsx",
+                lineNumber: 213,
+                columnNumber: 25
+              }, this),
               zt === "assigned" && /* @__PURE__ */ u.jsxDEV(
                 "button",
                 {
@@ -19718,7 +19723,7 @@ function W_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 214,
+                  lineNumber: 215,
                   columnNumber: 27
                 },
                 this
@@ -19736,7 +19741,7 @@ function W_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 223,
+                  lineNumber: 224,
                   columnNumber: 25
                 },
                 this
@@ -19754,16 +19759,11 @@ function W_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 231,
+                  lineNumber: 232,
                   columnNumber: 25
                 },
                 this
-              ),
-              /* @__PURE__ */ u.jsxDEV("span", { className: `status-chip status-${zt}`, children: ut }, void 0, !1, {
-                fileName: "/app/code/client/pages/Orders.jsx",
-                lineNumber: 239,
-                columnNumber: 25
-              }, this)
+              )
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 212,
