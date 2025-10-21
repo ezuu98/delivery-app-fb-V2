@@ -78,9 +78,9 @@ export default function CreatePackerModal({ onClose, onCreated }){
       } else if(/WEAK_PASSWORD/i.test(m) || /AT LEAST 6 CHARACTERS/i.test(m)){
         setPasswordErr(true);
         setError('Password must be at least 6 characters');
-      } else if(/INVALID CONTACT NUMBER/i.test(m)){
+      } else if(/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS/i.test(m)){
         setContactErr(true);
-        setError('Please enter a valid mobile number');
+        setError('Mobile number must be exactly 10 digits');
       } else {
         setError(m || 'Failed to create packer');
       }
