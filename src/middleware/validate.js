@@ -7,7 +7,7 @@ function typeOf(v){
 }
 
 function validate(schemas = {}){
-  // schemas: { body: { field: 'string'|'number'|'boolean' }, query: { ... }, params: { ... } }
+  // schemas: { body: { field: 'string'|'number'|'boolean'|'string?' }, query: { ... }, params: { ... } }
   return function(req, res, next){
     try{
       for (const part of ['params','query','body']){
@@ -15,12 +15,14 @@ function validate(schemas = {}){
         if (!schema) continue;
         const src = req[part] || {};
         for (const [key, rule] of Object.entries(schema)){
-          const required = true;
-          const expected = String(rule);
+          const ruleStr = String(rule);
+          const isOptional = ruleStr.endsWith('?');
+          const expected = isOptional ? ruleStr.slice(0, -1) : ruleStr;
           const val = src[key];
-          if ((val === undefined || val === null || val === '') && required){
+          if ((val === undefined || val === null || val === '') && !isOptional){
             return res.status(400).json(fail(`Missing ${part}.${key}`));
           }
+          if ((val === undefined || val === null || val === '')) continue;
           if (expected && expected !== 'any'){
             const got = typeOf(val);
             if (expected === 'number' && got === 'string' && val !== ''){
