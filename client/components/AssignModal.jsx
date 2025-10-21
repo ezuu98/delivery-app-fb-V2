@@ -116,7 +116,7 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
                       disabled={submitting}
                     >
                       <option value="">-- Choose a rider --</option>
-                      {riders.map(r => (
+                      {[...riders].sort((a, b) => a.name.localeCompare(b.name)).map(r => (
                         <option key={r.id} value={r.id}>{r.name}</option>
                       ))}
                     </select>
