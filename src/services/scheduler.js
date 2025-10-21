@@ -95,7 +95,7 @@ async function ensureFirestoreStatusNew(orders){
 
 async function syncOnce(){
   try{
-    const { orders = [], error } = await listOrders({ limit: 100 });
+    const { orders = [], error } = await fetchAllOrders({ limit: 100, maxPages: 500 });
     if (error) {
       log.warn('scheduler.orders.error', { error });
       return;
