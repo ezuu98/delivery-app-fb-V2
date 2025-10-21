@@ -13,6 +13,19 @@ export default function CreateRiderModal({ onClose, onCreated }){
   const [passwordErr, setPasswordErr] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const COUNTRY_CODE = '+92';
+
+  function formatPhoneNumber(value){
+    const digits = String(value || '').replace(/\D+/g, '');
+    if (digits.length === 0) return '';
+    if (digits.startsWith('92')) {
+      return COUNTRY_CODE + digits.slice(2);
+    }
+    return COUNTRY_CODE + digits;
+  }
+
+  const displayPhoneNumber = formatPhoneNumber(contactNumber);
+
   async function create(){
     setError(''); setOk(''); setSubmitted(true);
     const em = String(email).trim();
