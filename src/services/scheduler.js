@@ -1,4 +1,4 @@
-const { listOrders, fetchAllOrders } = require('./shopify');
+const { listOrders } = require('./shopify');
 const orderModel = require('../models/orderModel');
 const { getFirestore } = require('./firestore');
 const log = require('../utils/logger');
