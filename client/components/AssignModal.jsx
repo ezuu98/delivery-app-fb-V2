@@ -5,6 +5,8 @@ export default function AssignModal({ orderId, onClose, onAssigned }){
   const [packers, setPackers] = useState([]);
   const [selectedRider, setSelectedRider] = useState('');
   const [selectedPacker, setSelectedPacker] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadingPackers, setLoadingPackers] = useState(true);
   const [error, setError] = useState('');
