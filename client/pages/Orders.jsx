@@ -263,6 +263,9 @@ export default function Orders(){
         {showEdit && editingOrder && (
           <EditOrderModal order={editingOrder} onClose={closeEdit} onUpdated={() => { setRefreshTrigger(prev => prev + 1); closeEdit(); }} />
         )}
+        {showImage && imageOrder && (
+          <ImageModal order={imageOrder} onClose={closeImage} />
+        )}
           <div className="rc-filters">
             <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
             <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
