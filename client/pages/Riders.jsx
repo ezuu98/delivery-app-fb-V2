@@ -82,6 +82,7 @@ export default function Riders(){
   const [limit, setLimit] = useState(20);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 20, pages: 1 });
   const [showCreateRider, setShowCreateRider] = useState(false);
+  const [editingRider, setEditingRider] = useState(null);
   const [fareSettings, setFareSettings] = useState(DEFAULT_FARE_SETTINGS);
   const [dateRangeFrom, setDateRangeFrom] = useState(defaultDates.from);
   const [dateRangeTo, setDateRangeTo] = useState(defaultDates.to);
