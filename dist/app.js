@@ -19762,7 +19762,7 @@ function W_() {
                   onClick: () => pe(te),
                   "aria-label": "Edit order",
                   title: "Edit order",
-                  children: "✏️"
+                  children: "⋯"
                 },
                 void 0,
                 !1,
