@@ -270,3 +270,9 @@
 .date-range-separator{color:#9ca3af;font-size:14px;font-weight:500}
 .date-range-clear{background:transparent;border:none;color:#dc2626;cursor:pointer;padding:4px 6px;border-radius:6px;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease}
 .date-range-clear:hover{background:#fee2e2;color:#b91c1c}
+
+/* Table cell skeleton loader */
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+.cell-loader{display:inline-block;height:12px;border-radius:9999px;background:linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 37%,#f3f4f6 63%);background-size:400px 100%;animation:shimmer 1.2s infinite ease-in-out}
+.loader-sm{width:70px}
+.loader-md{width:110px}
