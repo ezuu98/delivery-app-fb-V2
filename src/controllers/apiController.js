@@ -1298,11 +1298,25 @@ module.exports = {
     const found = await findOrderByAnyId(rawId);
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
-    const { riderId } = req.body || {};
+    const { riderId, paymentMethod, amount } = req.body || {};
     const rider = await riderModel.getById(riderId);
     if (!rider) return res.status(400).json(fail('Invalid rider'));
     const assignment = await orderModel.assign(id, riderId);
-    log.info('order.assigned', { orderId: id, riderId });
+
+    // Save payment method and amount to Firestore
+    try {
+      const db = getFirestore();
+      if (db) {
+        const updateData = { orderId: id };
+        if (paymentMethod) updateData.paymentMethod = String(paymentMethod).trim();
+        if (amount) updateData.amount = String(amount).trim();
+        await db.collection('orders').doc(id).set(updateData, { merge: true });
+      }
+    } catch (e) {
+      log.warn('firestore.payment.save.failed', { message: e?.message });
+    }
+
+    log.info('order.assigned', { orderId: id, riderId, paymentMethod, amount });
     return res.json(ok({ assignment }));
   },
 
