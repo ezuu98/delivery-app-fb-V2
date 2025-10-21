@@ -42,7 +42,8 @@ export default function EditOrderModal({ order, onClose, onUpdated }){
         const data = await res.json();
         if(alive){
           setPackers(Array.isArray(data.packers) ? data.packers : []);
-          setSelectedPacker(order.assignment?.packerId || '');
+          const packerId = order.assignment?.packerId || order.packed_by || order.packer_id || '';
+          setSelectedPacker(String(packerId));
         }
       }catch(e){ if(alive) setError(e.message || 'Failed to load packers'); }
     })();
