@@ -360,8 +360,10 @@ export default function Riders(){
                   <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
                   <td className="rc-col-actions">
                     <div className="actions-container">
-                      <button className="rc-select rc-chip" onClick={()=> setEditingRider(r)}>Edit</button>
-                      <button className="rc-select rc-chip" onClick={async ()=>{
+                      <button className="rc-select rc-chip btn-edit-rider" aria-label="Edit rider" title="Edit rider" onClick={()=> setEditingRider(r)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
+                      </button>
+                      <button className="rc-select rc-chip btn-delete-rider" aria-label="Delete rider" title="Delete rider" onClick={async ()=>{
                         const yes = window.confirm('Delete this rider?');
                         if (!yes) return;
                         try{
@@ -371,7 +373,9 @@ export default function Riders(){
                           setRiders(prev => prev.filter(x => String(x.id) !== String(r.id)));
                           setMeta(m => ({ ...m, total: Math.max(0, (m.total||1) - 1) }));
                         }catch(e){ alert(String(e?.message || 'Failed to delete')); }
-                      }}>Delete</button>
+                      }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 7h12v2H6V7zm2 3h8l-.8 9.6c-.06.75-.69 1.32-1.44 1.32H10.24c-.75 0-1.38-.57-1.44-1.32L8 10zM9 4h6l1 2H8l1-2z"/></svg>
+                      </button>
                     </div>
                   </td>
                 </tr>
