@@ -324,12 +324,19 @@ export default function Riders(){
                     if (dateRangeFrom && dateRangeTo) {
                       const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
                       const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<span className="cell-loader loader-sm" aria-busy="true" aria-label="Loading range"></span>);
                       const km = data?.km ?? 0;
                       return `${Number(km).toFixed(2)} km`;
                     }
                     return `${Number(r.monthlyCounts?.[lastThreeMonths.keys[lastThreeMonths.keys.length - 1]] || 0).toFixed(2)} km`;
                   })()}</td>
                   {(() => {
+                    if (dateRangeFrom && dateRangeTo) {
+                      const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
+                      const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<td className="rc-col-earnings"><span className="cell-loader loader-md" aria-busy="true" aria-label="Loading earnings"></span></td>);
+                    }
+
                     let km = 0;
                     let rideCount = 0;
 
@@ -352,6 +359,7 @@ export default function Riders(){
                     if (dateRangeFrom && dateRangeTo) {
                       const cacheKey = `${r.id}:${dateRangeFrom}:${dateRangeTo}`;
                       const data = riderRangeData.get(cacheKey);
+                      if (!data) return (<span className="cell-loader loader-sm" aria-busy="true" aria-label="Loading performance"></span>);
                       const perfPct = data?.performancePct ?? 0;
                       return `${Number(perfPct)}%`;
                     }
