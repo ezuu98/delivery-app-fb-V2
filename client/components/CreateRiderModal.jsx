@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export default function CreateRiderModal({ onClose, onCreated }){
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
