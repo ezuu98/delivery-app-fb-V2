@@ -294,6 +294,7 @@ export default function Riders(){
                 <th className="col-earnings">{(() => { const k = lastThreeMonths.keys[lastThreeMonths.keys.length - 2]; const parts = String(k).split('-'); const y = parseInt(parts[0],10); const m = parseInt(parts[1],10); const d = new Date(Number.isFinite(y)?y:new Date().getFullYear(), Number.isFinite(m)?(m-1):new Date().getMonth()-1, 1); const ml = d.toLocaleString(undefined, { month: 'short' }); return `Earnings (${ml}, Rs)`; })()}</th>
                 <th className="col-perf">Performance</th>
                 <th className="col-total">Total</th>
+                <th className="col-action">Actions</th>
               </tr>
             </thead>
             <tbody>
