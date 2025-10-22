@@ -160,6 +160,7 @@ export default function Orders(){
                 <th className="col-km customer-heading">Customer</th>
                 <th className="col-perf address-heading">Address</th>
                 <th className="col-rider rider-heading">Rider</th>
+                <th className="col-packer packer-heading">Packer</th>
                 <th className="col-start-time start-heading">Start</th>
                 <th className="col-expected expected-heading">Expected</th>
                 <th className="col-actual actual-heading">Actual</th>
