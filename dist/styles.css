@@ -278,6 +278,9 @@
 
 /* Date range filter */
 .date-range-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* Make Download CSV button match filter chip hover styles */
+.download-csv-btn:hover,
+.download-csv-btn:focus{background-color:#eef6ff;border-color:#cfe0ff;color:#1f5fbf;outline:none}
 .date-range-input{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;font-size:14px;height:40px}
 .date-range-input:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
 .date-range-separator{color:#9ca3af;font-size:14px;font-weight:500}
