@@ -95,81 +95,16 @@ export default function Orders(){
 
   async function downloadCSV(){
     try{
-      const from = fromDate ? new Date(fromDate + 'T00:00:00') : null;
-      const to = toDate ? new Date(toDate + 'T23:59:59') : null;
+      const params = new URLSearchParams();
+      if (fromDate) params.set('from', fromDate);
+      if (toDate) params.set('to', toDate);
+      if (q) params.set('q', q);
+      if (tab && tab !== 'all') params.set('status', tab);
 
-      // Build base params (preserve search and status filters)
-      const baseParams = new URLSearchParams();
-      if(q) baseParams.set('q', q);
-      if(tab && tab !== 'all'){
-        const statusKey = STATUS_PARAM_MAP[tab] || tab;
-        baseParams.set('status', normalizeStatus(statusKey));
-      }
-
-      const pageSize = 200;
-      let allOrders = [];
-
-      // Fetch first page to get meta.pages
-      let p = 1;
-      const firstParams = new URLSearchParams(baseParams.toString());
-      firstParams.set('page', String(p));
-      firstParams.set('limit', String(pageSize));
-      let res = await fetch(`/api/orders?${firstParams.toString()}`, { credentials: 'include' });
+      const res = await fetch(`/api/orders/export?${params.toString()}`, { credentials: 'include' });
       if(res.status === 401){ window.location.href = '/auth/login'; return; }
-      if(!res.ok) throw new Error('Failed to load orders for export');
-      let data = await res.json();
-      allOrders = allOrders.concat(Array.isArray(data.orders) ? data.orders : []);
-      const totalPages = data.meta?.pages || 1;
-
-      // Fetch remaining pages sequentially
-      for(let pageNum = 2; pageNum <= totalPages; pageNum++){
-        const params = new URLSearchParams(baseParams.toString());
-        params.set('page', String(pageNum));
-        params.set('limit', String(pageSize));
-        const r = await fetch(`/api/orders?${params.toString()}`, { credentials: 'include' });
-        if(r.status === 401){ window.location.href = '/auth/login'; return; }
-        if(!r.ok) continue;
-        const d = await r.json();
-        if(Array.isArray(d.orders)) allOrders = allOrders.concat(d.orders);
-      }
-
-      const rows = [];
-      const header = ['Order','Customer','Address','Rider','Packer','Start','Expected','Actual','Amount','Payment Method','Status'];
-      rows.push(header.map(h=>`"${h.replace(/"/g,'""')}"`).join(','));
-
-      for (const o of allOrders){
-        const od = parseOrderDate(o);
-        if(from && (!od || od < from)) continue;
-        if(to && (!od || od > to)) continue;
-        const orderId = o.name || o.order_number || o.id || '';
-        const fullName = o.full_name || (o.customer && o.customer.full_name) || '';
-        let addr = '-';
-        if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) {
-          addr = String(o.shipping_address).trim();
-        } else if (o.shipping_address && typeof o.shipping_address === 'object') {
-          addr = [o.shipping_address.address1 || '', o.shipping_address.city || '', o.shipping_address.province || '', o.shipping_address.country || '']
-            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
-        } else if (typeof o.billing_address === 'string' && String(o.billing_address).trim()) {
-          addr = String(o.billing_address).trim();
-        } else if (o.billing_address && typeof o.billing_address === 'object') {
-          addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
-            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
-        }
-        const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
-        const packerLabel = o.packerName || (o.packed_by ? String(o.packed_by) : '');
-        const startTime = typeof resolveStartTime === 'function' ? formatTimeOfDay(resolveStartTime(o)) : '';
-        const expectedTime = typeof resolveExpectedValue === 'function' ? formatExpectedTime(resolveExpectedValue(o)) : '';
-        const actualDisplay = typeof resolveActualDuration === 'function' ? formatDurationHM(resolveActualDuration(o)) : '';
-        const amount = o.amount || o.assignment?.amount || '';
-        const payment = o.paymentMethod || o.assignment?.paymentMethod || '';
-        const statusRaw = (o.current_status || o.order_status || o.status || '').toString();
-        const cols = [orderId, fullName, addr, riderLabel, packerLabel, startTime, expectedTime, actualDisplay, amount, payment, statusRaw];
-        const esc = cols.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',');
-        rows.push(esc);
-      }
-
-      const csv = rows.join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      if(!res.ok) throw new Error('Failed to generate export');
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -179,7 +114,7 @@ export default function Orders(){
       a.remove();
       URL.revokeObjectURL(url);
     }catch(e){
-      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to generate CSV', { type: 'error' }); } }catch(_){ }
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to download CSV', { type: 'error' }); } }catch(_){ }
     }
   }
 
