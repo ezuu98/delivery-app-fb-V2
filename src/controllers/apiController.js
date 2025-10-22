@@ -1109,7 +1109,63 @@ module.exports = {
         const packerLabel = o.packerName || (o.packed_by ? String(o.packed_by) : '');
         const startTime = (()=>{ try{ if (o.deliveryStartTime) return String(o.deliveryStartTime); if (o.created_at) return String(o.created_at); return ''; }catch(_){ return ''; } })();
         const expectedTime = (()=>{ try{ if (o.expected_delivery_time && typeof o.expected_delivery_time === 'string') return String(o.expected_delivery_time); if (o.expected_delivery_time && typeof o.expected_delivery_time === 'object' && o.expected_delivery_time.minutes !== undefined) return String(o.expected_delivery_time.minutes); return ''; }catch(_){ return ''; } })();
-        const actualDisplay = o.actual_delivery_time ? String(o.actual_delivery_time) : '';
+        // Compute actual duration in minutes similar to client logic
+        const computeMinutes = (ord) => {
+          try{
+            // Check numeric duration candidates
+            const candidates = [ord.durationMins, ord.duration_minutes, ord.deliveryDuration, ord.delivery_duration, ord.actualDuration, ord.actual_duration, ord.actualDurationMinutes, ord.orders && ord.orders.deliveryDuration, ord.orders && ord.orders.delivery_duration, ord.orders && ord.orders.durationMins, ord.orders && ord.orders.duration_minutes, ord.orders && ord.orders.actualDuration, ord.orders && ord.orders.actualDurationMinutes];
+            for (const c of candidates){
+              if (c === null || c === undefined) continue;
+              if (typeof c === 'number' && Number.isFinite(c)) return Math.round(c);
+              if (typeof c === 'string'){
+                const t = c.trim();
+                if (!t) continue;
+                const mMatch = t.match(/^(-?\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
+                if (mMatch) return Math.round(Number(mMatch[1]));
+                const sMatch = t.match(/^(-?\d+(?:\.\d+)?)\s*(s|sec|secs|seconds)$/i);
+                if (sMatch) return Math.round(Number(sMatch[1]) / 60);
+                const num = Number(t);
+                if (Number.isFinite(num)) return Math.round(num);
+              }
+              if (typeof c === 'object' && c !== null){
+                if (Number.isFinite(c.minutes)) return Math.round(Number(c.minutes));
+                if (Number.isFinite(c.expectedMinutes)) return Math.round(Number(c.expectedMinutes));
+                if (Number.isFinite(c.seconds)) return Math.round(Number(c.seconds) / 60);
+              }
+            }
+            // Fallback: compute from timestamps
+            const toDate = (v) => {
+              if (v === null || v === undefined) return null;
+              if (v instanceof Date) return v;
+              if (typeof v === 'number'){
+                if (!Number.isFinite(v)) return null;
+                if (v > 1e12) return new Date(v);
+                if (v > 1e9) return new Date(v * 1000);
+              }
+              if (typeof v === 'string'){
+                const parsed = Date.parse(v);
+                if (!Number.isNaN(parsed)) return new Date(parsed);
+              }
+              if (typeof v === 'object'){
+                if (v.seconds !== undefined) return new Date(Number(v.seconds) * 1000);
+                if (v.at) return toDate(v.at);
+              }
+              return null;
+            };
+            const delivered = toDate(ord.actual_delivery_time || ord.actualDeliveryTime || ord.deliveryEndTime || (ord.events && ord.events.find(e=>e && e.type==='delivered') && ord.events.reverse()[0] && ord.events.reverse()[0].at));
+            const start = toDate(ord.deliveryStartTime || ord.delivery_start_time || ord.start_time || ord.startTime || ord.started_at || ord.startedAt || ord.created_at);
+            if (delivered && start){
+              const diff = Math.round((delivered.getTime() - start.getTime()) / 60000);
+              if (diff >= 0) return diff;
+            }
+          }catch(_){ }
+          return null;
+        };
+        const minutes = computeMinutes(o);
+        let actualDisplay = '';
+        if (minutes === null) actualDisplay = '';
+        else if (minutes < 60) actualDisplay = `${minutes} min`;
+        else { const hrs = Math.floor(minutes / 60); const rem = minutes % 60; actualDisplay = `${hrs}h ${rem}m`; }
         const amount = o.amount || o.assignment?.amount || '';
         const payment = o.paymentMethod || o.assignment?.paymentMethod || '';
         const statusRaw = (o.current_status || o.order_status || o.status || '').toString();
