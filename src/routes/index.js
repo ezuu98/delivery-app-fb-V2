@@ -41,6 +41,7 @@ router.get('/api/riders/:id', ensureAuthenticatedJson, apiController.riderProfil
 router.get('/api/packers', ensureAuthenticatedJson, apiController.packers);
 router.post('/api/packers', ensureAuthenticatedJson, validate({ body: { fullName: 'string', password: 'string', contactNumber: 'string' } }), apiController.createPacker);
 router.get('/api/orders', ensureAuthenticatedJson, apiController.orders);
+router.get('/api/orders/export', ensureAuthenticatedJson, apiController.exportOrders);
 router.get('/api/orders/:id', ensureAuthenticatedJson, apiController.getOrder);
 router.get('/api/orders/:id/delivery-events', ensureAuthenticatedJson, validate({ params: { id: 'string' } }), apiController.getDeliveryEvents);
 router.post('/api/orders/:id/delivery-events', ensureAuthenticatedJson, validate({ params: { id: 'string' }, body: { type: 'string' } }), apiController.addDeliveryEvent);
