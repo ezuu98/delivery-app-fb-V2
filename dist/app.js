@@ -19938,39 +19938,44 @@ function K_() {
           lineNumber: 162,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-start-time start-heading", children: "Start" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-packer packer-heading", children: "Packer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 163,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-expected expected-heading", children: "Expected" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-start-time start-heading", children: "Start" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 164,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-actual actual-heading", children: "Actual" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-expected expected-heading", children: "Expected" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 165,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-amount amount-heading", children: "Amount" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-actual actual-heading", children: "Actual" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 166,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-payment payment-heading", children: "Payment Method" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-amount amount-heading", children: "Amount" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 167,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-status status-heading", children: "Status" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-payment payment-heading", children: "Payment Method" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 168,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ u.jsxDEV("th", { className: "col-actions actions-heading", children: "Actions" }, void 0, !1, {
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-status status-heading", children: "Status" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 169,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ u.jsxDEV("th", { className: "col-actions actions-heading", children: "Actions" }, void 0, !1, {
+          fileName: "/app/code/client/pages/Orders.jsx",
+          lineNumber: 170,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
@@ -19983,22 +19988,22 @@ function K_() {
         columnNumber: 13
       }, this),
       /* @__PURE__ */ u.jsxDEV("tbody", { children: [
-        T && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 11, className: "section-note", children: "Loading…" }, void 0, !1, {
+        T && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 12, className: "section-note", children: "Loading…" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 174,
+          lineNumber: 175,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 174,
+          lineNumber: 175,
           columnNumber: 17
         }, this),
-        !T && Z && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 11, className: "auth-error", children: Z }, void 0, !1, {
+        !T && Z && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 12, className: "auth-error", children: Z }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 177,
+          lineNumber: 178,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 177,
+          lineNumber: 178,
           columnNumber: 17
         }, this),
         !T && !Z && fe.map((ne, Ye) => {
@@ -20010,56 +20015,61 @@ function K_() {
           return /* @__PURE__ */ u.jsxDEV("tr", { "data-status": ht, children: [
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-name order-id-cell", children: Gt }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 208,
+              lineNumber: 209,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-km customer-cell", children: At || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 209,
+              lineNumber: 210,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-perf address-cell", children: ot }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 210,
+              lineNumber: 211,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-rider rider-cell", children: rn }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 211,
-              columnNumber: 21
-            }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-start-time start-cell", children: Ht }, void 0, !1, {
-              fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 212,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-expected expected-cell", children: ya }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-packer packer-cell", children: ne.packerName || (ne.packed_by ? String(ne.packed_by) : "-") }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 213,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: xn }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-start-time start-cell", children: Ht }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 214,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-amount amount-cell", children: ne.amount || ((ln = ne.assignment) == null ? void 0 : ln.amount) || "-" }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-expected expected-cell", children: ya }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 215,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-payment payment-cell", children: ne.paymentMethod || ((Qn = ne.assignment) == null ? void 0 : Qn.paymentMethod) || "-" }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-actual actual-time-cell", children: xn }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 216,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-status status-cell", children: /* @__PURE__ */ u.jsxDEV("span", { className: `status-chip status-${ht}`, children: Tt }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-amount amount-cell", children: ne.amount || ((ln = ne.assignment) == null ? void 0 : ln.amount) || "-" }, void 0, !1, {
+              fileName: "/app/code/client/pages/Orders.jsx",
+              lineNumber: 217,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-payment payment-cell", children: ne.paymentMethod || ((Qn = ne.assignment) == null ? void 0 : Qn.paymentMethod) || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
               lineNumber: 218,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-status status-cell", children: /* @__PURE__ */ u.jsxDEV("span", { className: `status-chip status-${ht}`, children: Tt }, void 0, !1, {
+              fileName: "/app/code/client/pages/Orders.jsx",
+              lineNumber: 220,
               columnNumber: 23
             }, this) }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 217,
+              lineNumber: 219,
               columnNumber: 21
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-actions actions-cell", children: /* @__PURE__ */ u.jsxDEV("div", { className: "actions-container", children: [
@@ -20072,11 +20082,11 @@ function K_() {
                   title: "Unassign order",
                   children: /* @__PURE__ */ u.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ u.jsxDEV("path", { d: "M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4z" }, void 0, !1, {
                     fileName: "/app/code/client/pages/Orders.jsx",
-                    lineNumber: 229,
+                    lineNumber: 231,
                     columnNumber: 151
                   }, this) }, void 0, !1, {
                     fileName: "/app/code/client/pages/Orders.jsx",
-                    lineNumber: 229,
+                    lineNumber: 231,
                     columnNumber: 29
                   }, this)
                 },
@@ -20084,7 +20094,7 @@ function K_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 223,
+                  lineNumber: 225,
                   columnNumber: 27
                 },
                 this
@@ -20100,17 +20110,17 @@ function K_() {
                   children: /* @__PURE__ */ u.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: [
                     /* @__PURE__ */ u.jsxDEV("path", { d: "M21 5h-3.17l-1.41-1.41A2 2 0 0 0 15 3H9a2 2 0 0 0-1.41.59L6.17 5H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 13H3V7h4.05l1.41-1.41.01-.01L9 5h6l.53.58L17.95 7H21v11z" }, void 0, !1, {
                       fileName: "/app/code/client/pages/Orders.jsx",
-                      lineNumber: 239,
+                      lineNumber: 241,
                       columnNumber: 149
                     }, this),
                     /* @__PURE__ */ u.jsxDEV("path", { d: "M12 8a5 5 0 1 0 .001 10.001A5 5 0 0 0 12 8zm0 8a3 3 0 1 1 .001-6.001A3 3 0 0 1 12 16z" }, void 0, !1, {
                       fileName: "/app/code/client/pages/Orders.jsx",
-                      lineNumber: 239,
+                      lineNumber: 241,
                       columnNumber: 351
                     }, this)
                   ] }, void 0, !0, {
                     fileName: "/app/code/client/pages/Orders.jsx",
-                    lineNumber: 239,
+                    lineNumber: 241,
                     columnNumber: 27
                   }, this)
                 },
@@ -20118,7 +20128,7 @@ function K_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 232,
+                  lineNumber: 234,
                   columnNumber: 25
                 },
                 this
@@ -20132,11 +20142,11 @@ function K_() {
                   title: "Edit order",
                   children: /* @__PURE__ */ u.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ u.jsxDEV("path", { d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" }, void 0, !1, {
                     fileName: "/app/code/client/pages/Orders.jsx",
-                    lineNumber: 247,
+                    lineNumber: 249,
                     columnNumber: 149
                   }, this) }, void 0, !1, {
                     fileName: "/app/code/client/pages/Orders.jsx",
-                    lineNumber: 247,
+                    lineNumber: 249,
                     columnNumber: 27
                   }, this)
                 },
@@ -20144,38 +20154,38 @@ function K_() {
                 !1,
                 {
                   fileName: "/app/code/client/pages/Orders.jsx",
-                  lineNumber: 241,
+                  lineNumber: 243,
                   columnNumber: 25
                 },
                 this
               )
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 221,
+              lineNumber: 223,
               columnNumber: 23
             }, this) }, void 0, !1, {
               fileName: "/app/code/client/pages/Orders.jsx",
-              lineNumber: 220,
+              lineNumber: 222,
               columnNumber: 21
             }, this)
           ] }, wt || Ye, !0, {
             fileName: "/app/code/client/pages/Orders.jsx",
-            lineNumber: 207,
+            lineNumber: 208,
             columnNumber: 19
           }, this);
         }),
-        !T && !Z && fe.length === 0 && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 11, className: "section-note", children: "No orders to display." }, void 0, !1, {
+        !T && !Z && fe.length === 0 && /* @__PURE__ */ u.jsxDEV("tr", { children: /* @__PURE__ */ u.jsxDEV("td", { colSpan: 12, className: "section-note", children: "No orders to display." }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 255,
+          lineNumber: 257,
           columnNumber: 21
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 255,
+          lineNumber: 257,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 172,
+        lineNumber: 173,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
@@ -20190,25 +20200,25 @@ function K_() {
     /* @__PURE__ */ u.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: [
       F && re && /* @__PURE__ */ u.jsxDEV(BE, { orderId: re, onClose: Me, onAssigned: st }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 262,
+        lineNumber: 264,
         columnNumber: 11
       }, this),
       K && Te && /* @__PURE__ */ u.jsxDEV(q_, { order: Te, onClose: nt, onUpdated: () => {
         ee((ne) => ne + 1), nt();
       } }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 265,
+        lineNumber: 267,
         columnNumber: 11
       }, this),
       be && Y && /* @__PURE__ */ u.jsxDEV(G_, { order: Y, onClose: Ze }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 268,
+        lineNumber: 270,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ u.jsxDEV("div", { className: "rc-filters", children: [
         /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: M.page <= 1 || T, onClick: () => w((ne) => Math.max(1, ne - 1)), children: "Prev" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 271,
+          lineNumber: 273,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ u.jsxDEV("span", { className: "section-note", children: [
@@ -20221,22 +20231,22 @@ function K_() {
           " total"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 272,
+          lineNumber: 274,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: M.page >= M.pages || T, onClick: () => w((ne) => Math.min(M.pages, ne + 1)), children: "Next" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
-          lineNumber: 273,
+          lineNumber: 275,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Orders.jsx",
-        lineNumber: 270,
+        lineNumber: 272,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Orders.jsx",
-      lineNumber: 260,
+      lineNumber: 262,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
