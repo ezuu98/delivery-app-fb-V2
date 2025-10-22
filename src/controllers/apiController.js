@@ -505,7 +505,9 @@ module.exports = {
       const cn = String(contactNumber).trim();
       const digits = cn.replace(/\D+/g, '');
       if(!fn || !cn || !pw) return res.status(400).json(fail('Full name, mobile and password are required'));
-      if(digits.length !== 10) return res.status(400).json(fail('numbers should be 10 digit'));
+      const isLocal10 = digits.length === 10;
+      const isPkWithCode = digits.length === 12 && digits.startsWith('92');
+      if(!isLocal10 && !isPkWithCode) return res.status(400).json(fail('numbers should be 10 digit'));
       if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return res.status(400).json(fail('Invalid email'));
       const db = getFirestore();
       if (!db) return res.status(503).json(fail('Firestore not configured'));
