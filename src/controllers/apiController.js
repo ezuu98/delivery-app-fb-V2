@@ -928,13 +928,18 @@ module.exports = {
 
       // On-time rate calculation: check riders.orders array
       // Count all orders where current_status === 'delivered'
-      const totalCount = riderOrders.filter(o => String(o.current_status || '').toLowerCase() === 'delivered').length;
+      const deliveredOrders = riderOrders.filter(o => String(o.current_status || '').toLowerCase() === 'delivered');
+      const totalCount = deliveredOrders.length;
       // Count orders where onTime === true
-      const onTimeCount = riderOrders.filter(o => String(o.current_status || '').toLowerCase() === 'delivered' && o.onTime === true).length;
+      const onTimeCount = deliveredOrders.filter(o => o.onTime === true).length;
       // Calculate percentage
       const onTimeRate = totalCount > 0 ? Math.round((onTimeCount / totalCount) * 100) : 0;
 
-      const totalKm = (typeof rider.totalDistance === 'number' && Number.isFinite(rider.totalDistance)) ? rider.totalDistance : 0;
+      // Calculate total KM from delivered orders
+      const totalKm = deliveredOrders.reduce((sum, o) => {
+        const km = Number.isFinite(Number(o.distance_km)) ? Number(o.distance_km) : 0;
+        return sum + km;
+      }, 0);
 
       // Build history for last 10 days using actual delivered dates
       const historyMap = new Map();
