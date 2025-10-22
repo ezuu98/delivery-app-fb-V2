@@ -614,8 +614,9 @@ module.exports = {
                 if (orderSnap.exists){
                   const orderData = orderSnap.data() || {};
                   const assignedAt = toDateOrNull(orderData.assignedAt);
+                  const orderStatus = String(orderData.order_status || orderData.current_status || '').toLowerCase();
 
-                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
+                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd && orderStatus === 'delivered'){
                     debug.ordersMatched += 1;
                     rideCount += 1;
                     const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
