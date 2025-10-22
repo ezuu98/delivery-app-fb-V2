@@ -18885,7 +18885,7 @@ function Y_() {
       /* @__PURE__ */ u.jsxDEV("div", { className: "rc-select rc-chip", children: [
         "Total KM Traveled ",
         /* @__PURE__ */ u.jsxDEV("strong", { children: [
-          Number(w.totalKm || 0),
+          Number((R == null ? void 0 : R.totalKm) || 0),
           " km"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
