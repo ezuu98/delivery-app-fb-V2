@@ -93,15 +93,51 @@ export default function Orders(){
     return null;
   }
 
-  function downloadCSV(){
+  async function downloadCSV(){
     try{
       const from = fromDate ? new Date(fromDate + 'T00:00:00') : null;
       const to = toDate ? new Date(toDate + 'T23:59:59') : null;
+
+      // Build base params (preserve search and status filters)
+      const baseParams = new URLSearchParams();
+      if(q) baseParams.set('q', q);
+      if(tab && tab !== 'all'){
+        const statusKey = STATUS_PARAM_MAP[tab] || tab;
+        baseParams.set('status', normalizeStatus(statusKey));
+      }
+
+      const pageSize = 200;
+      let allOrders = [];
+
+      // Fetch first page to get meta.pages
+      let p = 1;
+      const firstParams = new URLSearchParams(baseParams.toString());
+      firstParams.set('page', String(p));
+      firstParams.set('limit', String(pageSize));
+      let res = await fetch(`/api/orders?${firstParams.toString()}`, { credentials: 'include' });
+      if(res.status === 401){ window.location.href = '/auth/login'; return; }
+      if(!res.ok) throw new Error('Failed to load orders for export');
+      let data = await res.json();
+      allOrders = allOrders.concat(Array.isArray(data.orders) ? data.orders : []);
+      const totalPages = data.meta?.pages || 1;
+
+      // Fetch remaining pages sequentially
+      for(let pageNum = 2; pageNum <= totalPages; pageNum++){
+        const params = new URLSearchParams(baseParams.toString());
+        params.set('page', String(pageNum));
+        params.set('limit', String(pageSize));
+        const r = await fetch(`/api/orders?${params.toString()}`, { credentials: 'include' });
+        if(r.status === 401){ window.location.href = '/auth/login'; return; }
+        if(!r.ok) continue;
+        const d = await r.json();
+        if(Array.isArray(d.orders)) allOrders = allOrders.concat(d.orders);
+      }
+
       const rows = [];
       const header = ['Order','Customer','Address','Rider','Packer','Start','Expected','Actual','Amount','Payment Method','Status'];
       rows.push(header.map(h=>`"${h.replace(/"/g,'""')}"`).join(','));
-      const list = Array.isArray(orders)? orders : [];
-      for (const o of list){
+
+      for (const o of allOrders){
         const od = parseOrderDate(o);
         if(from && (!od || od < from)) continue;
         if(to && (!od || od > to)) continue;
@@ -131,6 +167,7 @@ export default function Orders(){
         const esc = cols.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',');
         rows.push(esc);
       }
+
       const csv = rows.join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
