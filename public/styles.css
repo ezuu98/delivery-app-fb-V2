@@ -173,7 +173,8 @@
 .rc-table thead th.col-perf{width:30%}
 .rc-table thead th.col-total{width:10%}
 .rc-table thead th.col-rider{width:12%}
-.rc-table thead th.col-expected{width:14%}
+   .rc-table thead th.col-packer{width:10%}
+   .rc-table thead th.col-expected{width:14%}
 .rc-table thead th.col-actual{width:8%}
 .rc-table thead th.col-status{width:8%}
 
