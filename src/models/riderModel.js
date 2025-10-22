@@ -12,6 +12,7 @@ function mapRider(doc){
   const id = String((doc && doc.id) || d.uid || '');
   const name = d.displayName || d.name || d.email || 'Unknown';
   const totalKm = Number(d.totalKm ?? d.total_kms ?? 0);
+  const totalDistance = typeof d.totalDistance === 'string' ? d.totalDistance : null;
   const performance = Number(d.performance || 80);
   const commissionUsd = Number(d.commissionUsd || 0);
   const lastActiveDays = daysSince(d.updatedAt || d.createdAt || null);
@@ -20,7 +21,7 @@ function mapRider(doc){
   const orders = Array.isArray(d.orders) ? d.orders.slice() : [];
   const contactNumber = d.contactNumber || null;
   const email = d.email || null;
-  return { id, name, totalKm, performance, commissionUsd, status, lastActiveDays, thisMonthKm, orders, contactNumber, email };
+  return { id, name, totalKm, totalDistance, performance, commissionUsd, status, lastActiveDays, thisMonthKm, orders, contactNumber, email };
 }
 
 async function list() {
