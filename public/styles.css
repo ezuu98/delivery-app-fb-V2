@@ -41,7 +41,13 @@
 
 /* Dashboard */
 .rider-commissions{max-width:1140px;margin:28px auto;padding:0 20px}
-.rc-header{margin-bottom:18px}
+.rc-header{margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.rc-header-left{display:flex;flex-direction:column}
+.rc-date-range{display:flex;gap:8px;align-items:center}
+.date-field{display:inline-flex}
+.date-input{padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+.download-csv-btn{padding:8px 12px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .rc-title{margin:0 0 6px;font-size:24px}
 .rc-subtitle{margin:0;color:#6b7280}
 .rc-toolbar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:12px 0 18px}
@@ -164,13 +170,17 @@
 .rc-chip{box-shadow:0 1px 1px rgba(0,0,0,.02)}
 .rc-table-wrapper{background:#F7FAFC;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .rc-table{width:100%;border-collapse:separate;border-spacing:0}
+/* Orders table: enable horizontal scroll at any width */
+.orders-table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.orders-table-scroll .rc-table{min-width:1080px}
 .rc-table thead th{background:#f9fafb;text-align:left;padding:14px;border-bottom:1px solid #eef2f7;font-weight:600;color:#374151}
 .rc-table thead th.col-name{width:16%}
 .rc-table thead th.col-km{width:12%}
 .rc-table thead th.col-perf{width:30%}
 .rc-table thead th.col-total{width:10%}
 .rc-table thead th.col-rider{width:12%}
-.rc-table thead th.col-expected{width:14%}
+   .rc-table thead th.col-packer{width:10%}
+   .rc-table thead th.col-expected{width:14%}
 .rc-table thead th.col-actual{width:8%}
 .rc-table thead th.col-status{width:8%}
 
@@ -268,6 +278,9 @@
 
 /* Date range filter */
 .date-range-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* Make Download CSV button match filter chip hover styles */
+.download-csv-btn:hover,
+.download-csv-btn:focus{background-color:#eef6ff;border-color:#cfe0ff;color:#1f5fbf;outline:none}
 .date-range-input{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;font-size:14px;height:40px}
 .date-range-input:focus{outline:none;border-color:#0070f3;box-shadow:0 0 0 3px rgba(0,112,243,.12)}
 .date-range-separator{color:#9ca3af;font-size:14px;font-weight:500}

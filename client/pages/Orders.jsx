@@ -51,6 +51,8 @@ export default function Orders(){
   const [editingOrder, setEditingOrder] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [imageOrder, setImageOrder] = useState(null);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   useEffect(()=>{
     let alive = true;
@@ -80,6 +82,41 @@ export default function Orders(){
     })();
     return ()=>{ alive = false; };
   },[q, tab, page, limit, refreshTrigger]);
+
+  function parseOrderDate(o){
+    const candidates = [o.created_at, o.createdAt, o.expected_delivery_time, o.expectedDeliveryTime, o.deliveryStartTime, o.deliveryStartTime, o.actual_delivery_time, o.actualDeliveryTime];
+    for (const c of candidates){
+      if(!c) continue;
+      const t = Date.parse(String(c));
+      if(!Number.isNaN(t)) return new Date(t);
+    }
+    return null;
+  }
+
+  async function downloadCSV(){
+    try{
+      const params = new URLSearchParams();
+      if (fromDate) params.set('from', fromDate);
+      if (toDate) params.set('to', toDate);
+      if (q) params.set('q', q);
+      if (tab && tab !== 'all') params.set('status', tab);
+
+      const res = await fetch(`/api/orders/export?${params.toString()}`, { credentials: 'include' });
+      if(res.status === 401){ window.location.href = '/auth/login'; return; }
+      if(!res.ok) throw new Error('Failed to generate export');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_${fromDate||'all'}_${toDate||'all'}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }catch(e){
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to download CSV', { type: 'error' }); } }catch(_){ }
+    }
+  }
 
   const filtered = useMemo(()=> orders, [orders]);
 
@@ -129,8 +166,22 @@ export default function Orders(){
     <SiteLayout>
       <section className="rider-commissions">
         <header className="rc-header">
-          <h2 className="rc-title">Order Management</h2>
-          <p className="rc-subtitle">Manage orders synced from Shopify.</p>
+          <div className="rc-header-left">
+            <h2 className="rc-title">Order Management</h2>
+            <p className="rc-subtitle">Manage orders synced from Shopify.</p>
+          </div>
+
+          <div className="rc-date-range">
+            <label className="date-field">
+              <span className="sr-only">From date</span>
+              <input aria-label="From date" className="date-input" type="date" value={fromDate} onChange={e=>setFromDate(e.target.value)} />
+            </label>
+            <label className="date-field">
+              <span className="sr-only">To date</span>
+              <input aria-label="To date" className="date-input" type="date" value={toDate} onChange={e=>setToDate(e.target.value)} />
+            </label>
+            <button className="rc-select rc-chip download-csv-btn" onClick={downloadCSV}>Download CSV</button>
+          </div>
         </header>
 
         <div className="rc-toolbar">
@@ -160,6 +211,7 @@ export default function Orders(){
                 <th className="col-km customer-heading">Customer</th>
                 <th className="col-perf address-heading">Address</th>
                 <th className="col-rider rider-heading">Rider</th>
+                <th className="col-packer packer-heading">Packer</th>
                 <th className="col-start-time start-heading">Start</th>
                 <th className="col-expected expected-heading">Expected</th>
                 <th className="col-actual actual-heading">Actual</th>
@@ -171,10 +223,10 @@ export default function Orders(){
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={11} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={12} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={11} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={12} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const statusRaw = getRawStatus(o);
@@ -209,6 +261,7 @@ export default function Orders(){
                     <td className="rc-col-km customer-cell">{fullName || '-'}</td>
                     <td className="rc-col-perf address-cell">{addr}</td>
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
+                    <td className="rc-col-packer packer-cell">{o.packerName || (o.packed_by ? String(o.packed_by) : '-')}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
@@ -252,7 +305,7 @@ export default function Orders(){
                 );
               })}
               {!loading && !error && visible.length === 0 && (
-                <tr><td colSpan={11} className="section-note">No orders to display.</td></tr>
+                <tr><td colSpan={12} className="section-note">No orders to display.</td></tr>
               )}
             </tbody>
           </table>

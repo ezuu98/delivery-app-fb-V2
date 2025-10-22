@@ -971,6 +971,216 @@ module.exports = {
       return res.status(500).json(fail('Failed to load rider profile'));
     }
   },
+  exportOrders: async (req, res) => {
+    try{
+      const { q = '', status = 'all', created_at_min, created_at_max, from, to } = req.query || {};
+      const fromTs = created_at_min || from ? (created_at_min || from) : null;
+      const toTs = created_at_max || to ? (created_at_max || to) : null;
+
+      // Base list from cached Shopify orders
+      let cached = await orderModel.getAll();
+
+      const ql = String(q).toLowerCase().trim();
+      const normalizedStatus = normalizeStatus(status) || 'all';
+
+      function getOrderStatus(o){ return normalizeStatus(o?.current_status); }
+
+      const filtered = cached.filter(o => {
+        if (normalizedStatus !== 'all' && getOrderStatus(o) !== normalizedStatus) return false;
+        if (ql){
+          const name = String(o.name || o.order_number || o.id || '').toLowerCase();
+          const customer = String(o.full_name || o.customer?.full_name || '').toLowerCase();
+          const addr = String((typeof o.shipping_address === 'string' ? o.shipping_address : (o.shipping_address?.address1 ? `${o.shipping_address.address1} ${o.shipping_address.city||''}` : JSON.stringify(o.shipping_address || o.billing_address || {}))) || '').toLowerCase();
+          const text = `${name} ${customer} ${addr}`;
+          if(!text.includes(ql)) return false;
+        }
+        if (fromTs || toTs){
+          const t = o.created_at ? Date.parse(o.created_at) : null;
+          if (!t) return false;
+          if (fromTs && t < Date.parse(fromTs)) return false;
+          if (toTs && t > Date.parse(toTs)) return false;
+        }
+        return true;
+      });
+
+      // Sort by created_at desc
+      filtered.sort((a,b)=>{ const ta = a && a.created_at ? Date.parse(a.created_at) : 0; const tb = b && b.created_at ? Date.parse(b.created_at) : 0; return (Number.isFinite(tb)?tb:0) - (Number.isFinite(ta)?ta:0); });
+
+      const db = getFirestore();
+      const fsMap = new Map();
+      if (db){
+        try{
+          for (const o of filtered){
+            const orderId = String(o.orderId || o.id || o.name || o.order_number || '');
+            if (!orderId) continue;
+            try{ const snap = await db.collection('orders').doc(orderId).get(); if (snap.exists) fsMap.set(orderId, { ...snap.data(), __docId: String(snap.id) }); }catch(_){ }
+          }
+        }catch(_){ }
+      }
+
+      const merged = filtered.map(o => {
+        const key = String(o.orderId || o.id || o.name || o.order_number || '');
+        const f = fsMap.get(key);
+        if (!f) return o;
+        return {
+          ...o,
+          current_status: typeof f.current_status === 'string' ? f.current_status : o.current_status,
+          full_name: (typeof f.full_name === 'string' && f.full_name) ? f.full_name : o.full_name,
+          email: f.email ?? o.email,
+          phone: f.phone ?? o.phone,
+          shipping_address: f.shipping_address ?? o.shipping_address,
+          billing_address: f.billing_address ?? o.billing_address,
+          deliveryStartTime: f.deliveryStartTime ?? o.deliveryStartTime,
+          deliveryEndTime: f.deliveryEndTime ?? o.deliveryEndTime,
+          expected_delivery_time: f.expected_delivery_time ?? o.expected_delivery_time,
+          expectedDeliveryTime: f.expectedDeliveryTime ?? o.expectedDeliveryTime,
+          actual_delivery_time: f.actual_delivery_time ?? o.actual_delivery_time,
+          actualDeliveryTime: f.actualDeliveryTime ?? o.actualDeliveryTime,
+          delivery_events: Array.isArray(f.delivery_events) ? f.delivery_events : o.delivery_events,
+          deliveryEvents: Array.isArray(f.deliveryEvents) ? f.deliveryEvents : o.deliveryEvents,
+          events: Array.isArray(f.events) ? f.events : o.events,
+          riderId: f.riderId ?? o.riderId,
+          packed_by: f.packed_by ?? o.packed_by,
+          paymentMethod: f.paymentMethod ?? o.paymentMethod,
+          amount: f.amount ?? o.amount,
+          orders: (() => {
+            const base = (f && typeof f.orders === 'object') ? f.orders : o.orders;
+            const hasBase = base && typeof base === 'object';
+            const merged = hasBase ? { ...base } : {};
+            if (f && (f.deliveryDuration !== undefined) && merged.deliveryDuration === undefined) {
+              merged.deliveryDuration = f.deliveryDuration;
+            }
+            return hasBase || merged.deliveryDuration !== undefined ? merged : base;
+          })(),
+          deliveryDuration: (f && (f.deliveryDuration !== undefined)) ? f.deliveryDuration : o.deliveryDuration,
+        };
+      });
+
+      // Reference data
+      const assigns = await orderModel.listAssignments();
+      const amap = new Map(assigns.map(a => [String(a.orderId), a]));
+      const riders = await riderModel.list().catch(()=>[]);
+      const rmap = new Map(riders.map(r => [String(r.id), r.name]));
+
+      const packers = [];
+      try{ if (db) { const psnap = await db.collection('packers').get(); psnap.forEach(doc=>{ const d = doc.data() || {}; packers.push({ id: doc.id, fullName: d.fullName || d.name || null }); }); } }catch(_){ }
+      const pmap = new Map(packers.map(p => [String(p.id), p.fullName]));
+
+      // Delivery events for filtered orders
+      const evAll = await deliveryModel.listAll();
+      const etaMap = new Map();
+      const actualMap = new Map();
+      const pageOrderIds = new Set(merged.map(o => String(o.orderId || o.id || o.name || o.order_number || '')));
+      for (const { orderId, events } of evAll){
+        if (!pageOrderIds.has(String(orderId)) || !Array.isArray(events)) continue;
+        for (let i = events.length - 1; i >= 0; i--){ const ev = events[i]; if (!ev) continue; if (ev.type === 'eta' && !etaMap.has(String(orderId))) etaMap.set(String(orderId), ev); if (ev.type === 'delivered' && !actualMap.has(String(orderId))) actualMap.set(String(orderId), ev); if (etaMap.has(String(orderId)) && actualMap.has(String(orderId))) break; }
+      }
+
+      const withAssignments = merged.map(o => {
+        const idKey = String(o.orderId || o.id || o.name || o.order_number || '');
+        const assignment = amap.get(idKey) || null;
+        const eta = etaMap.get(idKey) || null;
+        const delivered = actualMap.get(idKey) || null;
+        const resolvedExpected = (function(v,e){ if (e && e.expectedAt) return e.expectedAt; if (e && Number.isFinite(e.expectedMinutes)) return { minutes: Number(e.expectedMinutes) }; return v; })(o.expected_delivery_time, eta);
+
+        const candidateRiderIds = [ assignment?.riderId, eta?.riderId, o.riderId, o.rider_id, o.riderID, o.assigned_to_id, (o.rider && typeof o.rider === 'object' ? o.rider.id : null) ].map(v => { if (v === undefined || v === null) return null; const str = String(v).trim(); return str ? str : null; });
+        const normalizedRiderId = candidateRiderIds.find(Boolean) || null;
+
+        const baseRiderText = (function(){ if (typeof assignment?.riderName === 'string' && assignment.riderName.trim()) return assignment.riderName.trim(); if (typeof o.rider === 'string' && o.rider.trim()) return o.rider.trim(); if (o.rider && typeof o.rider === 'object'){ const name = o.rider.name || o.rider.full_name || o.rider.fullName || null; if (typeof name === 'string' && name.trim()) return name.trim(); } if (typeof o.riderName === 'string' && o.riderName.trim()) return o.riderName.trim(); if (typeof o.rider_name === 'string' && o.rider_name.trim()) return o.rider_name.trim(); if (typeof o.assigned_to === 'string' && o.assigned_to.trim()) return o.assigned_to.trim(); return null; })();
+
+        const resolvedRiderName = (function(){ if (typeof assignment?.riderName === 'string' && assignment.riderName.trim()) return assignment.riderName.trim(); if (normalizedRiderId){ const byMap = rmap.get(String(normalizedRiderId)); if (byMap) return byMap; } if (baseRiderText) return baseRiderText; if (normalizedRiderId) return String(normalizedRiderId); return null; })();
+
+        const packedById = o.packed_by ? String(o.packed_by).trim() : null;
+        const resolvedPackerName = packedById ? (pmap.get(packedById) || packedById) : null;
+
+        const base = { ...o };
+        return { ...base, assignment, riderId: normalizedRiderId, rider: resolvedRiderName, packed_by: packedById, packerName: resolvedPackerName, expected_delivery_time: resolvedExpected !== null ? resolvedExpected : (o.expected_delivery_time || null), actual_delivery_time: (o.deliveryEndTime || delivered?.at || o.actual_delivery_time || null) };
+      });
+
+      // Build CSV
+      const header = ['Order','Customer','Address','Rider','Packer','Start','Expected','Actual','Amount','Payment Method','Status'];
+      const rows = [ header.map(h=>`"${h.replace(/"/g,'""')}"`).join(',') ];
+      for (const o of withAssignments){
+        const orderId = o.name || o.order_number || o.id || '';
+        const fullName = o.full_name || (o.customer && o.customer.full_name) || '';
+        let addr = '-';
+        if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) addr = String(o.shipping_address).trim(); else if (o.shipping_address && typeof o.shipping_address === 'object') addr = [o.shipping_address.address1 || '', o.shipping_address.city || '', o.shipping_address.province || '', o.shipping_address.country || ''].map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-'; else if (typeof o.billing_address === 'string' && String(o.billing_address).trim()) addr = String(o.billing_address).trim(); else if (o.billing_address && typeof o.billing_address === 'object') addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || ''].map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+        const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
+        const packerLabel = o.packerName || (o.packed_by ? String(o.packed_by) : '');
+        const startTime = (()=>{ try{ if (o.deliveryStartTime) return String(o.deliveryStartTime); if (o.created_at) return String(o.created_at); return ''; }catch(_){ return ''; } })();
+        const expectedTime = (()=>{ try{ if (o.expected_delivery_time && typeof o.expected_delivery_time === 'string') return String(o.expected_delivery_time); if (o.expected_delivery_time && typeof o.expected_delivery_time === 'object' && o.expected_delivery_time.minutes !== undefined) return String(o.expected_delivery_time.minutes); return ''; }catch(_){ return ''; } })();
+        // Compute actual duration in minutes similar to client logic
+        const computeMinutes = (ord) => {
+          try{
+            // Check numeric duration candidates
+            const candidates = [ord.durationMins, ord.duration_minutes, ord.deliveryDuration, ord.delivery_duration, ord.actualDuration, ord.actual_duration, ord.actualDurationMinutes, ord.orders && ord.orders.deliveryDuration, ord.orders && ord.orders.delivery_duration, ord.orders && ord.orders.durationMins, ord.orders && ord.orders.duration_minutes, ord.orders && ord.orders.actualDuration, ord.orders && ord.orders.actualDurationMinutes];
+            for (const c of candidates){
+              if (c === null || c === undefined) continue;
+              if (typeof c === 'number' && Number.isFinite(c)) return Math.round(c);
+              if (typeof c === 'string'){
+                const t = c.trim();
+                if (!t) continue;
+                const mMatch = t.match(/^(-?\d+(?:\.\d+)?)\s*(m|min|mins|minutes)$/i);
+                if (mMatch) return Math.round(Number(mMatch[1]));
+                const sMatch = t.match(/^(-?\d+(?:\.\d+)?)\s*(s|sec|secs|seconds)$/i);
+                if (sMatch) return Math.round(Number(sMatch[1]) / 60);
+                const num = Number(t);
+                if (Number.isFinite(num)) return Math.round(num);
+              }
+              if (typeof c === 'object' && c !== null){
+                if (Number.isFinite(c.minutes)) return Math.round(Number(c.minutes));
+                if (Number.isFinite(c.expectedMinutes)) return Math.round(Number(c.expectedMinutes));
+                if (Number.isFinite(c.seconds)) return Math.round(Number(c.seconds) / 60);
+              }
+            }
+            // Fallback: compute from timestamps
+            const toDate = (v) => {
+              if (v === null || v === undefined) return null;
+              if (v instanceof Date) return v;
+              if (typeof v === 'number'){
+                if (!Number.isFinite(v)) return null;
+                if (v > 1e12) return new Date(v);
+                if (v > 1e9) return new Date(v * 1000);
+              }
+              if (typeof v === 'string'){
+                const parsed = Date.parse(v);
+                if (!Number.isNaN(parsed)) return new Date(parsed);
+              }
+              if (typeof v === 'object'){
+                if (v.seconds !== undefined) return new Date(Number(v.seconds) * 1000);
+                if (v.at) return toDate(v.at);
+              }
+              return null;
+            };
+            const delivered = toDate(ord.actual_delivery_time || ord.actualDeliveryTime || ord.deliveryEndTime || (ord.events && ord.events.find(e=>e && e.type==='delivered') && ord.events.reverse()[0] && ord.events.reverse()[0].at));
+            const start = toDate(ord.deliveryStartTime || ord.delivery_start_time || ord.start_time || ord.startTime || ord.started_at || ord.startedAt || ord.created_at);
+            if (delivered && start){
+              const diff = Math.round((delivered.getTime() - start.getTime()) / 60000);
+              if (diff >= 0) return diff;
+            }
+          }catch(_){ }
+          return null;
+        };
+        const minutes = computeMinutes(o);
+        let actualDisplay = '';
+        if (minutes === null) actualDisplay = '';
+        else if (minutes < 60) actualDisplay = `${minutes} min`;
+        else { const hrs = Math.floor(minutes / 60); const rem = minutes % 60; actualDisplay = `${hrs}h ${rem}m`; }
+        const amount = o.amount || o.assignment?.amount || '';
+        const payment = o.paymentMethod || o.assignment?.paymentMethod || '';
+        const statusRaw = (o.current_status || o.order_status || o.status || '').toString();
+        const cols = [orderId, fullName, addr, riderLabel, packerLabel, startTime, expectedTime, actualDisplay, amount, payment, statusRaw];
+        rows.push(cols.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(','));
+      }
+
+      const csv = rows.join('\n');
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      const filename = `orders_${fromTs||'all'}_${toTs||'all'}.csv`;
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      return res.send(csv);
+
+    }catch(e){ log.error('orders.export.failed', { message: e?.message }); return res.status(500).json(fail('Failed to export orders')); }
+  },
   orders: async (req, res) => {
     try{
       const { q = '', status = 'all', created_at_min, created_at_max, page = '1', limit = '20' } = req.query || {};
