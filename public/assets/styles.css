@@ -47,6 +47,9 @@
 .date-field{display:inline-flex}
 .date-input{padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
 .download-csv-btn{padding:8px 12px}
+/* Make Download CSV button match filter chip hover styles */
+.download-csv-btn:hover,
+.download-csv-btn:focus{background-color:#eef6ff;border-color:#cfe0ff;color:#1f5fbf;outline:none}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .rc-title{margin:0 0 6px;font-size:24px}
 .rc-subtitle{margin:0;color:#6b7280}
