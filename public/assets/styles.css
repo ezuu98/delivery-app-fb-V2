@@ -125,8 +125,9 @@
 .rc-table thead th.col-perf{width:26%}
 .rc-table thead th.col-total{width:10%}
 .rc-table thead th.col-rider{width:12%}
-.rc-table thead th.col-start-time{width:12%}
-.rc-table thead th.col-expected{width:12%}
+   .rc-table thead th.col-packer{width:10%}
+   .rc-table thead th.col-start-time{width:12%}
+   .rc-table thead th.col-expected{width:12%}
 .rc-table thead th.col-actual{width:6%}
 .rc-table thead th.col-status{width:6%}
 
