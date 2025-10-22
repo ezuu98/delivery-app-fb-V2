@@ -80,6 +80,9 @@
   .dashboard-header-right{width:100%;display:flex;justify-content:space-between}
   .dashboard-table thead th.col-address{display:none}
   .dashboard-table tbody td.rc-col-address{display:none}
+  /* Enable horizontal scroll for Orders table */
+  .orders-table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .orders-table-scroll .rc-table{min-width:1080px}
 }
 
 @media (max-width:680px){
