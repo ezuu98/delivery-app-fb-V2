@@ -9,23 +9,6 @@ export default function RiderProfile(){
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savedPerformance, setSavedPerformance] = useState(null);
-
-  useEffect(()=>{
-    const stored = readRiderPerformance(id);
-    if(typeof stored === 'number' && Number.isFinite(stored)){
-      setSavedPerformance(stored);
-    }else if(typeof stored === 'string'){
-      const numeric = Number(stored);
-      if(Number.isFinite(numeric)){
-        setSavedPerformance(numeric);
-      }else{
-        setSavedPerformance(null);
-      }
-    }else{
-      setSavedPerformance(null);
-    }
-  },[id]);
 
   useEffect(()=>{
     let alive = true;
