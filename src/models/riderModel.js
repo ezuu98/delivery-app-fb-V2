@@ -12,7 +12,7 @@ function mapRider(doc){
   const id = String((doc && doc.id) || d.uid || '');
   const name = d.displayName || d.name || d.email || 'Unknown';
   const totalKm = Number(d.totalKm ?? d.total_kms ?? 0);
-  const totalDistance = typeof d.totalDistance === 'string' ? d.totalDistance : null;
+  const totalDistance = Number(d.totalDistance ?? 0);
   const performance = Number(d.performance || 80);
   const commissionUsd = Number(d.commissionUsd || 0);
   const lastActiveDays = daysSince(d.updatedAt || d.createdAt || null);
