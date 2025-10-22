@@ -51,6 +51,8 @@ export default function Orders(){
   const [editingOrder, setEditingOrder] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [imageOrder, setImageOrder] = useState(null);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   useEffect(()=>{
     let alive = true;
@@ -80,6 +82,69 @@ export default function Orders(){
     })();
     return ()=>{ alive = false; };
   },[q, tab, page, limit, refreshTrigger]);
+
+  function parseOrderDate(o){
+    const candidates = [o.created_at, o.createdAt, o.expected_delivery_time, o.expectedDeliveryTime, o.deliveryStartTime, o.deliveryStartTime, o.actual_delivery_time, o.actualDeliveryTime];
+    for (const c of candidates){
+      if(!c) continue;
+      const t = Date.parse(String(c));
+      if(!Number.isNaN(t)) return new Date(t);
+    }
+    return null;
+  }
+
+  function downloadCSV(){
+    try{
+      const from = fromDate ? new Date(fromDate + 'T00:00:00') : null;
+      const to = toDate ? new Date(toDate + 'T23:59:59') : null;
+      const rows = [];
+      const header = ['Order','Customer','Address','Rider','Packer','Start','Expected','Actual','Amount','Payment Method','Status'];
+      rows.push(header.map(h=>`"${h.replace(/"/g,'""')}"`).join(','));
+      const list = Array.isArray(orders)? orders : [];
+      for (const o of list){
+        const od = parseOrderDate(o);
+        if(from && (!od || od < from)) continue;
+        if(to && (!od || od > to)) continue;
+        const orderId = o.name || o.order_number || o.id || '';
+        const fullName = o.full_name || (o.customer && o.customer.full_name) || '';
+        let addr = '-';
+        if (typeof o.shipping_address === 'string' && String(o.shipping_address).trim()) {
+          addr = String(o.shipping_address).trim();
+        } else if (o.shipping_address && typeof o.shipping_address === 'object') {
+          addr = [o.shipping_address.address1 || '', o.shipping_address.city || '', o.shipping_address.province || '', o.shipping_address.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+        } else if (typeof o.billing_address === 'string' && String(o.billing_address).trim()) {
+          addr = String(o.billing_address).trim();
+        } else if (o.billing_address && typeof o.billing_address === 'object') {
+          addr = [o.billing_address.address1 || '', o.billing_address.city || '', o.billing_address.province || '', o.billing_address.country || '']
+            .map(s => String(s || '').trim()).filter(Boolean).join(', ') || '-';
+        }
+        const riderLabel = o.rider ? String(o.rider) : (o.assignment?.riderId ? String(o.assignment.riderId) : 'Unassigned');
+        const packerLabel = o.packerName || (o.packed_by ? String(o.packed_by) : '');
+        const startTime = typeof resolveStartTime === 'function' ? formatTimeOfDay(resolveStartTime(o)) : '';
+        const expectedTime = typeof resolveExpectedValue === 'function' ? formatExpectedTime(resolveExpectedValue(o)) : '';
+        const actualDisplay = typeof resolveActualDuration === 'function' ? formatDurationHM(resolveActualDuration(o)) : '';
+        const amount = o.amount || o.assignment?.amount || '';
+        const payment = o.paymentMethod || o.assignment?.paymentMethod || '';
+        const statusRaw = (o.current_status || o.order_status || o.status || '').toString();
+        const cols = [orderId, fullName, addr, riderLabel, packerLabel, startTime, expectedTime, actualDisplay, amount, payment, statusRaw];
+        const esc = cols.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',');
+        rows.push(esc);
+      }
+      const csv = rows.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_${fromDate||'all'}_${toDate||'all'}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }catch(e){
+      try{ if(window && typeof window.showToast === 'function'){ window.showToast(e.message || 'Failed to generate CSV', { type: 'error' }); } }catch(_){ }
+    }
+  }
 
   const filtered = useMemo(()=> orders, [orders]);
 
