@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SiteLayout from '../components/SiteLayout.jsx';
 import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, toDateOrNull } from '../utils/orderTime.js';
-import { readRiderPerformance } from '../utils/riderPerformanceStorage.js';
 
 export default function RiderProfile(){
   const { id } = useParams();
