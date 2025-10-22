@@ -935,11 +935,16 @@ module.exports = {
       // Calculate percentage
       const onTimeRate = totalCount > 0 ? Math.round((onTimeCount / totalCount) * 100) : 0;
 
-      // Calculate total KM from delivered orders
-      const totalKm = deliveredOrders.reduce((sum, o) => {
-        const km = Number.isFinite(Number(o.distance_km)) ? Number(o.distance_km) : 0;
-        return sum + km;
-      }, 0);
+      // Total KM from rider.totalDistance field (e.g., "16600.86 km")
+      let totalKm = 0;
+      if (rider.totalDistance) {
+        const distanceStr = String(rider.totalDistance).trim();
+        const match = distanceStr.match(/^([0-9]+(?:\.[0-9]+)?)/);
+        if (match) {
+          const value = parseFloat(match[1]);
+          totalKm = Number.isFinite(value) ? Math.round(value) : 0;
+        }
+      }
 
       // Build history for last 10 days using actual delivered dates
       const historyMap = new Map();
