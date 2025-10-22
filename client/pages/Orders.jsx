@@ -152,7 +152,7 @@ export default function Orders(){
         )}
         {shopifyErr && (<div className="auth-error">{shopifyErr}</div>)}
 
-        <div className="rc-table-wrapper">
+        <div className="rc-table-wrapper orders-table-scroll">
           <table className="rc-table">
             <thead>
               <tr>

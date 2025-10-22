@@ -365,7 +365,7 @@ export default function Riders(){
                     }
                     return Number.isFinite(Number(r.performancePct)) ? `${Math.round(Number(r.performancePct))}%` : '0%';
                   })()}</td>
-                  <td className="rc-col-total">{Number(r.totalKm || 0).toFixed(2)} km</td>
+                  <td className="rc-col-total">{(typeof r.totalDistance === 'string' && r.totalDistance.trim()) ? r.totalDistance : `${Number(r.totalKm || 0).toFixed(2)} km`}</td>
                   <td className="rc-col-actions">
                     <div className="actions-container">
                       <button className="rc-select rc-chip btn-edit-rider" aria-label="Edit rider" title="Edit rider" onClick={()=> setEditingRider(r)}>

@@ -74,7 +74,9 @@ module.exports = {
       const cn = String(contactNumber || '').trim();
       const digits = cn.replace(/\D+/g,'');
       if (!fn || !cn) return res.status(400).json(stdFail('Missing fullName/contactNumber', 400));
-      if (digits.length !== 10) return res.status(400).json(stdFail('numbers should be 10 digit', 400));
+      const isLocal10 = digits.length === 10;
+      const isPkWithCode = digits.length === 12 && digits.startsWith('92');
+      if (!isLocal10 && !isPkWithCode) return res.status(400).json(stdFail('numbers should be 10 digit', 400));
 
       let localId = null;
       const em = email ? String(email).trim() : '';
