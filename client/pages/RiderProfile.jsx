@@ -60,7 +60,7 @@ export default function RiderProfile(){
           <div className="rc-filters rp-stats-wrap">
             <div className="rc-select rc-chip">Total Deliveries&nbsp;<strong>{Array.isArray(rider.orders) ? rider.orders.length : 0}</strong></div>
             <div className="rc-select rc-chip">On-Time Rate&nbsp;<strong>{onTimeRateValue}%</strong></div>
-            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{Number(rider.totalKm || 0)} km</strong></div>
+            <div className="rc-select rc-chip">Total KM Traveled&nbsp;<strong>{Number(metrics?.totalKm || 0)} km</strong></div>
           </div>
         </div>
 
