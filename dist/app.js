@@ -69,13 +69,13 @@ bd.exports;
       var N = k.getCurrentStack;
       return N && (p += N() || ""), p;
     };
-    var Q = !1, ie = !1, Te = !1, q = !1, be = !1, ye = {
+    var Q = !1, ie = !1, Te = !1, G = !1, be = !1, ye = {
       ReactCurrentDispatcher: P,
       ReactCurrentBatchConfig: I,
       ReactCurrentOwner: U
     };
     ye.ReactDebugCurrentFrame = k, ye.ReactCurrentActQueue = ee;
-    function G(p) {
+    function q(p) {
       {
         for (var N = arguments.length, A = new Array(N > 1 ? N - 1 : 0), z = 1; z < N; z++)
           A[z - 1] = arguments[z];
@@ -187,7 +187,7 @@ bd.exports;
       }, ae = function(p, N) {
         Object.defineProperty(st.prototype, p, {
           get: function() {
-            G("%s(...) is deprecated in plain JavaScript React classes. %s", N[0], N[1]);
+            q("%s(...) is deprecated in plain JavaScript React classes. %s", N[0], N[1]);
           }
         });
       };
@@ -481,7 +481,7 @@ bd.exports;
         var Eo = W(p);
         if (typeof Eo == "function") {
           var ur = p;
-          Eo === ur.entries && (vt || G("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), vt = !0);
+          Eo === ur.entries && (vt || q("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), vt = !0);
           for (var xo = Eo.call(ur), So, Td = 0; !(So = xo.next()).done; )
             yt = So.value, qe = $t + Ea(yt, Td++), Ct += oa(yt, N, A, qe, re);
         } else if (we === "object") {
@@ -593,7 +593,7 @@ bd.exports;
               return N.displayName;
             },
             set: function(Ee) {
-              re || (G("Setting `displayName` on Context.Consumer has no effect. You should set it directly on the context with Context.displayName = '%s'.", Ee), re = !0);
+              re || (q("Setting `displayName` on Context.Consumer has no effect. You should set it directly on the context with Context.displayName = '%s'.", Ee), re = !0);
             }
           }
         }), N.Consumer = we;
@@ -696,7 +696,7 @@ Your code should look like:
     var de;
     de = Symbol.for("react.module.reference");
     function Re(p) {
-      return !!(typeof p == "string" || typeof p == "function" || p === S || p === _ || be || p === d || p === E || p === M || q || p === se || Q || ie || Te || typeof p == "object" && p !== null && (p.$$typeof === $ || p.$$typeof === F || p.$$typeof === R || p.$$typeof === C || p.$$typeof === O || // This needs to include all possible module reference object
+      return !!(typeof p == "string" || typeof p == "function" || p === S || p === _ || be || p === d || p === E || p === M || G || p === se || Q || ie || Te || typeof p == "object" && p !== null && (p.$$typeof === $ || p.$$typeof === F || p.$$typeof === R || p.$$typeof === C || p.$$typeof === O || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
@@ -1141,10 +1141,10 @@ Check the top-level render call using <` + A + ">.");
     var Da = !1;
     function Cd(p) {
       var N = Vn.bind(null, p);
-      return N.type = p, Da || (Da = !0, G("React.createFactory() is deprecated and will be removed in a future major release. Consider using JSX or use React.createElement() directly instead.")), Object.defineProperty(N, "type", {
+      return N.type = p, Da || (Da = !0, q("React.createFactory() is deprecated and will be removed in a future major release. Consider using JSX or use React.createElement() directly instead.")), Object.defineProperty(N, "type", {
         enumerable: !1,
         get: function() {
-          return G("Factory.type is deprecated. Access the class directly before passing it to createFactory."), Object.defineProperty(this, "type", {
+          return q("Factory.type is deprecated. Access the class directly before passing it to createFactory."), Object.defineProperty(this, "type", {
             value: p
           }), p;
         }
@@ -1165,7 +1165,7 @@ Check the top-level render call using <` + A + ">.");
       } finally {
         if (I.transition = A, A === null && z._updatedFibers) {
           var re = z._updatedFibers.size;
-          re > 10 && G("Detected a large number of updates inside startTransition. If this is due to a subscription please re-write it to use React provided hooks. Otherwise concurrent mode guarantees are off the table."), z._updatedFibers.clear();
+          re > 10 && q("Detected a large number of updates inside startTransition. If this is due to a subscription please re-write it to use React provided hooks. Otherwise concurrent mode guarantees are off the table."), z._updatedFibers.clear();
         }
       }
     }
@@ -1345,7 +1345,7 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
   function Te(x) {
     return x.displayName || "Context";
   }
-  function q(x) {
+  function G(x) {
     if (x == null)
       return null;
     if (typeof x.tag == "number" && W("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof x == "function")
@@ -1378,11 +1378,11 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
           return ie(x, x.render, "ForwardRef");
         case E:
           var Re = x.displayName || null;
-          return Re !== null ? Re : q(x.type) || "Memo";
+          return Re !== null ? Re : G(x.type) || "Memo";
         case M: {
           var We = x, Ve = We._payload, Pe = We._init;
           try {
-            return q(Pe(Ve));
+            return G(Pe(Ve));
           } catch {
             return null;
           }
@@ -1390,14 +1390,14 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
       }
     return null;
   }
-  var be = Object.assign, ye = 0, G, K, pe, Me, $e, nt, ze;
+  var be = Object.assign, ye = 0, q, K, pe, Me, $e, nt, ze;
   function Ze() {
   }
   Ze.__reactDisabledLog = !0;
   function st() {
     {
       if (ye === 0) {
-        G = console.log, K = console.info, pe = console.warn, Me = console.error, $e = console.group, nt = console.groupCollapsed, ze = console.groupEnd;
+        q = console.log, K = console.info, pe = console.warn, Me = console.error, $e = console.group, nt = console.groupCollapsed, ze = console.groupEnd;
         var x = {
           configurable: !0,
           enumerable: !0,
@@ -1427,7 +1427,7 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
         };
         Object.defineProperties(console, {
           log: be({}, x, {
-            value: G
+            value: q
           }),
           info: be({}, x, {
             value: K
@@ -1654,8 +1654,8 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
   }
   function Et(x, Z) {
     if (typeof x.ref == "string" && Bn.current && Z && Bn.current.stateNode !== Z) {
-      var de = q(Bn.current.type);
-      Se[de] || (W('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', q(Bn.current.type), x.ref), Se[de] = !0);
+      var de = G(Bn.current.type);
+      Se[de] || (W('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', G(Bn.current.type), x.ref), Se[de] = !0);
     }
   }
   function Ot(x, Z) {
@@ -1743,7 +1743,7 @@ const yE = /* @__PURE__ */ iw(y), ow = /* @__PURE__ */ rw({
   function lr() {
     {
       if (vt.current) {
-        var x = q(vt.current.type);
+        var x = G(vt.current.type);
         if (x)
           return `
 
@@ -1786,7 +1786,7 @@ Check the top-level render call using <` + de + ">.");
         return;
       di[de] = !0;
       var Re = "";
-      x && x._owner && x._owner !== vt.current && (Re = " It was passed a child from " + q(x._owner.type) + "."), Na(x), W('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', de, Re), Na(null);
+      x && x._owner && x._owner !== vt.current && (Re = " It was passed a child from " + G(x._owner.type) + "."), Na(x), W('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', de, Re), Na(null);
     }
   }
   function fi(x, Z) {
@@ -1823,11 +1823,11 @@ Check the top-level render call using <` + de + ">.");
       else
         return;
       if (de) {
-        var Re = q(Z);
+        var Re = G(Z);
         xn(de, x.props, "prop", Re, x);
       } else if (Z.PropTypes !== void 0 && !Ea) {
         Ea = !0;
-        var We = q(Z);
+        var We = G(Z);
         W("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", We || "Unknown");
       }
       typeof Z.getDefaultProps == "function" && !Z.getDefaultProps.isReactClassApproved && W("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
@@ -1855,7 +1855,7 @@ Check the top-level render call using <` + de + ">.");
         var Wt = io(We);
         Wt ? Ce += Wt : Ce += lr();
         var xt;
-        x === null ? xt = "null" : Bt(x) ? xt = "array" : x !== void 0 && x.$$typeof === f ? (xt = "<" + (q(x.type) || "Unknown") + " />", Ce = " Did you accidentally export a JSX literal instead of a component?") : xt = typeof x, W("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", xt, Ce);
+        x === null ? xt = "null" : Bt(x) ? xt = "array" : x !== void 0 && x.$$typeof === f ? (xt = "<" + (G(x.type) || "Unknown") + " />", Ce = " Did you accidentally export a JSX literal instead of a component?") : xt = typeof x, W("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", xt, Ce);
       }
       var St = Lt(x, Z, de, We, Ve);
       if (St == null)
@@ -1874,7 +1874,7 @@ Check the top-level render call using <` + de + ">.");
             fi(Rn, x);
       }
       if (Ht.call(Z, "key")) {
-        var Sa = q(x), Kt = Object.keys(Z).filter(function(Ie) {
+        var Sa = G(x), Kt = Object.keys(Z).filter(function(Ie) {
           return Ie !== "key";
         }), mi = Kt.length > 0 ? "{key: someKey, " + Kt.join(": ..., ") + ": ...}" : "{key: someKey}";
         if (!Xn[Sa + mi]) {
@@ -1960,7 +1960,7 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
         return oe.now() - W;
       };
     }
-    var P = 1073741823, I = -1, ee = 250, U = 5e3, k = 1e4, ne = P, X = [], Q = [], ie = 1, Te = null, q = E, be = !1, ye = !1, G = !1, K = typeof setTimeout == "function" ? setTimeout : null, pe = typeof clearTimeout == "function" ? clearTimeout : null, Me = typeof setImmediate < "u" ? setImmediate : null;
+    var P = 1073741823, I = -1, ee = 250, U = 5e3, k = 1e4, ne = P, X = [], Q = [], ie = 1, Te = null, G = E, be = !1, ye = !1, q = !1, K = typeof setTimeout == "function" ? setTimeout : null, pe = typeof clearTimeout == "function" ? clearTimeout : null, Me = typeof setImmediate < "u" ? setImmediate : null;
     typeof navigator < "u" && navigator.scheduling !== void 0 && navigator.scheduling.isInputPending !== void 0 && navigator.scheduling.isInputPending.bind(navigator.scheduling);
     function $e(ce) {
       for (var Se = b(Q); Se !== null; ) {
@@ -1974,7 +1974,7 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
       }
     }
     function nt(ce) {
-      if (G = !1, $e(ce), !ye)
+      if (q = !1, $e(ce), !ye)
         if (b(X) !== null)
           ye = !0, _t(ze);
         else {
@@ -1983,13 +1983,13 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
         }
     }
     function ze(ce, Se) {
-      ye = !1, G && (G = !1, Bn()), be = !0;
-      var Be = q;
+      ye = !1, q && (q = !1, Bn()), be = !0;
+      var Be = G;
       try {
         var ct;
         if (!f) return Ze(ce, Se);
       } finally {
-        Te = null, q = Be, be = !1;
+        Te = null, G = Be, be = !1;
       }
     }
     function Ze(ce, Se) {
@@ -1997,7 +1997,7 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
       for ($e(Be), Te = b(X); Te !== null && !(Te.expirationTime > Be && (!ce || ya())); ) {
         var ct = Te.callback;
         if (typeof ct == "function") {
-          Te.callback = null, q = Te.priorityLevel;
+          Te.callback = null, G = Te.priorityLevel;
           var Et = Te.expirationTime <= Be, Ot = ct(Et);
           Be = o.unstable_now(), typeof Ot == "function" ? Te.callback = Ot : Te === b(X) && S(X), $e(Be);
         } else
@@ -2020,43 +2020,43 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
         default:
           ce = E;
       }
-      var Be = q;
-      q = ce;
+      var Be = G;
+      G = ce;
       try {
         return Se();
       } finally {
-        q = Be;
+        G = Be;
       }
     }
     function fn(ce) {
       var Se;
-      switch (q) {
+      switch (G) {
         case C:
         case O:
         case E:
           Se = E;
           break;
         default:
-          Se = q;
+          Se = G;
           break;
       }
-      var Be = q;
-      q = Se;
+      var Be = G;
+      G = Se;
       try {
         return ce();
       } finally {
-        q = Be;
+        G = Be;
       }
     }
     function ae(ce) {
-      var Se = q;
+      var Se = G;
       return function() {
-        var Be = q;
-        q = Se;
+        var Be = G;
+        G = Se;
         try {
           return ce.apply(this, arguments);
         } finally {
-          q = Be;
+          G = Be;
         }
       };
     }
@@ -2094,7 +2094,7 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
         expirationTime: Sn,
         sortIndex: -1
       };
-      return Et > ct ? (Lt.sortIndex = Et, g(Q, Lt), b(X) === null && Lt === b(Q) && (G ? Bn() : G = !0, On(nt, Et - ct))) : (Lt.sortIndex = Sn, g(X, Lt), !ye && !be && (ye = !0, _t(ze))), Lt;
+      return Et > ct ? (Lt.sortIndex = Et, g(Q, Lt), b(X) === null && Lt === b(Q) && (q ? Bn() : q = !0, On(nt, Et - ct))) : (Lt.sortIndex = Sn, g(X, Lt), !ye && !be && (ye = !0, _t(ze))), Lt;
     }
     function Tt() {
     }
@@ -2108,7 +2108,7 @@ var u = gE.exports, NE = { exports: {} }, la = {}, EE = { exports: {} }, xE = {}
       ce.callback = null;
     }
     function wt() {
-      return q;
+      return G;
     }
     var ut = !1, Gt = null, Pt = -1, Ht = m, Hn = -1;
     function ya() {
@@ -2206,7 +2206,7 @@ var sw = EE.exports;
       i.unshift("Warning: " + t), Function.prototype.apply.call(console[e], console, i);
     }
   }
-  var R = 0, C = 1, O = 2, E = 3, M = 4, F = 5, $ = 6, se = 7, le = 8, oe = 9, W = 10, P = 11, I = 12, ee = 13, U = 14, k = 15, ne = 16, X = 17, Q = 18, ie = 19, Te = 21, q = 22, be = 23, ye = 24, G = 25, K = !0, pe = !1, Me = !1, $e = !1, nt = !1, ze = !0, Ze = !0, st = !0, fn = !0, ae = /* @__PURE__ */ new Set(), Ye = {}, Tt = {};
+  var R = 0, C = 1, O = 2, E = 3, M = 4, F = 5, $ = 6, se = 7, le = 8, oe = 9, W = 10, P = 11, I = 12, ee = 13, U = 14, k = 15, ne = 16, X = 17, Q = 18, ie = 19, Te = 21, G = 22, be = 23, ye = 24, q = 25, K = !0, pe = !1, Me = !1, $e = !1, nt = !1, ze = !0, Ze = !0, st = !0, fn = !0, ae = /* @__PURE__ */ new Set(), Ye = {}, Tt = {};
   function ht(e, t) {
     At(e, t), At(e + "Capture", t);
   }
@@ -3069,7 +3069,7 @@ Error generating stack: ` + a.message + `
         return at(n);
       case le:
         return n === pi ? "StrictMode" : "Mode";
-      case q:
+      case G:
         return "Offscreen";
       case I:
         return "Profiler";
@@ -3079,7 +3079,7 @@ Error generating stack: ` + a.message + `
         return "Suspense";
       case ie:
         return "SuspenseList";
-      case G:
+      case q:
         return "TracingMarker";
       case C:
       case R:
@@ -12162,7 +12162,7 @@ Check the render method of \`` + a + "`.");
           break;
         return null;
       }
-      case q:
+      case G:
       case be:
         return t.lanes = J, by(e, t, n);
     }
@@ -12251,7 +12251,7 @@ Check the render method of \`` + a + "`.");
         return jy(e, t, n);
       case Te:
         break;
-      case q:
+      case G:
         return by(e, t, n);
     }
     throw new Error("Unknown unit of work tag (" + t.tag + "). This error is likely caused by a bug in React. Please file an issue.");
@@ -12516,7 +12516,7 @@ Check the render method of \`` + a + "`.");
       }
       case Te:
         break;
-      case q:
+      case G:
       case be: {
         sh(t);
         var _r = t.memoizedState, eo = _r !== null;
@@ -12529,7 +12529,7 @@ Check the render method of \`` + a + "`.");
       }
       case ye:
         return null;
-      case G:
+      case q:
         return null;
     }
     throw new Error("Unknown unit of work tag (" + t.tag + "). This error is likely caused by a bug in React. Please file an issue.");
@@ -12567,7 +12567,7 @@ Check the render method of \`` + a + "`.");
       case W:
         var c = t.type._context;
         return Op(c, t), null;
-      case q:
+      case G:
       case be:
         return sh(t), null;
       case ye:
@@ -12604,7 +12604,7 @@ Check the render method of \`` + a + "`.");
         var r = t.type._context;
         Op(r, t);
         break;
-      case q:
+      case G:
       case be:
         sh(t);
         break;
@@ -12930,9 +12930,9 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         case ie:
         case X:
         case Te:
-        case q:
-        case be:
         case G:
+        case be:
+        case q:
           break;
         default:
           throw new Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
@@ -12985,7 +12985,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           } catch (l) {
             gt(e, e.return, l);
           }
-      } else if (!((a.tag === q || a.tag === be) && a.memoizedState !== null && a !== e)) {
+      } else if (!((a.tag === G || a.tag === be) && a.memoizedState !== null && a !== e)) {
         if (a.child !== null) {
           a.child.return = a, a = a.child;
           continue;
@@ -13204,7 +13204,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         ai(e, t, n);
         return;
       }
-      case q: {
+      case G: {
         if (
           // TODO: Remove this dead flag
           n.mode & Qe
@@ -13383,7 +13383,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         }
         return;
       }
-      case q: {
+      case G: {
         var Ge = a !== null && a.memoizedState !== null;
         if (
           // TODO: Remove this dead flag
@@ -13434,7 +13434,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Wy(e, t, n) {
     for (var a = (e.mode & Qe) !== je; Ne !== null; ) {
       var r = Ne, i = r.child;
-      if (r.tag === q && a) {
+      if (r.tag === G && a) {
         var l = r.memoizedState !== null, s = l || Xc;
         if (s) {
           Km(e, t, n);
@@ -13509,7 +13509,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           Kl(t, t.return);
           break;
         }
-        case q: {
+        case G: {
           var r = t.memoizedState !== null;
           if (r) {
             Ky(e);
@@ -13539,7 +13539,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function dj(e) {
     for (; Ne !== null; ) {
       var t = Ne, n = t.child;
-      if (t.tag === q) {
+      if (t.tag === G) {
         var a = t.memoizedState !== null;
         if (a) {
           Qy(e);
@@ -14934,7 +14934,7 @@ Check the render method of \`` + h + "`.");
     return r.elementType = Ve, r.lanes = n, r;
   }
   function RN(e, t, n, a) {
-    var r = ra(q, e, a, t);
+    var r = ra(G, e, a, t);
     r.elementType = St, r.lanes = n;
     var i = {
       isHidden: !1
@@ -16875,8 +16875,8 @@ function __() {
       if (!(o != null && o.apiKey)) throw new Error("Firebase not configured");
       const I = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), ee = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), { getAuth: U, setPersistence: k, browserLocalPersistence: ne, browserSessionPersistence: X, signInWithEmailAndPassword: Q } = ee, ie = U();
       await k(ie, d ? ne : X);
-      const q = await (await Q(ie, m.trim(), b)).user.getIdToken();
-      if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: q }) })).ok) throw new Error("Session creation failed");
+      const G = await (await Q(ie, m.trim(), b)).user.getIdToken();
+      if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: G }) })).ok) throw new Error("Session creation failed");
       E("Signed in successfully."), setTimeout(() => window.location.href = "/dashboard", 600);
     } catch (I) {
       C(le(I));
@@ -17065,18 +17065,18 @@ function O_() {
   async function X(Q) {
     Q.preventDefault(), F(""), se(""), oe(!0);
     try {
-      const ie = String(m).trim(), Te = String(b).trim(), q = Te.replace(/\D+/g, ""), be = { fn: !ie, cn: !Te };
-      if (ee(be.fn), k(be.cn || q.length < 7), be.fn || be.cn) {
+      const ie = String(m).trim(), Te = String(b).trim(), G = Te.replace(/\D+/g, ""), be = { fn: !ie, cn: !Te };
+      if (ee(be.fn), k(be.cn || G.length < 7), be.fn || be.cn) {
         F("Please fill in required fields");
         return;
       }
-      if (q.length < 7) {
+      if (G.length < 7) {
         F("Please enter a valid mobile number");
         return;
       }
       if (R !== O) throw new Error("Passwords do not match");
       if (!(o != null && o.apiKey)) throw new Error("Firebase not configured");
-      const ye = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), { getAuth: G, createUserWithEmailAndPassword: K } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), pe = G(), $e = await (await K(pe, d.trim(), R)).user.getIdToken();
+      const ye = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), { getAuth: q, createUserWithEmailAndPassword: K } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), pe = q(), $e = await (await K(pe, d.trim(), R)).user.getIdToken();
       if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: $e, profile: { fullName: ie, contactNumber: Te } }) })).ok) throw new Error("Session creation failed");
       se("Account created successfully. Redirecting..."), setTimeout(() => window.location.href = "/riders", 700);
     } catch (ie) {
@@ -17516,8 +17516,8 @@ function V_({ onClose: o, onCreated: f }) {
   k(d);
   async function ne() {
     E(""), F(""), ee(!0);
-    const X = String(m), Q = String(b).trim(), ie = String(d).trim(), Te = ie.replace(/\D+/g, ""), q = { fn: !Q, cn: !ie, pw: !X };
-    if (se(q.fn), oe(q.cn || Te.length < 7), P(q.pw), q.fn || q.cn || q.pw) {
+    const X = String(m), Q = String(b).trim(), ie = String(d).trim(), Te = ie.replace(/\D+/g, ""), G = { fn: !Q, cn: !ie, pw: !X };
+    if (se(G.fn), oe(G.cn || Te.length < 7), P(G.pw), G.fn || G.cn || G.pw) {
       E("Full name, mobile and password are required");
       return;
     }
@@ -17536,9 +17536,9 @@ function V_({ onClose: o, onCreated: f }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: X, fullName: Q, contactNumber: be })
-      }), G = await ye.json().catch(() => null);
+      }), q = await ye.json().catch(() => null);
       if (!ye.ok) {
-        const K = String(G && (G.error || G.message) || ""), pe = K.toUpperCase();
+        const K = String(q && (q.error || q.message) || ""), pe = K.toUpperCase();
         /MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(K) || /MISSING\s*PASSWORD/i.test(K) ? (E("Full name, mobile and password are required"), se(!Q), oe(!ie || Te.length !== 10), P(!X)) : pe.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(K) ? (P(!0), E("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(K) ? (oe(!0), E("numbers should be 10 digit")) : /FIREBASE NOT CONFIGURED/i.test(K) ? E("Service temporarily unavailable. Please try again later.") : E(K || "Failed to create rider");
         return;
       }
@@ -17994,22 +17994,22 @@ function H_(o, f) {
 }
 function B_() {
   const o = () => {
-    const G = /* @__PURE__ */ new Date(), K = new Date(G.getFullYear(), G.getMonth(), 1), pe = `${K.getFullYear()}-${String(K.getMonth() + 1).padStart(2, "0")}-${String(K.getDate()).padStart(2, "0")}`, Me = `${G.getFullYear()}-${String(G.getMonth() + 1).padStart(2, "0")}-${String(G.getDate()).padStart(2, "0")}`;
+    const q = /* @__PURE__ */ new Date(), K = new Date(q.getFullYear(), q.getMonth(), 1), pe = `${K.getFullYear()}-${String(K.getMonth() + 1).padStart(2, "0")}-${String(K.getDate()).padStart(2, "0")}`, Me = `${q.getFullYear()}-${String(q.getMonth() + 1).padStart(2, "0")}-${String(q.getDate()).padStart(2, "0")}`;
     return { from: pe, to: Me };
   }, f = y.useMemo(() => o(), []), [m, g] = y.useState([]), [b, S] = y.useState(""), [d, _] = y.useState(!0), [R, C] = y.useState(""), [O, E] = y.useState(1), [M, F] = y.useState(20), [$, se] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [le, oe] = y.useState(!1), [W, P] = y.useState(null), [I, ee] = y.useState(ga), [U, k] = y.useState(f.from), [ne, X] = y.useState(f.to), [Q, ie] = y.useState(/* @__PURE__ */ new Map());
   y.useEffect(() => {
-    function G() {
+    function q() {
       ee(VE());
     }
-    G();
+    q();
     function K(pe) {
-      pe.key === Nd && G();
+      pe.key === Nd && q();
     }
-    return typeof window < "u" && (window.addEventListener("storage", K), window.addEventListener("fare-settings-changed", G)), () => {
-      typeof window < "u" && (window.removeEventListener("storage", K), window.removeEventListener("fare-settings-changed", G));
+    return typeof window < "u" && (window.addEventListener("storage", K), window.addEventListener("fare-settings-changed", q)), () => {
+      typeof window < "u" && (window.removeEventListener("storage", K), window.removeEventListener("fare-settings-changed", q));
     };
   }, []), y.useEffect(() => {
-    let G = !0;
+    let q = !0;
     return (async () => {
       var K, pe, Me, $e;
       _(!0), C("");
@@ -18023,21 +18023,21 @@ function B_() {
         }
         if (!ze.ok) throw new Error("Failed to load riders");
         const Ze = await ze.json();
-        G && (g(Array.isArray(Ze.riders) ? Ze.riders : []), se({ total: ((K = Ze.meta) == null ? void 0 : K.total) || 0, page: ((pe = Ze.meta) == null ? void 0 : pe.page) || 1, limit: ((Me = Ze.meta) == null ? void 0 : Me.limit) || M, pages: (($e = Ze.meta) == null ? void 0 : $e.pages) || 1 }));
+        q && (g(Array.isArray(Ze.riders) ? Ze.riders : []), se({ total: ((K = Ze.meta) == null ? void 0 : K.total) || 0, page: ((pe = Ze.meta) == null ? void 0 : pe.page) || 1, limit: ((Me = Ze.meta) == null ? void 0 : Me.limit) || M, pages: (($e = Ze.meta) == null ? void 0 : $e.pages) || 1 }));
       } catch (nt) {
-        G && C(nt.message || "Failed to load riders");
+        q && C(nt.message || "Failed to load riders");
       } finally {
-        G && _(!1);
+        q && _(!1);
       }
     })(), () => {
-      G = !1;
+      q = !1;
     };
   }, [b, O, M]), y.useEffect(() => {
     if (!U || !ne || !m.length) {
       ie(/* @__PURE__ */ new Map());
       return;
     }
-    const G = new AbortController(), K = G.signal;
+    const q = new AbortController(), K = q.signal;
     let pe = !1;
     const Me = (() => {
       const ze = typeof navigator < "u" && Number.isFinite(Number(navigator.hardwareConcurrency)) ? Number(navigator.hardwareConcurrency) : 8;
@@ -18084,13 +18084,13 @@ function B_() {
       await Promise.all(fn);
     }
     return nt($e, Me), () => {
-      pe = !0, G.abort();
+      pe = !0, q.abort();
     };
   }, [U, ne, m]);
-  const Te = y.useMemo(() => m.filter((G) => {
-    if (b && !String(G.name || "").toLowerCase().includes(b.toLowerCase().trim())) return !1;
+  const Te = y.useMemo(() => m.filter((q) => {
+    if (b && !String(q.name || "").toLowerCase().includes(b.toLowerCase().trim())) return !1;
     if (U || ne) {
-      const K = Number(G.lastActiveDays ?? 0), pe = U ? new Date(U) : null, Me = ne ? new Date(ne) : null;
+      const K = Number(q.lastActiveDays ?? 0), pe = U ? new Date(U) : null, Me = ne ? new Date(ne) : null;
       if (pe && Me) {
         const $e = Math.floor((Date.now() - pe.getTime()) / 864e5), nt = Math.floor((Date.now() - Me.getTime()) / (1e3 * 60 * 60 * 24));
         if (K < nt || K > $e) return !1;
@@ -18103,27 +18103,27 @@ function B_() {
       }
     }
     return !0;
-  }), [m, b, U, ne]), q = y.useMemo(() => {
-    const G = Number(I.farePerKm);
-    return Number.isFinite(G) ? G : ga.farePerKm;
+  }), [m, b, U, ne]), G = y.useMemo(() => {
+    const q = Number(I.farePerKm);
+    return Number.isFinite(q) ? q : ga.farePerKm;
   }, [I]), be = y.useMemo(() => {
-    const G = Number(I.baseFare);
-    return Number.isFinite(G) ? G : ga.baseFare;
+    const q = Number(I.baseFare);
+    return Number.isFinite(q) ? q : ga.baseFare;
   }, [I]);
   y.useEffect(() => {
     if (!Array.isArray(m) || m.length === 0) return;
-    const G = {};
+    const q = {};
     for (const K of m) {
       if (!K || K.id === void 0 || K.id === null) continue;
       const pe = Number(K.performancePct);
-      Number.isFinite(pe) && (G[K.id] = Math.round(pe));
+      Number.isFinite(pe) && (q[K.id] = Math.round(pe));
     }
-    Object.keys(G).length !== 0 && k_(G);
+    Object.keys(q).length !== 0 && k_(q);
   }, [m]);
   const ye = y.useMemo(() => {
-    const G = /* @__PURE__ */ new Date(), K = [], pe = [];
+    const q = /* @__PURE__ */ new Date(), K = [], pe = [];
     for (let Me = 2; Me >= 0; Me--) {
-      const $e = new Date(G.getFullYear(), G.getMonth() - Me, 1), nt = `${$e.getFullYear()}-${String($e.getMonth() + 1).padStart(2, "0")}`, ze = $e.toLocaleString(void 0, { month: "short", year: "numeric" });
+      const $e = new Date(q.getFullYear(), q.getMonth() - Me, 1), nt = `${$e.getFullYear()}-${String($e.getMonth() + 1).padStart(2, "0")}`, ze = $e.toLocaleString(void 0, { month: "short", year: "numeric" });
       K.push(nt), pe.push(ze);
     }
     return { keys: K, labels: pe };
@@ -18167,8 +18167,8 @@ function B_() {
           lineNumber: 275,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ u.jsxDEV("input", { className: "rc-search-input", type: "search", placeholder: "Search", value: b, onChange: (G) => {
-          S(G.target.value), E(1);
+        /* @__PURE__ */ u.jsxDEV("input", { className: "rc-search-input", type: "search", placeholder: "Search", value: b, onChange: (q) => {
+          S(q.target.value), E(1);
         } }, void 0, !1, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 276,
@@ -18180,8 +18180,8 @@ function B_() {
         columnNumber: 11
       }, this),
       /* @__PURE__ */ u.jsxDEV("div", { className: "rc-filters", children: /* @__PURE__ */ u.jsxDEV("div", { className: "date-range-filter", children: [
-        /* @__PURE__ */ u.jsxDEV("input", { type: "date", className: "date-range-input", value: U, onChange: (G) => {
-          k(G.target.value), E(1);
+        /* @__PURE__ */ u.jsxDEV("input", { type: "date", className: "date-range-input", value: U, onChange: (q) => {
+          k(q.target.value), E(1);
         }, placeholder: "From", title: "Filter from date" }, void 0, !1, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 280,
@@ -18192,8 +18192,8 @@ function B_() {
           lineNumber: 281,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ u.jsxDEV("input", { type: "date", className: "date-range-input", value: ne, onChange: (G) => {
-          X(G.target.value), E(1);
+        /* @__PURE__ */ u.jsxDEV("input", { type: "date", className: "date-range-input", value: ne, onChange: (q) => {
+          X(q.target.value), E(1);
         }, placeholder: "To", title: "Filter to date" }, void 0, !1, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 282,
@@ -18226,12 +18226,12 @@ function B_() {
         {
           rider: W,
           onClose: () => P(null),
-          onUpdated: (G) => {
-            if (!G) {
+          onUpdated: (q) => {
+            if (!q) {
               P(null);
               return;
             }
-            g((K) => K.map((pe) => String(pe.id) === String(G.id) ? { ...pe, name: G.displayName || G.name || pe.name, contactNumber: G.contactNumber ?? pe.contactNumber } : pe)), P(null);
+            g((K) => K.map((pe) => String(pe.id) === String(q.id) ? { ...pe, name: q.displayName || q.name || pe.name, contactNumber: q.contactNumber ?? pe.contactNumber } : pe)), P(null);
           }
         },
         void 0,
@@ -18256,7 +18256,7 @@ function B_() {
             columnNumber: 17
           }, this),
           /* @__PURE__ */ u.jsxDEV("th", { className: "col-earnings", children: (() => {
-            const G = ye.keys[ye.keys.length - 2], K = String(G).split("-"), pe = parseInt(K[0], 10), Me = parseInt(K[1], 10);
+            const q = ye.keys[ye.keys.length - 2], K = String(q).split("-"), pe = parseInt(K[0], 10), Me = parseInt(K[1], 10);
             return `Earnings (${new Date(Number.isFinite(pe) ? pe : (/* @__PURE__ */ new Date()).getFullYear(), Number.isFinite(Me) ? Me - 1 : (/* @__PURE__ */ new Date()).getMonth() - 1, 1).toLocaleString(void 0, { month: "short" })}, Rs)`;
           })() }, void 0, !1, {
             fileName: "/app/code/client/pages/Riders.jsx",
@@ -18306,8 +18306,8 @@ function B_() {
             lineNumber: 318,
             columnNumber: 17
           }, this),
-          !d && !R && Te.map((G) => /* @__PURE__ */ u.jsxDEV("tr", { "data-rider-id": G.id, "data-status": G.status, "data-last-days": G.lastActiveDays, children: [
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-name", children: /* @__PURE__ */ u.jsxDEV("a", { className: "rider-name-link", href: `/riders/${G.id}`, children: G.name }, void 0, !1, {
+          !d && !R && Te.map((q) => /* @__PURE__ */ u.jsxDEV("tr", { "data-rider-id": q.id, "data-status": q.status, "data-last-days": q.lastActiveDays, children: [
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-name", children: /* @__PURE__ */ u.jsxDEV("a", { className: "rider-name-link", href: `/riders/${q.id}`, children: q.name }, void 0, !1, {
               fileName: "/app/code/client/pages/Riders.jsx",
               lineNumber: 322,
               columnNumber: 47
@@ -18319,7 +18319,7 @@ function B_() {
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-month", children: (() => {
               var K;
               if (U && ne) {
-                const pe = `${G.id}:${U}:${ne}`, Me = Q.get(pe);
+                const pe = `${q.id}:${U}:${ne}`, Me = Q.get(pe);
                 if (!Me) return /* @__PURE__ */ u.jsxDEV("span", { className: "cell-loader loader-sm", "aria-busy": "true", "aria-label": "Loading range" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 327,
@@ -18328,7 +18328,7 @@ function B_() {
                 const $e = (Me == null ? void 0 : Me.km) ?? 0;
                 return `${Number($e).toFixed(2)} km`;
               }
-              return `${Number(((K = G.monthlyCounts) == null ? void 0 : K[ye.keys[ye.keys.length - 1]]) || 0).toFixed(2)} km`;
+              return `${Number(((K = q.monthlyCounts) == null ? void 0 : K[ye.keys[ye.keys.length - 1]]) || 0).toFixed(2)} km`;
             })() }, void 0, !1, {
               fileName: "/app/code/client/pages/Riders.jsx",
               lineNumber: 323,
@@ -18337,7 +18337,7 @@ function B_() {
             (() => {
               var $e, nt;
               if (U && ne) {
-                const ze = `${G.id}:${U}:${ne}`;
+                const ze = `${q.id}:${U}:${ne}`;
                 if (!Q.get(ze)) return /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-earnings", children: /* @__PURE__ */ u.jsxDEV("span", { className: "cell-loader loader-md", "aria-busy": "true", "aria-label": "Loading earnings" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 337,
@@ -18350,15 +18350,15 @@ function B_() {
               }
               let K = 0, pe = 0;
               if (U && ne) {
-                const ze = `${G.id}:${U}:${ne}`, Ze = Q.get(ze);
+                const ze = `${q.id}:${U}:${ne}`, Ze = Q.get(ze);
                 K = (Ze == null ? void 0 : Ze.km) ?? 0, pe = (Ze == null ? void 0 : Ze.rideCount) ?? 0;
               } else {
                 const ze = ye.keys[ye.keys.length - 2];
-                K = Number((($e = G.monthlyCounts) == null ? void 0 : $e[ze]) || 0);
-                const Ze = Array.isArray(G.orders) ? G.orders : [];
-                pe = Number(((nt = G.monthlyRideCounts) == null ? void 0 : nt[ze]) ?? H_(Ze, ze) ?? 0);
+                K = Number((($e = q.monthlyCounts) == null ? void 0 : $e[ze]) || 0);
+                const Ze = Array.isArray(q.orders) ? q.orders : [];
+                pe = Number(((nt = q.monthlyRideCounts) == null ? void 0 : nt[ze]) ?? H_(Ze, ze) ?? 0);
               }
-              const Me = K * q + pe * be;
+              const Me = K * G + pe * be;
               return /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-earnings", children: Number.isFinite(Me) ? `${Me.toFixed(2)} Rs.` : "0 Rs." }, void 0, !1, {
                 fileName: "/app/code/client/pages/Riders.jsx",
                 lineNumber: 356,
@@ -18367,7 +18367,7 @@ function B_() {
             })(),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-performance", children: (() => {
               if (U && ne) {
-                const K = `${G.id}:${U}:${ne}`, pe = Q.get(K);
+                const K = `${q.id}:${U}:${ne}`, pe = Q.get(K);
                 if (!pe) return /* @__PURE__ */ u.jsxDEV("span", { className: "cell-loader loader-sm", "aria-busy": "true", "aria-label": "Loading performance" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 362,
@@ -18376,22 +18376,19 @@ function B_() {
                 const Me = (pe == null ? void 0 : pe.performancePct) ?? 0;
                 return `${Number(Me)}%`;
               }
-              return Number.isFinite(Number(G.performancePct)) ? `${Math.round(Number(G.performancePct))}%` : "0%";
+              return Number.isFinite(Number(q.performancePct)) ? `${Math.round(Number(q.performancePct))}%` : "0%";
             })() }, void 0, !1, {
               fileName: "/app/code/client/pages/Riders.jsx",
               lineNumber: 358,
               columnNumber: 19
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-total", children: [
-              Number(G.totalKm || 0).toFixed(2),
-              " km"
-            ] }, void 0, !0, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-total", children: typeof q.totalDistance == "string" && q.totalDistance.trim() ? q.totalDistance : `${Number(q.totalKm || 0).toFixed(2)} km` }, void 0, !1, {
               fileName: "/app/code/client/pages/Riders.jsx",
               lineNumber: 368,
               columnNumber: 19
             }, this),
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-actions", children: /* @__PURE__ */ u.jsxDEV("div", { className: "actions-container", children: [
-              /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip btn-edit-rider", "aria-label": "Edit rider", title: "Edit rider", onClick: () => P(G), children: /* @__PURE__ */ u.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ u.jsxDEV("path", { d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" }, void 0, !1, {
+              /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip btn-edit-rider", "aria-label": "Edit rider", title: "Edit rider", onClick: () => P(q), children: /* @__PURE__ */ u.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ u.jsxDEV("path", { d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" }, void 0, !1, {
                 fileName: "/app/code/client/pages/Riders.jsx",
                 lineNumber: 372,
                 columnNumber: 147
@@ -18407,7 +18404,7 @@ function B_() {
               /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip btn-delete-rider", "aria-label": "Delete rider", title: "Delete rider", onClick: async () => {
                 if (window.confirm("Delete this rider?"))
                   try {
-                    const pe = await fetch(`/api/riders/${encodeURIComponent(G.id)}`, { method: "DELETE", credentials: "include" });
+                    const pe = await fetch(`/api/riders/${encodeURIComponent(q.id)}`, { method: "DELETE", credentials: "include" });
                     if (pe.status === 401) {
                       window.location.href = "/auth/login";
                       return;
@@ -18417,7 +18414,7 @@ function B_() {
                       alert(Me || "Failed to delete");
                       return;
                     }
-                    g((Me) => Me.filter(($e) => String($e.id) !== String(G.id))), se((Me) => ({ ...Me, total: Math.max(0, (Me.total || 1) - 1) }));
+                    g((Me) => Me.filter(($e) => String($e.id) !== String(q.id))), se((Me) => ({ ...Me, total: Math.max(0, (Me.total || 1) - 1) }));
                   } catch (pe) {
                     alert(String((pe == null ? void 0 : pe.message) || "Failed to delete"));
                   }
@@ -18443,7 +18440,7 @@ function B_() {
               lineNumber: 369,
               columnNumber: 19
             }, this)
-          ] }, G.id, !0, {
+          ] }, q.id, !0, {
             fileName: "/app/code/client/pages/Riders.jsx",
             lineNumber: 321,
             columnNumber: 17
@@ -18473,7 +18470,7 @@ function B_() {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ u.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: /* @__PURE__ */ u.jsxDEV("div", { className: "rc-filters", children: [
-      /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: $.page <= 1 || d, onClick: () => E((G) => Math.max(1, G - 1)), children: "Prev" }, void 0, !1, {
+      /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: $.page <= 1 || d, onClick: () => E((q) => Math.max(1, q - 1)), children: "Prev" }, void 0, !1, {
         fileName: "/app/code/client/pages/Riders.jsx",
         lineNumber: 400,
         columnNumber: 13
@@ -18491,7 +18488,7 @@ function B_() {
         lineNumber: 401,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: $.page >= $.pages || d, onClick: () => E((G) => Math.min($.pages, G + 1)), children: "Next" }, void 0, !1, {
+      /* @__PURE__ */ u.jsxDEV("button", { className: "rc-select rc-chip", disabled: $.page >= $.pages || d, onClick: () => E((q) => Math.min($.pages, q + 1)), children: "Next" }, void 0, !1, {
         fileName: "/app/code/client/pages/Riders.jsx",
         lineNumber: 402,
         columnNumber: 13
@@ -19067,7 +19064,7 @@ function q_() {
 function $E({ orderId: o, onClose: f, onAssigned: m }) {
   const [g, b] = y.useState([]), [S, d] = y.useState([]), [_, R] = y.useState(""), [C, O] = y.useState(""), [E, M] = y.useState(""), [F, $] = y.useState(""), [se, le] = y.useState(!0), [oe, W] = y.useState(!0), [P, I] = y.useState(""), [ee, U] = y.useState(""), [k, ne] = y.useState(!1);
   y.useEffect(() => {
-    let q = !0;
+    let G = !0;
     return (async () => {
       le(!0), I("");
       try {
@@ -19078,17 +19075,17 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
         }
         if (!be.ok) throw new Error("Failed to load riders");
         const ye = await be.json();
-        q && b(Array.isArray(ye.riders) ? ye.riders : []);
+        G && b(Array.isArray(ye.riders) ? ye.riders : []);
       } catch (be) {
-        q && I(be.message || "Failed to load riders");
+        G && I(be.message || "Failed to load riders");
       } finally {
-        q && le(!1);
+        G && le(!1);
       }
     })(), () => {
-      q = !1;
+      G = !1;
     };
   }, []), y.useEffect(() => {
-    let q = !0;
+    let G = !0;
     return (async () => {
       W(!0), U("");
       try {
@@ -19099,14 +19096,14 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
         }
         if (!be.ok) throw new Error("Failed to load packers");
         const ye = await be.json();
-        q && d(Array.isArray(ye.packers) ? ye.packers : []);
+        G && d(Array.isArray(ye.packers) ? ye.packers : []);
       } catch (be) {
-        q && U(be.message || "Failed to load packers");
+        G && U(be.message || "Failed to load packers");
       } finally {
-        q && W(!1);
+        G && W(!1);
       }
     })(), () => {
-      q = !1;
+      G = !1;
     };
   }, []);
   async function X() {
@@ -19124,18 +19121,18 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
     }
     ne(!0);
     try {
-      const q = await fetch(`/api/orders/${encodeURIComponent(o)}/assign`, {
+      const G = await fetch(`/api/orders/${encodeURIComponent(o)}/assign`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ riderId: _, paymentMethod: E.trim(), amount: F.trim() })
       });
-      if (q.status === 401) {
+      if (G.status === 401) {
         window.location.href = "/auth/login";
         return;
       }
-      const be = await q.json().catch(() => null);
-      if (!q.ok) throw new Error(be && be.error ? be.error : "Assign failed");
+      const be = await G.json().catch(() => null);
+      if (!G.ok) throw new Error(be && be.error ? be.error : "Assign failed");
       const ye = await fetch(`/api/orders/${encodeURIComponent(o)}/assign-packer`, {
         method: "POST",
         credentials: "include",
@@ -19146,16 +19143,16 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
         window.location.href = "/auth/login";
         return;
       }
-      const G = await ye.json().catch(() => null);
-      if (!ye.ok) throw new Error(G && G.error ? G.error : "Assign failed");
+      const q = await ye.json().catch(() => null);
+      if (!ye.ok) throw new Error(q && q.error ? q.error : "Assign failed");
       m && m({ orderId: o, riderId: _, packerId: C, paymentMethod: E.trim(), amount: F.trim() });
       try {
         window && typeof window.showToast == "function" && window.showToast("Order assigned successfully", { type: "success" });
       } catch {
       }
       f();
-    } catch (q) {
-      alert(q.message || "Failed to assign");
+    } catch (G) {
+      alert(G.message || "Failed to assign");
     } finally {
       ne(!1);
     }
@@ -19192,7 +19189,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
               {
                 className: "field-input assign-dropdown",
                 value: _,
-                onChange: (q) => R(q.target.value),
+                onChange: (G) => R(G.target.value),
                 disabled: k,
                 children: [
                   /* @__PURE__ */ u.jsxDEV("option", { value: "", children: "-- Choose a rider --" }, void 0, !1, {
@@ -19200,7 +19197,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
                     lineNumber: 118,
                     columnNumber: 23
                   }, this),
-                  [...g].sort((q, be) => q.name.localeCompare(be.name)).map((q) => /* @__PURE__ */ u.jsxDEV("option", { value: q.id, children: q.name }, q.id, !1, {
+                  [...g].sort((G, be) => G.name.localeCompare(be.name)).map((G) => /* @__PURE__ */ u.jsxDEV("option", { value: G.id, children: G.name }, G.id, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 120,
                     columnNumber: 25
@@ -19244,7 +19241,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
               {
                 className: "field-input assign-dropdown",
                 value: C,
-                onChange: (q) => O(q.target.value),
+                onChange: (G) => O(G.target.value),
                 disabled: k,
                 children: [
                   /* @__PURE__ */ u.jsxDEV("option", { value: "", children: "-- Choose a packer --" }, void 0, !1, {
@@ -19252,7 +19249,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
                     lineNumber: 136,
                     columnNumber: 23
                   }, this),
-                  [...S].sort((q, be) => q.name.localeCompare(be.name)).map((q) => /* @__PURE__ */ u.jsxDEV("option", { value: q.id, children: q.name }, q.id, !1, {
+                  [...S].sort((G, be) => G.name.localeCompare(be.name)).map((G) => /* @__PURE__ */ u.jsxDEV("option", { value: G.id, children: G.name }, G.id, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 138,
                     columnNumber: 25
@@ -19297,7 +19294,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
               className: "field-input assign-dropdown",
               placeholder: "e.g., Cash, Card, Online",
               value: E,
-              onChange: (q) => M(q.target.value),
+              onChange: (G) => M(G.target.value),
               disabled: k
             },
             void 0,
@@ -19327,7 +19324,7 @@ function $E({ orderId: o, onClose: f, onAssigned: m }) {
               className: "field-input assign-dropdown",
               placeholder: "e.g., 500",
               value: F,
-              onChange: (q) => $(q.target.value),
+              onChange: (G) => $(G.target.value),
               disabled: k
             },
             void 0,
@@ -19782,7 +19779,7 @@ const K_ = [
   "in-transit": "in_progress"
 };
 function Q_() {
-  const [o, f] = y.useState([]), [m, g] = y.useState(""), [b, S] = y.useState("all"), [d, _] = y.useState(1), [R, C] = y.useState(20), [O, E] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [M, F] = y.useState(!0), [$, se] = y.useState(""), [le, oe] = y.useState(""), [W, P] = y.useState(!0), [I, ee] = y.useState(0), [U, k] = y.useState(!1), [ne, X] = y.useState(null), [Q, ie] = y.useState(!1), [Te, q] = y.useState(null), [be, ye] = y.useState(!1), [G, K] = y.useState(null);
+  const [o, f] = y.useState([]), [m, g] = y.useState(""), [b, S] = y.useState("all"), [d, _] = y.useState(1), [R, C] = y.useState(20), [O, E] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [M, F] = y.useState(!0), [$, se] = y.useState(""), [le, oe] = y.useState(""), [W, P] = y.useState(!0), [I, ee] = y.useState(0), [U, k] = y.useState(!1), [ne, X] = y.useState(null), [Q, ie] = y.useState(!1), [Te, G] = y.useState(null), [be, ye] = y.useState(!1), [q, K] = y.useState(null);
   y.useEffect(() => {
     let ae = !0;
     return (async () => {
@@ -19822,10 +19819,10 @@ function Q_() {
     X(null), k(!1);
   }
   function $e(ae) {
-    q(ae), ie(!0);
+    G(ae), ie(!0);
   }
   function nt() {
-    q(null), ie(!1);
+    G(null), ie(!1);
   }
   function ze(ae) {
     K(ae), ye(!0);
@@ -19933,7 +19930,7 @@ function Q_() {
       lineNumber: 153,
       columnNumber: 25
     }, this),
-    /* @__PURE__ */ u.jsxDEV("div", { className: "rc-table-wrapper", children: /* @__PURE__ */ u.jsxDEV("table", { className: "rc-table", children: [
+    /* @__PURE__ */ u.jsxDEV("div", { className: "rc-table-wrapper orders-table-scroll", children: /* @__PURE__ */ u.jsxDEV("table", { className: "rc-table", children: [
       /* @__PURE__ */ u.jsxDEV("thead", { children: /* @__PURE__ */ u.jsxDEV("tr", { children: [
         /* @__PURE__ */ u.jsxDEV("th", { className: "col-name order-id-heading", children: "Order" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
@@ -20217,7 +20214,7 @@ function Q_() {
         lineNumber: 265,
         columnNumber: 11
       }, this),
-      be && G && /* @__PURE__ */ u.jsxDEV(W_, { order: G, onClose: Ze }, void 0, !1, {
+      be && q && /* @__PURE__ */ u.jsxDEV(W_, { order: q, onClose: Ze }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
         lineNumber: 268,
         columnNumber: 11
@@ -20541,8 +20538,8 @@ function J_({ onClose: o, onCreated: f }) {
   }
   async function ne() {
     E(""), F(""), ee(!0);
-    const X = String(m), Q = String(b).trim(), ie = String(d).trim(), Te = ie.replace(/\D+/g, ""), q = { fn: !Q, cn: !ie, pw: !X };
-    if (se(q.fn), oe(q.cn || Te.length !== 10), P(q.pw), q.fn || q.cn || q.pw) {
+    const X = String(m), Q = String(b).trim(), ie = String(d).trim(), Te = ie.replace(/\D+/g, ""), G = { fn: !Q, cn: !ie, pw: !X };
+    if (se(G.fn), oe(G.cn || Te.length !== 10), P(G.pw), G.fn || G.cn || G.pw) {
       E("Full name, mobile and password are required");
       return;
     }
@@ -20561,9 +20558,9 @@ function J_({ onClose: o, onCreated: f }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: X, fullName: Q, contactNumber: be })
-      }), G = await ye.json().catch(() => null);
+      }), q = await ye.json().catch(() => null);
       if (!ye.ok) {
-        const K = String(G && (G.error || G.message) || ""), pe = K.toUpperCase();
+        const K = String(q && (q.error || q.message) || ""), pe = K.toUpperCase();
         if (/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(K) || /MISSING\s*PASSWORD/i.test(K))
           E("Full name, mobile and password are required"), se(!Q), oe(!ie || Te.length !== 10), P(!X);
         else if (pe.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(K))
@@ -20731,8 +20728,8 @@ function Z_() {
           return;
         }
         if (!Te.ok) throw new Error("Failed to load orders");
-        const q = await Te.json();
-        U && (f(Array.isArray(q.orders) ? q.orders : []), E({ total: ((k = q.meta) == null ? void 0 : k.total) || 0, page: ((ne = q.meta) == null ? void 0 : ne.page) || d, limit: ((X = q.meta) == null ? void 0 : X.limit) || R, pages: ((Q = q.meta) == null ? void 0 : Q.pages) || 1 }));
+        const G = await Te.json();
+        U && (f(Array.isArray(G.orders) ? G.orders : []), E({ total: ((k = G.meta) == null ? void 0 : k.total) || 0, page: ((ne = G.meta) == null ? void 0 : ne.page) || d, limit: ((X = G.meta) == null ? void 0 : X.limit) || R, pages: ((Q = G.meta) == null ? void 0 : Q.pages) || 1 }));
       } catch (ie) {
         U && S(ie.message || "Failed to load orders");
       } finally {
@@ -20892,7 +20889,7 @@ function Z_() {
           const X = M(k), Q = k.full_name || (k.customer && k.customer.full_name ? k.customer.full_name : "");
           let ie = "-";
           typeof k.shipping_address == "string" && String(k.shipping_address).trim() ? ie = String(k.shipping_address).trim() : k.shipping_address && typeof k.shipping_address == "object" ? ie = [k.shipping_address.address1 || "", k.shipping_address.city || "", k.shipping_address.province || "", k.shipping_address.country || ""].map((K) => String(K || "").trim()).filter(Boolean).join(", ") || "-" : typeof k.billing_address == "string" && String(k.billing_address).trim() ? ie = String(k.billing_address).trim() : k.billing_address && typeof k.billing_address == "object" && (ie = [k.billing_address.address1 || "", k.billing_address.city || "", k.billing_address.province || "", k.billing_address.country || ""].map((K) => String(K || "").trim()).filter(Boolean).join(", ") || "-");
-          const Te = k.name || k.order_number || k.id || ne, q = String(k.id || k.name || k.order_number || ne).replace(/^#+/, ""), be = k.created_at ? new Date(k.created_at) : null, ye = be ? be.toLocaleDateString() : "-", G = be ? be.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
+          const Te = k.name || k.order_number || k.id || ne, G = String(k.id || k.name || k.order_number || ne).replace(/^#+/, ""), be = k.created_at ? new Date(k.created_at) : null, ye = be ? be.toLocaleDateString() : "-", q = be ? be.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
           return /* @__PURE__ */ u.jsxDEV("tr", { "data-status": X, children: [
             /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-order", children: Te }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
@@ -20923,7 +20920,7 @@ function Z_() {
               lineNumber: 130,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-time", children: G }, void 0, !1, {
+            /* @__PURE__ */ u.jsxDEV("td", { className: "rc-col-time", children: q }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 131,
               columnNumber: 23
@@ -20937,7 +20934,7 @@ function Z_() {
               lineNumber: 132,
               columnNumber: 23
             }, this)
-          ] }, q, !0, {
+          ] }, G, !0, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
             lineNumber: 125,
             columnNumber: 21
