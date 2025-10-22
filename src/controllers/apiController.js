@@ -934,7 +934,7 @@ module.exports = {
       // Calculate percentage
       const onTimeRate = totalCount > 0 ? Math.round((onTimeCount / totalCount) * 100) : 0;
 
-      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
+      const totalKm = (typeof rider.totalDistance === 'number' && Number.isFinite(rider.totalDistance)) ? rider.totalDistance : 0;
 
       // Build history for last 10 days using actual delivered dates
       const historyMap = new Map();
