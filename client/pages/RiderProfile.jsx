@@ -54,7 +54,7 @@ export default function RiderProfile(){
   }
 
   const { rider, metrics, history } = data;
-  const onTimeRateValue = savedPerformance ?? (Number.isFinite(Number(metrics?.onTimeRate)) ? Math.round(Number(metrics.onTimeRate)) : 0);
+  const onTimeRateValue = Number.isFinite(Number(metrics?.onTimeRate)) ? Math.round(Number(metrics.onTimeRate)) : 0;
 
   return (
     <SiteLayout>
