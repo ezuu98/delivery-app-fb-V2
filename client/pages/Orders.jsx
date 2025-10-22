@@ -210,6 +210,7 @@ export default function Orders(){
                     <td className="rc-col-km customer-cell">{fullName || '-'}</td>
                     <td className="rc-col-perf address-cell">{addr}</td>
                     <td className="rc-col-rider rider-cell">{riderLabel}</td>
+                    <td className="rc-col-packer packer-cell">{o.packerName || (o.packed_by ? String(o.packed_by) : '-')}</td>
                     <td className="rc-col-start-time start-cell">{startTime}</td>
                     <td className="rc-col-expected expected-cell">{expectedTime}</td>
                     <td className="rc-col-actual actual-time-cell">{actualDisplay}</td>
