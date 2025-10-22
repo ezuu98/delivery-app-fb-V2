@@ -93,8 +93,25 @@ async function ensureFirestoreStatusNew(orders){
   }catch(_){ /* ignore scheduler firestore errors */ }
 }
 
+async function syncFromShopify(){
+  try{
+    const { orders = [], error } = await listOrders({ limit: 50, order: 'created_at desc' });
+    if (error) { log.warn('scheduler.shopify.fetch.error', { message: String(error) }); return; }
+    if (!Array.isArray(orders) || !orders.length) return;
+    await orderModel.upsertMany(orders);
+    await ensureFirestoreStatusNew(orders);
+    log.info('scheduler.shopify.synced', { count: orders.length });
+  }catch(e){
+    log.warn('scheduler.shopify.exception', { message: e?.message });
+  }
+}
+
 async function syncOnce(){
   try{
+    // 1) Poll Shopify for latest orders and upsert
+    await syncFromShopify();
+
+    // 2) Mirror Firestore -> cache to ensure UI has latest enriched docs
     const db = getFirestore();
     if (!db) {
       log.warn('scheduler.firestore.notConfigured');
