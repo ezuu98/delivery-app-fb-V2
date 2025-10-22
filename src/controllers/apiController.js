@@ -615,7 +615,7 @@ module.exports = {
                   const orderData = orderSnap.data() || {};
                   const assignedAt = toDateOrNull(orderData.assignedAt);
 
-                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
+                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd && String(orderData.current_status || '').toLowerCase() === 'delivered'){
                     debug.ordersMatched += 1;
                     rideCount += 1;
                     const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
@@ -820,6 +820,7 @@ module.exports = {
             deliveredAt: base ? (base.actual_delivery_time ?? undefined) : undefined,
             assignedAt: undefined,
             orders: undefined,
+            onTime: base ? (base.onTime ?? false) : false,
           });
         }
       }catch(_){
@@ -925,12 +926,25 @@ module.exports = {
       const totalDeliveries = riderOrdersCount || completed.length;
       const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
 
-      // On-time rate = (# deliveries where actual < expected) / total deliveries * 100
-      const eligible = deliveries.filter(d => Number.isFinite(d.durationMins) && Number.isFinite(d.expectedMinutes));
-      const onTimeCount = eligible.filter(d => d.durationMins < d.expectedMinutes).length;
-      const onTimeRate = totalDeliveries ? Math.round((onTimeCount / totalDeliveries) * 100) : 0;
+      // On-time rate calculation: check riders.orders array
+      // Count all orders where current_status === 'delivered'
+      const deliveredOrders = riderOrders.filter(o => String(o.current_status || '').toLowerCase() === 'delivered');
+      const totalCount = deliveredOrders.length;
+      // Count orders where onTime === true
+      const onTimeCount = deliveredOrders.filter(o => o.onTime === true).length;
+      // Calculate percentage
+      const onTimeRate = totalCount > 0 ? Math.round((onTimeCount / totalCount) * 100) : 0;
 
-      const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
+      // Total KM from rider.totalDistance field (e.g., "16600.86 km")
+      let totalKm = 0;
+      if (rider.totalDistance) {
+        const distanceStr = String(rider.totalDistance).trim();
+        const match = distanceStr.match(/^([0-9]+(?:\.[0-9]+)?)/);
+        if (match) {
+          const value = parseFloat(match[1]);
+          totalKm = Number.isFinite(value) ? Math.round(value) : 0;
+        }
+      }
 
       // Build history for last 10 days using actual delivered dates
       const historyMap = new Map();
