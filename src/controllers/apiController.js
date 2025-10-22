@@ -926,9 +926,19 @@ module.exports = {
       const avgDeliveryMins = completed.length ? Math.round(completed.reduce((a,d)=>a+(d.durationMins||0),0)/completed.length) : 0;
 
       // On-time rate = (# deliveries where actual < expected) / total deliveries * 100
-      const eligible = deliveries.filter(d => Number.isFinite(d.durationMins) && Number.isFinite(d.expectedMinutes));
+      // Only count orders where current_status === 'delivered'
+      const eligible = deliveries.filter(d => {
+        const orderId = String(d.orderId);
+        const order = riderOrders.find(o => String(o.orderId) === orderId);
+        return Number.isFinite(d.durationMins) && Number.isFinite(d.expectedMinutes) && String(order?.current_status || '').toLowerCase() === 'delivered';
+      });
       const onTimeCount = eligible.filter(d => d.durationMins < d.expectedMinutes).length;
-      const onTimeRate = totalDeliveries ? Math.round((onTimeCount / totalDeliveries) * 100) : 0;
+      const deliveredCount = deliveries.filter(d => {
+        const orderId = String(d.orderId);
+        const order = riderOrders.find(o => String(o.orderId) === orderId);
+        return String(order?.current_status || '').toLowerCase() === 'delivered';
+      }).length;
+      const onTimeRate = deliveredCount > 0 ? Math.round((onTimeCount / deliveredCount) * 100) : 0;
 
       const totalKm = (typeof rider.totalKm === 'number' && Number.isFinite(rider.totalKm)) ? rider.totalKm : (Number.isFinite(Number(rider.total_kms)) ? Number(rider.total_kms) : 0);
 
