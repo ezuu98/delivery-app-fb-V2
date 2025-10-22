@@ -172,10 +172,10 @@ export default function Orders(){
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={11} className="section-note">Loading…</td></tr>
+                <tr><td colSpan={12} className="section-note">Loading…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={11} className="auth-error">{error}</td></tr>
+                <tr><td colSpan={12} className="auth-error">{error}</td></tr>
               )}
               {!loading && !error && visible.map((o,i)=>{
                 const statusRaw = getRawStatus(o);
