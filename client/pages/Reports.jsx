@@ -34,34 +34,8 @@ export default function Reports(){
           <h2 className="rc-title">Reporting & Analytics</h2>
         </header>
 
-        <div className="rc-toolbar">
-          <div className="rc-filters">
-            <button className="rc-select rc-chip" data-tab="overview">Overview</button>
-            <button className="rc-select rc-chip" data-tab="performance">Performance</button>
-            <button className="rc-select rc-chip" data-tab="custom">Custom Reports</button>
-          </div>
-        </div>
-
         <div id="tab-overview">
-          <div className="rc-table-wrapper reports-overview">
-            <div className="rc-select rc-chip block-chip">
-              <div className="section-title reports-stat-title">Total Deliveries</div>
-              <div className="reports-stat-value">{metrics.totalDeliveries}</div>
-            </div>
-            <div className="rc-select rc-chip block-chip">
-              <div className="section-title reports-stat-title">Average Delivery Time</div>
-              <div className="reports-stat-value">{metrics.avgDeliveryMins} mins</div>
-            </div>
-          </div>
-
-          <div className="rc-toolbar reports-toolbar-center">
-            <div className="section-title reports-stat-title">Delivery Data</div>
-            <label className="rc-select rc-chip toggle-data-label">
-              <input type="checkbox" checked={showTable} onChange={(e)=>setShowTable(e.target.checked)} /> Show Delivery Data Table
-            </label>
-          </div>
-
-          {showTable && (
+          {true && (
             <div className="rc-table-wrapper">
               <table className="rc-table">
                 <thead>
