@@ -176,108 +176,221 @@ export default function Reports(){
   return (
     <SiteLayout>
       <section className="rider-commissions">
-        <div id="tab-overview">
-          <h3 className="rc-section-title">Rider Commission Report</h3>
-
-          <div className="rc-toolbar report-filter-bar">
-            <div className="date-range-filters">
-              <div className="date-filter">
-                <label htmlFor="fromDate" className="date-label">From Date:</label>
-                <input
-                  id="fromDate"
-                  type="date"
-                  className="date-input"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
-              </div>
-
-              <div className="date-filter">
-                <label htmlFor="toDate" className="date-label">To Date:</label>
-                <input
-                  id="toDate"
-                  type="date"
-                  className="date-input"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
-              </div>
-
-              <button className="rc-button report-button" onClick={handleCreateReport}>
-                Create Report
-              </button>
-
-              <button className="rc-button download-button" onClick={handleDownload}>
-                Download
-              </button>
-            </div>
+        <div className="reports-tabs-container">
+          <div className="reports-tabs-navigation">
+            <button
+              className={`reports-tab-button ${activeTab === 'commission' ? 'active' : ''}`}
+              onClick={() => setActiveTab('commission')}
+            >
+              Commission Report
+            </button>
+            <button
+              className={`reports-tab-button ${activeTab === 'performance' ? 'active' : ''}`}
+              onClick={() => setActiveTab('performance')}
+            >
+              Performance Report
+            </button>
+            <button
+              className={`reports-tab-button ${activeTab === 'dispatcher' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dispatcher')}
+            >
+              Dispatcher Performance Report
+            </button>
           </div>
 
-          {showRiderSelection && (
-            <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
-              <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
-                <h4 className="modal-title">Select Riders for Report</h4>
+          {activeTab === 'commission' && (
+            <div id="tab-commission" className="reports-tab-content">
+              <h3 className="rc-section-title">Rider Commission Report</h3>
 
-                <div className="modal-content">
-                  <button className="select-all-button" onClick={handleSelectAll}>
-                    {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+              <div className="rc-toolbar report-filter-bar">
+                <div className="date-range-filters">
+                  <div className="date-filter">
+                    <label htmlFor="fromDate" className="date-label">From Date:</label>
+                    <input
+                      id="fromDate"
+                      type="date"
+                      className="date-input"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="date-filter">
+                    <label htmlFor="toDate" className="date-label">To Date:</label>
+                    <input
+                      id="toDate"
+                      type="date"
+                      className="date-input"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+                  </div>
+
+                  <button className="rc-button report-button" onClick={handleCreateReport}>
+                    Create Report
                   </button>
 
-                  <div className="riders-list">
-                    {riders.map(rider => (
-                      <label key={rider.id || rider._id} className="rider-checkbox-label">
-                        <input
-                          type="checkbox"
-                          className="rider-checkbox"
-                          checked={selectedRiders.includes(rider.id || rider._id || '')}
-                          onChange={() => handleRiderToggle(rider.id || rider._id || '')}
-                        />
-                        <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
-                      </label>
-                    ))}
+                  <button className="rc-button download-button" onClick={handleDownload}>
+                    Download
+                  </button>
+                </div>
+              </div>
+
+              {showRiderSelection && (
+                <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
+                  <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
+                    <h4 className="modal-title">Select Riders for Report</h4>
+
+                    <div className="modal-content">
+                      <button className="select-all-button" onClick={handleSelectAll}>
+                        {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+                      </button>
+
+                      <div className="riders-list">
+                        {riders.map(rider => (
+                          <label key={rider.id || rider._id} className="rider-checkbox-label">
+                            <input
+                              type="checkbox"
+                              className="rider-checkbox"
+                              checked={selectedRiders.includes(rider.id || rider._id || '')}
+                              onChange={() => handleRiderToggle(rider.id || rider._id || '')}
+                            />
+                            <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="modal-actions">
+                      <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
+                      <button className="confirm-button" onClick={handleGenerateReport}>Generate Report</button>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="modal-actions">
-                  <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
-                  <button className="confirm-button" onClick={handleGenerateReport}>Generate Report</button>
+              {reportError && <div className="auth-error">{reportError}</div>}
+              {reportLoading && <div className="section-note">Generating…</div>}
+              {!reportLoading && reportRows.length > 0 && (
+                <div className="report-table-wrap">
+                  <div className="report-meta">
+                    <div><strong>From Date:</strong> {fromDate}</div>
+                    <div><strong>To Date:</strong> {toDate}</div>
+                  </div>
+                  <table className="report-table">
+                    <thead>
+                      <tr>
+                        <th>Rider Name</th>
+                        <th>Total Shopify Rides</th>
+                        <th>Total Extra Rides</th>
+                        <th>Total Distance Travelled</th>
+                        <th>per km rate</th>
+                        <th>Total Commission</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reportRows.map((row, i) => (
+                        <tr key={i}>
+                          <td>{row.riderName}</td>
+                          <td>{row.totalShopifyRides}</td>
+                          <td>{row.extraRides}</td>
+                          <td>{Number(row.distanceKm).toFixed(2)}</td>
+                          <td>{Number(row.perKmRate).toFixed(2)}</td>
+                          <td>{Number(row.totalCommission).toFixed(2)} Rs.</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'performance' && (
+            <div id="tab-performance" className="reports-tab-content">
+              <h3 className="rc-section-title">Rider Performance Report</h3>
+
+              <div className="rc-toolbar report-filter-bar">
+                <div className="date-range-filters">
+                  <div className="date-filter">
+                    <label htmlFor="perfFromDate" className="date-label">From Date:</label>
+                    <input
+                      id="perfFromDate"
+                      type="date"
+                      className="date-input"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="date-filter">
+                    <label htmlFor="perfToDate" className="date-label">To Date:</label>
+                    <input
+                      id="perfToDate"
+                      type="date"
+                      className="date-input"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+                  </div>
+
+                  <button className="rc-button report-button" onClick={handleCreateReport}>
+                    Create Report
+                  </button>
+
+                  <button className="rc-button download-button" onClick={handleDownload}>
+                    Download
+                  </button>
+                </div>
+              </div>
+
+              <div className="reports-empty-state">
+                <p>Rider Performance Report - Coming Soon</p>
               </div>
             </div>
           )}
 
-          {reportError && <div className="auth-error">{reportError}</div>}
-          {reportLoading && <div className="section-note">Generating…</div>}
-          {!reportLoading && reportRows.length > 0 && (
-            <div className="report-table-wrap">
-              <div className="report-meta">
-                <div><strong>From Date:</strong> {fromDate}</div>
-                <div><strong>To Date:</strong> {toDate}</div>
+          {activeTab === 'dispatcher' && (
+            <div id="tab-dispatcher" className="reports-tab-content">
+              <h3 className="rc-section-title">Dispatcher Performance Report</h3>
+
+              <div className="rc-toolbar report-filter-bar">
+                <div className="date-range-filters">
+                  <div className="date-filter">
+                    <label htmlFor="dispFromDate" className="date-label">From Date:</label>
+                    <input
+                      id="dispFromDate"
+                      type="date"
+                      className="date-input"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="date-filter">
+                    <label htmlFor="dispToDate" className="date-label">To Date:</label>
+                    <input
+                      id="dispToDate"
+                      type="date"
+                      className="date-input"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+                  </div>
+
+                  <button className="rc-button report-button" onClick={handleCreateReport}>
+                    Create Report
+                  </button>
+
+                  <button className="rc-button download-button" onClick={handleDownload}>
+                    Download
+                  </button>
+                </div>
               </div>
-              <table className="report-table">
-                <thead>
-                  <tr>
-                    <th>Rider Name</th>
-                    <th>Total Shopify Rides</th>
-                    <th>Total Extra Rides</th>
-                    <th>Total Distance Travelled</th>
-                    <th>per km rate</th>
-                    <th>Total Commission</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportRows.map((row, i) => (
-                    <tr key={i}>
-                      <td>{row.riderName}</td>
-                      <td>{row.totalShopifyRides}</td>
-                      <td>{row.extraRides}</td>
-                      <td>{Number(row.distanceKm).toFixed(2)}</td>
-                      <td>{Number(row.perKmRate).toFixed(2)}</td>
-                      <td>{Number(row.totalCommission).toFixed(2)} Rs.</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+              <div className="reports-empty-state">
+                <p>Dispatcher Performance Report - Coming Soon</p>
+              </div>
             </div>
           )}
         </div>
