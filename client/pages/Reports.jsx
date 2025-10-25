@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 
 export default function Reports(){
-  const [metrics, setMetrics] = useState({ totalDeliveries: 0, avgDeliveryMins: 0 });
   const [deliveries, setDeliveries] = useState([]);
-  const [showTable, setShowTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
