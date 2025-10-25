@@ -16,7 +16,6 @@ export default function Reports(){
         if(!res.ok) throw new Error('Failed to load reports');
         const data = await res.json();
         if(alive){
-          setMetrics(data.metrics || { totalDeliveries: 0, avgDeliveryMins: 0 });
           setDeliveries(Array.isArray(data.deliveries) ? data.deliveries : []);
         }
       }catch(e){ if(alive) setError(e.message||'Failed to load reports'); }
