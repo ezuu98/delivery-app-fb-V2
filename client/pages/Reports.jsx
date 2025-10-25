@@ -101,13 +101,48 @@ export default function Reports(){
           totalCommission,
         };
       }));
-      setReportRows(rows.filter(Boolean));
+      const filtered = rows.filter(Boolean);
+      setReportRows(filtered);
+      return filtered;
     }catch(e){
       setReportError(e?.message || 'Failed to generate report');
+      return [];
     }finally{
       setReportLoading(false);
       setShowRiderSelection(false);
     }
+  }
+
+  function toCsvRow(arr){
+    return arr.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+  }
+
+  async function handleDownload(){
+    const rows = reportRows.length ? reportRows : (await handleGenerateReport());
+    if (!rows || !rows.length) return;
+    const header = ['#','Rider Name','Total Shopify Rides','Extra Rides','Distance travelled (km)','Per km Rate','Total Commission'];
+    const lines = [toCsvRow(header)];
+    for (const r of rows){
+      lines.push(toCsvRow([
+        r.serial,
+        r.riderName,
+        r.totalShopifyRides,
+        r.extraRides,
+        Number(r.distanceKm).toFixed(2),
+        Number(r.perKmRate).toFixed(2),
+        Number(r.totalCommission).toFixed(2),
+      ]));
+    }
+    const csv = '\uFEFF' + lines.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rider-commission-${fromDate}_to_${toDate}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -144,7 +179,7 @@ export default function Reports(){
                 Create Report
               </button>
 
-              <button className="rc-button download-button" onClick={() => console.log('Download report:', {fromDate, toDate})}>
+              <button className="rc-button download-button" onClick={handleDownload}>
                 Download
               </button>
             </div>
