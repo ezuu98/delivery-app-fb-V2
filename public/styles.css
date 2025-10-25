@@ -305,3 +305,22 @@
 .download-button{background:#10b981;color:#fff;border:0;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:500;white-space:nowrap}
 .download-button:hover{background:#059669}
 .rc-section-title{font-size:18px;font-weight:600;color:#111827;margin:0 0 16px}
+
+/* Rider Selection Modal */
+.rider-selection-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.rider-selection-modal{background:#fff;border-radius:12px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.15)}
+.modal-title{margin:0 0 16px;font-size:18px;font-weight:600;color:#111827}
+.modal-content{margin-bottom:16px}
+.select-all-button{background:#f3f4f6;border:1px solid #e5e7eb;color:#111827;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;width:100%;margin-bottom:12px;text-align:left}
+.select-all-button:hover{background:#e5e7eb}
+.riders-list{border:1px solid #e5e7eb;border-radius:8px;max-height:400px;overflow-y:auto}
+.rider-checkbox-label{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f3f4f6;cursor:pointer;transition:background .15s ease}
+.rider-checkbox-label:hover{background:#f9fafb}
+.rider-checkbox-label:last-child{border-bottom:none}
+.rider-checkbox{cursor:pointer;width:18px;height:18px;accent-color:#0070f3}
+.rider-name{color:#374151;font-size:14px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.cancel-button{background:#f3f4f6;color:#111827;border:0;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.cancel-button:hover{background:#e5e7eb}
+.confirm-button{background:#0070f3;color:#fff;border:0;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.confirm-button:hover{background:#0055cc}
