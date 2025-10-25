@@ -82,7 +82,7 @@ export default function Reports(){
         let rideCount = 0;
         try{
           const params = new URLSearchParams({ fromDate, toDate });
-          const res = await fetch(`/api/riders/${encodeURIComponent(id)}/km?${params.toString()}`, { credentials: 'include' });
+          const res = await fetch(`/api/riders/${encodeURIComponent(id)}/km-in-range?${params.toString()}`, { credentials: 'include' });
           if(res.status === 401){ window.location.href = '/auth/login'; return null; }
           const json = await res.json().catch(()=>null);
           if(res.ok && json && json.ok){
