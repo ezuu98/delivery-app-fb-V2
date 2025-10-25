@@ -19,12 +19,50 @@ export default function Reports(){
 
   const [fromDate, setFromDate] = useState(getFirstOfMonth());
   const [toDate, setToDate] = useState(getTodayDate());
+  const [riders, setRiders] = useState([]);
+  const [selectedRiders, setSelectedRiders] = useState([]);
+  const [showRiderSelection, setShowRiderSelection] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(()=>{
-    setLoading(false);
+    const fetchRiders = async () => {
+      try {
+        const res = await fetch('/api/riders', { credentials: 'include' });
+        if (res.status === 401) { window.location.href = '/auth/login'; return; }
+        if (!res.ok) throw new Error('Failed to load riders');
+        const data = await res.json();
+        const ridersList = data.data || [];
+        setRiders(ridersList);
+        setSelectedRiders(ridersList.map(r => r.id || r._id || ''));
+      } catch (e) {
+        setError(e.message || 'Failed to load riders');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRiders();
   },[]);
+
+  const handleSelectAll = () => {
+    if (selectedRiders.length === riders.length) {
+      setSelectedRiders([]);
+    } else {
+      setSelectedRiders(riders.map(r => r.id || r._id || ''));
+    }
+  };
+
+  const handleRiderToggle = (riderId) => {
+    setSelectedRiders(prev =>
+      prev.includes(riderId)
+        ? prev.filter(id => id !== riderId)
+        : [...prev, riderId]
+    );
+  };
+
+  const handleCreateReport = () => {
+    setShowRiderSelection(true);
+  };
 
   return (
     <SiteLayout>
