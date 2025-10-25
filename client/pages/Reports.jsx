@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 
 export default function Reports(){
-  const [deliveries, setDeliveries] = useState([]);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
