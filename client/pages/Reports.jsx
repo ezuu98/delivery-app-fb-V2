@@ -30,7 +30,7 @@ export default function Reports(){
         <div id="tab-overview">
           <h3 className="rc-section-title">Rider Commission Report</h3>
 
-          <div className="rc-toolbar">
+          <div className="rc-toolbar report-filter-bar">
             <div className="date-range-filters">
               <div className="date-filter">
                 <label htmlFor="fromDate" className="date-label">From Date:</label>
@@ -53,6 +53,10 @@ export default function Reports(){
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </div>
+
+              <button className="rc-button report-button" onClick={() => console.log('Generate report:', {fromDate, toDate})}>
+                Create Report
+              </button>
             </div>
           </div>
         </div>
