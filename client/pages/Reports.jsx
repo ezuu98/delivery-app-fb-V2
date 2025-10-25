@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import { readFareSettings, DEFAULT_FARE_SETTINGS } from '../utils/fareSettings.js';
 
 export default function Reports(){
   const getFirstOfMonth = () => {
@@ -24,6 +25,9 @@ export default function Reports(){
   const [showRiderSelection, setShowRiderSelection] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reportRows, setReportRows] = useState([]);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState('');
 
   useEffect(()=>{
     const fetchRiders = async () => {
@@ -63,6 +67,48 @@ export default function Reports(){
   const handleCreateReport = () => {
     setShowRiderSelection(true);
   };
+
+  async function handleGenerateReport(){
+    setReportError('');
+    setReportLoading(true);
+    try{
+      const settings = readFareSettings();
+      const baseFare = Number(settings?.baseFare) || DEFAULT_FARE_SETTINGS.baseFare;
+      const perKm = Number(settings?.farePerKm) || DEFAULT_FARE_SETTINGS.farePerKm;
+      const sel = (selectedRiders.length ? riders.filter(r=> selectedRiders.includes(r.id || r._id || '')) : riders);
+      const rows = await Promise.all(sel.map(async (r, idx) => {
+        const id = r.id || r._id || '';
+        let totalKm = 0;
+        let rideCount = 0;
+        try{
+          const params = new URLSearchParams({ fromDate, toDate });
+          const res = await fetch(`/api/riders/${encodeURIComponent(id)}/km?${params.toString()}`, { credentials: 'include' });
+          if(res.status === 401){ window.location.href = '/auth/login'; return null; }
+          const json = await res.json().catch(()=>null);
+          if(res.ok && json && json.ok){
+            totalKm = Number(json.totalKm) || 0;
+            rideCount = Number(json.rideCount) || 0;
+          }
+        }catch(_){ /* noop */ }
+        const totalCommission = (totalKm * perKm) + (rideCount * baseFare);
+        return {
+          serial: idx + 1,
+          riderName: r.name || r.firstName || 'Unknown',
+          totalShopifyRides: rideCount,
+          extraRides: 0,
+          distanceKm: totalKm,
+          perKmRate: perKm,
+          totalCommission,
+        };
+      }));
+      setReportRows(rows.filter(Boolean));
+    }catch(e){
+      setReportError(e?.message || 'Failed to generate report');
+    }finally{
+      setReportLoading(false);
+      setShowRiderSelection(false);
+    }
+  }
 
   return (
     <SiteLayout>
@@ -131,9 +177,42 @@ export default function Reports(){
 
                 <div className="modal-actions">
                   <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
-                  <button className="confirm-button" onClick={() => { console.log('Generate report:', {fromDate, toDate, selectedRiders}); setShowRiderSelection(false); }}>Generate Report</button>
+                  <button className="confirm-button" onClick={handleGenerateReport}>Generate Report</button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {reportError && <div className="auth-error">{reportError}</div>}
+          {reportLoading && <div className="section-note">Generating…</div>}
+          {!reportLoading && reportRows.length > 0 && (
+            <div className="report-table-wrap">
+              <table className="report-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Rider Name</th>
+                    <th>Total Shopify Rides</th>
+                    <th>Extra Rides</th>
+                    <th>Distance travelled</th>
+                    <th>Per km Rate</th>
+                    <th>Total Commission</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportRows.map((row, i) => (
+                    <tr key={i}>
+                      <td>{row.serial}</td>
+                      <td>{row.riderName}</td>
+                      <td>{row.totalShopifyRides}</td>
+                      <td>{row.extraRides}</td>
+                      <td>{Number(row.distanceKm).toFixed(2)} km</td>
+                      <td>{Number(row.perKmRate).toFixed(2)}</td>
+                      <td>{Number(row.totalCommission).toFixed(2)} Rs.</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
