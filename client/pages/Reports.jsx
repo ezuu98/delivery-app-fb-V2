@@ -57,6 +57,10 @@ export default function Reports(){
               <button className="rc-button report-button" onClick={() => console.log('Generate report:', {fromDate, toDate})}>
                 Create Report
               </button>
+
+              <button className="rc-button download-button" onClick={() => console.log('Download report:', {fromDate, toDate})}>
+                Download
+              </button>
             </div>
           </div>
         </div>
