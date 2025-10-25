@@ -20410,7 +20410,7 @@ function Q_() {
     const Q = ie.length ? ie : await X();
     if (!Q || !Q.length) return;
     const k = [];
-    k.push(W(["Rider Commission Report"])), k.push(""), k.push(W(["To Date:", b])), k.push(W(["From Date:", p])), k.push("");
+    k.push(W(["Rider Commission Report"])), k.push(""), k.push(W(["From Date:", p])), k.push(W(["To Date:", b])), k.push("");
     const ue = ["Rider Name", "Total Shopify Rides", "Total Extra Rides", "Total Distance Travelled", "per km rate", "Total Commission"];
     k.push(W(ue));
     for (const Re of Q)
@@ -20597,16 +20597,26 @@ function Q_() {
     !K && ie.length > 0 && /* @__PURE__ */ s.jsxDEV("div", { className: "report-table-wrap", children: [
       /* @__PURE__ */ s.jsxDEV("div", { className: "report-meta", children: [
         /* @__PURE__ */ s.jsxDEV("div", { children: [
-          "To Date: ",
-          b
+          /* @__PURE__ */ s.jsxDEV("strong", { children: "From Date:" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 234,
+            columnNumber: 22
+          }, this),
+          " ",
+          p
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
           lineNumber: 234,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ s.jsxDEV("div", { children: [
-          "From Date: ",
-          p
+          /* @__PURE__ */ s.jsxDEV("strong", { children: "To Date:" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 235,
+            columnNumber: 22
+          }, this),
+          " ",
+          b
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
           lineNumber: 235,
