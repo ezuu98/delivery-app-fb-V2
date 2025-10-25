@@ -125,8 +125,8 @@ export default function Reports(){
     lines.push(toCsvRow(['Rider Commission Report']));
     lines.push('');
     // Date rows
-    lines.push(toCsvRow(['To Date:', toDate]));
     lines.push(toCsvRow(['From Date:', fromDate]));
+    lines.push(toCsvRow(['To Date:', toDate]));
     lines.push('');
     // Header and data
     const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
