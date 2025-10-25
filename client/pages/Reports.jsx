@@ -32,8 +32,7 @@ export default function Reports(){
         </header>
 
         <div id="tab-overview">
-          {true && (
-            <div className="rc-table-wrapper">
+          <div className="rc-table-wrapper">
               <table className="rc-table">
                 <thead>
                   <tr>
