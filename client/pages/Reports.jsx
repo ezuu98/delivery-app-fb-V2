@@ -8,21 +8,7 @@ export default function Reports(){
   const [error, setError] = useState('');
 
   useEffect(()=>{
-    let alive = true;
-    (async ()=>{
-      setLoading(true); setError('');
-      try{
-        const res = await fetch('/api/reports', { credentials:'include' });
-        if(res.status === 401){ window.location.href = '/auth/login'; return; }
-        if(!res.ok) throw new Error('Failed to load reports');
-        const data = await res.json();
-        if(alive){
-          setDeliveries(Array.isArray(data.deliveries) ? data.deliveries : []);
-        }
-      }catch(e){ if(alive) setError(e.message||'Failed to load reports'); }
-      finally{ if(alive) setLoading(false); }
-    })();
-    return ()=>{ alive = false; };
+    setLoading(false);
   },[]);
 
   return (
