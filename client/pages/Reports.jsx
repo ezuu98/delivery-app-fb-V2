@@ -19,41 +19,33 @@ export default function Reports(){
         </header>
 
         <div id="tab-overview">
-          <div className="rc-table-wrapper">
-              <table className="rc-table">
-                <thead>
-                  <tr>
-                    <th className="col-name">Order Number</th>
-                    <th className="col-km">Rider Assigned</th>
-                    <th className="col-perf">Expected Time</th>
-                    <th className="col-perf">Actual Delivery Time</th>
-                    <th className="col-perf">Distance Traveled</th>
-                    <th className="col-comm">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!loading && !error && deliveries.map((d,i)=> (
-                    <tr key={d.orderId||i}>
-                      <td className="rc-col-name">#{d.orderNumber || d.orderId}</td>
-                      <td className="rc-col-km">{d.riderId || '-'}</td>
-                      <td className="rc-col-perf">{d.expectedMinutes!=null ? `${d.expectedMinutes} mins` : '-'}</td>
-                      <td className="rc-col-perf">{d.durationMins!=null ? `${d.durationMins} mins` : '-'}</td>
-                      <td className="rc-col-perf">-</td>
-                      <td className="rc-col-commission">{d.status || 'new'}</td>
-                    </tr>
-                  ))}
-                  {!loading && !error && deliveries.length === 0 && (
-                    <tr><td colSpan={6} className="section-note">No data.</td></tr>
-                  )}
-                  {loading && (
-                    <tr><td colSpan={6} className="section-note">Loading…</td></tr>
-                  )}
-                  {error && (
-                    <tr><td colSpan={6} className="auth-error">{error}</td></tr>
-                  )}
-                </tbody>
-              </table>
+          <h3 className="rc-section-title">Rider Commission Report</h3>
+
+          <div className="rc-toolbar">
+            <div className="date-range-filters">
+              <div className="date-filter">
+                <label htmlFor="fromDate" className="date-label">From Date:</label>
+                <input
+                  id="fromDate"
+                  type="date"
+                  className="date-input"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              <div className="date-filter">
+                <label htmlFor="toDate" className="date-label">To Date:</label>
+                <input
+                  id="toDate"
+                  type="date"
+                  className="date-input"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
             </div>
+          </div>
         </div>
       </section>
     </SiteLayout>
