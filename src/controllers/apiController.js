@@ -599,39 +599,56 @@ module.exports = {
       try{
         const db = getFirestore();
         if (db){
-          // Get rider orders from riders collection
-          const riderSnap = await db.collection('riders').doc(String(riderId)).get();
-          if (riderSnap.exists){
-            const riderData = riderSnap.data() || {};
-            const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
-            debug.riderOrderCount = orderIds.length;
+          const checkedIds = new Set();
+          const toCheckIds = new Set();
 
-            // For each order, get the order doc and check assignedAt
-            for (const orderId of orderIds){
-              debug.ordersChecked += 1;
-              try{
-                const orderSnap = await db.collection('orders').doc(String(orderId)).get();
-                if (orderSnap.exists){
-                  const orderData = orderSnap.data() || {};
-                  const assignedAt = toDateOrNull(orderData.assignedAt);
-
-                  if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
-                    debug.ordersMatched += 1;
-                    rideCount += 1;
-                    const distanceRaw = orderData.totalDistance || orderData.distance || orderData.distance_km || orderData.distanceKm || 0;
-                    const km = parseKm(distanceRaw);
-                    if (km > 0) totalKm += km;
-
-                    // Check if order was on time
-                    if (orderData.onTime === true) {
-                      onTimeCount += 1;
-                    }
-                  }
-                }
-              }catch(e){ debug.errors.push(String(e.message)); }
+          // Collect from riders.orders
+          try{
+            const riderSnap = await db.collection('riders').doc(String(riderId)).get();
+            if (riderSnap.exists){
+              const riderData = riderSnap.data() || {};
+              const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
+              debug.riderOrderCount = orderIds.length;
+              for (const oid of orderIds){ if (oid !== undefined && oid !== null) toCheckIds.add(String(oid)); }
+            } else {
+              debug.errors.push('Rider document not found');
             }
-          } else {
-            debug.errors.push('Rider document not found');
+          }catch(e){ debug.errors.push('riderDoc:' + String(e.message)); }
+
+          // Also collect by querying orders where riderId == riderId
+          try{
+            const qSnap = await db.collection('orders').where('riderId','==', String(riderId)).get();
+            qSnap.forEach(doc => {
+              const id = String(doc.id);
+              toCheckIds.add(id);
+            });
+            debug.queryByRiderId = (qSnap && typeof qSnap.size === 'number') ? qSnap.size : undefined;
+          }catch(e){ debug.errors.push('queryRiderId:' + String(e.message)); }
+
+          // Iterate unique IDs; also process already-fetched docs from query to avoid refetch
+          const preloaded = new Map();
+          try{
+            const qSnap = await db.collection('orders').where('riderId','==', String(riderId)).get();
+            qSnap.forEach(doc => { preloaded.set(String(doc.id), doc.data() || {}); });
+          }catch(_){ }
+
+          for (const orderId of toCheckIds){
+            debug.ordersChecked += 1;
+            try{
+              const data = preloaded.has(String(orderId)) ? preloaded.get(String(orderId)) : (await db.collection('orders').doc(String(orderId)).get()).data();
+              if (data){
+                const assignedAt = toDateOrNull(data.assignedAt);
+                if (assignedAt && assignedAt >= from && assignedAt <= toEnd){
+                  if (!checkedIds.has(String(orderId))) debug.ordersMatched += 1;
+                  checkedIds.add(String(orderId));
+                  rideCount += 1;
+                  const distanceRaw = data.totalDistance || data.distance || data.distance_km || data.distanceKm || 0;
+                  const km = parseKm(distanceRaw);
+                  if (km > 0) totalKm += km;
+                  if (data.onTime === true) onTimeCount += 1;
+                }
+              }
+            }catch(e){ debug.errors.push('order:' + String(orderId) + ':' + String(e.message)); }
           }
         }
       }catch(e){
