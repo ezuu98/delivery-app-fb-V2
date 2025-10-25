@@ -2,101 +2,138 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 
 export default function Reports(){
-  const [metrics, setMetrics] = useState({ totalDeliveries: 0, avgDeliveryMins: 0 });
-  const [deliveries, setDeliveries] = useState([]);
-  const [showTable, setShowTable] = useState(false);
+  const getFirstOfMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
+  };
+
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const [fromDate, setFromDate] = useState(getFirstOfMonth());
+  const [toDate, setToDate] = useState(getTodayDate());
+  const [riders, setRiders] = useState([]);
+  const [selectedRiders, setSelectedRiders] = useState([]);
+  const [showRiderSelection, setShowRiderSelection] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(()=>{
-    let alive = true;
-    (async ()=>{
-      setLoading(true); setError('');
-      try{
-        const res = await fetch('/api/reports', { credentials:'include' });
-        if(res.status === 401){ window.location.href = '/auth/login'; return; }
-        if(!res.ok) throw new Error('Failed to load reports');
+    const fetchRiders = async () => {
+      try {
+        const res = await fetch('/api/riders', { credentials: 'include' });
+        if (res.status === 401) { window.location.href = '/auth/login'; return; }
+        if (!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        if(alive){
-          setMetrics(data.metrics || { totalDeliveries: 0, avgDeliveryMins: 0 });
-          setDeliveries(Array.isArray(data.deliveries) ? data.deliveries : []);
-        }
-      }catch(e){ if(alive) setError(e.message||'Failed to load reports'); }
-      finally{ if(alive) setLoading(false); }
-    })();
-    return ()=>{ alive = false; };
+        const ridersList = data.data || [];
+        setRiders(ridersList);
+        setSelectedRiders(ridersList.map(r => r.id || r._id || ''));
+      } catch (e) {
+        setError(e.message || 'Failed to load riders');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRiders();
   },[]);
+
+  const handleSelectAll = () => {
+    if (selectedRiders.length === riders.length) {
+      setSelectedRiders([]);
+    } else {
+      setSelectedRiders(riders.map(r => r.id || r._id || ''));
+    }
+  };
+
+  const handleRiderToggle = (riderId) => {
+    setSelectedRiders(prev =>
+      prev.includes(riderId)
+        ? prev.filter(id => id !== riderId)
+        : [...prev, riderId]
+    );
+  };
+
+  const handleCreateReport = () => {
+    setShowRiderSelection(true);
+  };
 
   return (
     <SiteLayout>
       <section className="rider-commissions">
-        <header className="rc-header">
-          <h2 className="rc-title">Reporting & Analytics</h2>
-          <p className="rc-subtitle">Gain insights into your delivery operations with detailed reports and visualizations.</p>
-        </header>
-
-        <div className="rc-toolbar">
-          <div className="rc-filters">
-            <button className="rc-select rc-chip" data-tab="overview">Overview</button>
-            <button className="rc-select rc-chip" data-tab="performance">Performance</button>
-            <button className="rc-select rc-chip" data-tab="custom">Custom Reports</button>
-          </div>
-        </div>
-
         <div id="tab-overview">
-          <div className="rc-table-wrapper reports-overview">
-            <div className="rc-select rc-chip block-chip">
-              <div className="section-title reports-stat-title">Total Deliveries</div>
-              <div className="reports-stat-value">{metrics.totalDeliveries}</div>
-            </div>
-            <div className="rc-select rc-chip block-chip">
-              <div className="section-title reports-stat-title">Average Delivery Time</div>
-              <div className="reports-stat-value">{metrics.avgDeliveryMins} mins</div>
+          <h3 className="rc-section-title">Rider Commission Report</h3>
+
+          <div className="rc-toolbar report-filter-bar">
+            <div className="date-range-filters">
+              <div className="date-filter">
+                <label htmlFor="fromDate" className="date-label">From Date:</label>
+                <input
+                  id="fromDate"
+                  type="date"
+                  className="date-input"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              <div className="date-filter">
+                <label htmlFor="toDate" className="date-label">To Date:</label>
+                <input
+                  id="toDate"
+                  type="date"
+                  className="date-input"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+
+              <button className="rc-button report-button" onClick={handleCreateReport}>
+                Create Report
+              </button>
+
+              <button className="rc-button download-button" onClick={() => console.log('Download report:', {fromDate, toDate})}>
+                Download
+              </button>
             </div>
           </div>
 
-          <div className="rc-toolbar reports-toolbar-center">
-            <div className="section-title reports-stat-title">Delivery Data</div>
-            <label className="rc-select rc-chip toggle-data-label">
-              <input type="checkbox" checked={showTable} onChange={(e)=>setShowTable(e.target.checked)} /> Show Delivery Data Table
-            </label>
-          </div>
+          {showRiderSelection && (
+            <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
+              <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
+                <h4 className="modal-title">Select Riders for Report</h4>
 
-          {showTable && (
-            <div className="rc-table-wrapper">
-              <table className="rc-table">
-                <thead>
-                  <tr>
-                    <th className="col-name">Order Number</th>
-                    <th className="col-km">Rider Assigned</th>
-                    <th className="col-perf">Expected Time</th>
-                    <th className="col-perf">Actual Delivery Time</th>
-                    <th className="col-perf">Distance Traveled</th>
-                    <th className="col-comm">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!loading && !error && deliveries.map((d,i)=> (
-                    <tr key={d.orderId||i}>
-                      <td className="rc-col-name">#{d.orderNumber || d.orderId}</td>
-                      <td className="rc-col-km">{d.riderId || '-'}</td>
-                      <td className="rc-col-perf">{d.expectedMinutes!=null ? `${d.expectedMinutes} mins` : '-'}</td>
-                      <td className="rc-col-perf">{d.durationMins!=null ? `${d.durationMins} mins` : '-'}</td>
-                      <td className="rc-col-perf">-</td>
-                      <td className="rc-col-commission">{d.status || 'new'}</td>
-                    </tr>
-                  ))}
-                  {!loading && !error && deliveries.length === 0 && (
-                    <tr><td colSpan={6} className="section-note">No data.</td></tr>
-                  )}
-                  {loading && (
-                    <tr><td colSpan={6} className="section-note">Loading…</td></tr>
-                  )}
-                  {error && (
-                    <tr><td colSpan={6} className="auth-error">{error}</td></tr>
-                  )}
-                </tbody>
-              </table>
+                <div className="modal-content">
+                  <button className="select-all-button" onClick={handleSelectAll}>
+                    {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+                  </button>
+
+                  <div className="riders-list">
+                    {riders.map(rider => (
+                      <label key={rider.id || rider._id} className="rider-checkbox-label">
+                        <input
+                          type="checkbox"
+                          className="rider-checkbox"
+                          checked={selectedRiders.includes(rider.id || rider._id || '')}
+                          onChange={() => handleRiderToggle(rider.id || rider._id || '')}
+                        />
+                        <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
+                  <button className="confirm-button" onClick={() => { console.log('Generate report:', {fromDate, toDate, selectedRiders}); setShowRiderSelection(false); }}>Generate Report</button>
+                </div>
+              </div>
             </div>
           )}
         </div>

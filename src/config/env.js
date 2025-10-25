@@ -32,7 +32,7 @@ function loadEnv() {
       admin: {
         projectId: reqStr('FIREBASE_PROJECT_ID'),
         clientEmail: reqStr('FIREBASE_CLIENT_EMAIL'),
-        privateKey: reqStr('FIREBASE_PRIVATE_KEY'),
+        privateKey: reqStr('FIREBASE_PRIVATE_KEY_BASE64'),
       },
     },
     redis: {
