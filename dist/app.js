@@ -31,14 +31,14 @@ bd.exports;
    */
   (function() {
     typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ < "u" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart == "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
-    var p = "18.3.1", g = Symbol.for("react.element"), b = Symbol.for("react.portal"), S = Symbol.for("react.fragment"), d = Symbol.for("react.strict_mode"), w = Symbol.for("react.profiler"), R = Symbol.for("react.provider"), j = Symbol.for("react.context"), U = Symbol.for("react.forward_ref"), x = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), L = Symbol.for("react.memo"), te = Symbol.for("react.lazy"), pe = Symbol.for("react.offscreen"), ie = Symbol.iterator, ce = "@@iterator";
-    function W(m) {
+    var p = "18.3.1", g = Symbol.for("react.element"), b = Symbol.for("react.portal"), S = Symbol.for("react.fragment"), d = Symbol.for("react.strict_mode"), w = Symbol.for("react.profiler"), R = Symbol.for("react.provider"), j = Symbol.for("react.context"), F = Symbol.for("react.forward_ref"), x = Symbol.for("react.suspense"), T = Symbol.for("react.suspense_list"), L = Symbol.for("react.memo"), te = Symbol.for("react.lazy"), pe = Symbol.for("react.offscreen"), ie = Symbol.iterator, ce = "@@iterator";
+    function K(m) {
       if (m === null || typeof m != "object")
         return null;
       var N = ie && m[ie] || m[ce];
       return typeof N == "function" ? N : null;
     }
-    var z = {
+    var P = {
       /**
        * @internal
        * @type {ReactComponent}
@@ -51,30 +51,30 @@ bd.exports;
       // Used to reproduce behavior of `batchedUpdates` in legacy mode.
       isBatchingLegacy: !1,
       didScheduleLegacyUpdate: !1
-    }, F = {
+    }, z = {
       /**
        * @internal
        * @type {ReactComponent}
        */
       current: null
-    }, k = {}, le = null;
+    }, U = {}, le = null;
     function X(m) {
       le = m;
     }
-    k.setExtraStackFrame = function(m) {
+    U.setExtraStackFrame = function(m) {
       le = m;
-    }, k.getCurrentStack = null, k.getStackAddendum = function() {
+    }, U.getCurrentStack = null, U.getStackAddendum = function() {
       var m = "";
       le && (m += le);
-      var N = k.getCurrentStack;
+      var N = U.getCurrentStack;
       return N && (m += N() || ""), m;
     };
-    var K = !1, oe = !1, Q = !1, P = !1, ue = !1, de = {
-      ReactCurrentDispatcher: z,
+    var W = !1, oe = !1, Q = !1, k = !1, ue = !1, de = {
+      ReactCurrentDispatcher: P,
       ReactCurrentBatchConfig: I,
-      ReactCurrentOwner: F
+      ReactCurrentOwner: z
     };
-    de.ReactDebugCurrentFrame = k, de.ReactCurrentActQueue = ee;
+    de.ReactDebugCurrentFrame = U, de.ReactCurrentActQueue = ee;
     function Y(m) {
       {
         for (var N = arguments.length, V = new Array(N > 1 ? N - 1 : 0), H = 1; H < N; H++)
@@ -271,7 +271,7 @@ bd.exports;
           case R:
             var V = m;
             return Ln(V._context) + ".Provider";
-          case U:
+          case F:
             return Pt(m, m.render, "ForwardRef");
           case L:
             var H = m.displayName || null;
@@ -329,8 +329,8 @@ bd.exports;
       });
     }
     function fe(m) {
-      if (typeof m.ref == "string" && F.current && m.__self && F.current.stateNode !== m.__self) {
-        var N = Dn(F.current.type);
+      if (typeof m.ref == "string" && z.current && m.__self && z.current.stateNode !== m.__self) {
+        var N = Dn(z.current.type);
         Ht[N] || (q('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', N, m.ref), Ht[N] = !0);
       }
     }
@@ -387,7 +387,7 @@ bd.exports;
         var Tt = typeof m == "function" ? m.displayName || m.name || "Unknown" : m;
         _e && xa(se, Tt), Ee && ua(se, Tt);
       }
-      return De(m, _e, Ee, Ue, Qe, F.current, se);
+      return De(m, _e, Ee, Ue, Qe, z.current, se);
     }
     function ct(m, N) {
       var V = De(m.type, N, m.ref, m._self, m._source, m._owner, m.props);
@@ -398,7 +398,7 @@ bd.exports;
         throw new Error("React.cloneElement(...): The argument must be a React element, but you passed " + m + ".");
       var H, se = Ve({}, m.props), _e = m.key, Ee = m.ref, Ue = m._self, Qe = m._source, dt = m._owner;
       if (N != null) {
-        pn(N) && (Ee = N.ref, dt = F.current), hn(N) && (zt(N.key), _e = "" + N.key);
+        pn(N) && (Ee = N.ref, dt = z.current), hn(N) && (zt(N.key), _e = "" + N.key);
         var yt;
         m.type && m.type.defaultProps && (yt = m.type.defaultProps);
         for (H in N)
@@ -478,7 +478,7 @@ bd.exports;
         for (var xi = 0; xi < m.length; xi++)
           Nt = m[xi], Ye = $t + Sa(Nt, xi), Tt += ca(Nt, N, V, Ye, se);
       else {
-        var xo = W(m);
+        var xo = K(m);
         if (typeof xo == "function") {
           var cr = m;
           xo === cr.entries && (gt || Y("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), gt = !0);
@@ -675,7 +675,7 @@ Your code should look like:
     function ne(m) {
       m != null && m.$$typeof === L ? q("forwardRef requires a render function but received a `memo` component. Instead of forwardRef(memo(...)), use memo(forwardRef(...)).") : typeof m != "function" ? q("forwardRef requires a render function but was given %s.", m === null ? "null" : typeof m) : m.length !== 0 && m.length !== 2 && q("forwardRef render functions accept exactly two parameters: props and ref. %s", m.length === 1 ? "Did you forget to use the ref parameter?" : "Any additional parameter will be undefined."), m != null && (m.defaultProps != null || m.propTypes != null) && q("forwardRef render functions do not support propTypes or defaultProps. Did you accidentally pass a React component?");
       var N = {
-        $$typeof: U,
+        $$typeof: F,
         render: m
       };
       {
@@ -696,7 +696,7 @@ Your code should look like:
     var he;
     he = Symbol.for("react.module.reference");
     function Ce(m) {
-      return !!(typeof m == "string" || typeof m == "function" || m === S || m === w || ue || m === d || m === x || m === T || P || m === pe || K || oe || Q || typeof m == "object" && m !== null && (m.$$typeof === te || m.$$typeof === L || m.$$typeof === R || m.$$typeof === j || m.$$typeof === U || // This needs to include all possible module reference object
+      return !!(typeof m == "string" || typeof m == "function" || m === S || m === w || ue || m === d || m === x || m === T || k || m === pe || W || oe || Q || typeof m == "object" && m !== null && (m.$$typeof === te || m.$$typeof === L || m.$$typeof === R || m.$$typeof === j || m.$$typeof === F || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
@@ -725,7 +725,7 @@ Your code should look like:
       return V;
     }
     function Ae() {
-      var m = z.current;
+      var m = P.current;
       return m === null && q(`Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
 1. You might have mismatching versions of React and the renderer (such as React DOM)
 2. You might be breaking the Rules of Hooks
@@ -972,7 +972,7 @@ See https://reactjs.org/link/invalid-hook-call for tips about how to debug and f
       }
       if (typeof m == "object")
         switch (m.$$typeof) {
-          case U:
+          case F:
             return po(m.render);
           case L:
             return bi(m.type, N, V);
@@ -1023,8 +1023,8 @@ See https://reactjs.org/link/invalid-hook-call for tips about how to debug and f
     var ze;
     ze = !1;
     function vo() {
-      if (F.current) {
-        var m = Dn(F.current.type);
+      if (z.current) {
+        var m = Dn(z.current.type);
         if (m)
           return `
 
@@ -1062,7 +1062,7 @@ Check the top-level render call using <` + V + ">.");
         if (!kr[V]) {
           kr[V] = !0;
           var H = "";
-          m && m._owner && m._owner !== F.current && (H = " It was passed a child from " + Dn(m._owner.type) + "."), sr(m), q('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', V, H), sr(null);
+          m && m._owner && m._owner !== z.current && (H = " It was passed a child from " + Dn(m._owner.type) + "."), sr(m), q('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', V, H), sr(null);
         }
       }
     }
@@ -1076,7 +1076,7 @@ Check the top-level render call using <` + V + ">.");
         else if (_t(m))
           m._store && (m._store.validated = !0);
         else if (m) {
-          var se = W(m);
+          var se = K(m);
           if (typeof se == "function" && se !== m.entries)
             for (var _e = se.call(m), Ee; !(Ee = _e.next()).done; )
               _t(Ee.value) && sn(Ee.value, N);
@@ -1091,7 +1091,7 @@ Check the top-level render call using <` + V + ">.");
         var V;
         if (typeof N == "function")
           V = N.propTypes;
-        else if (typeof N == "object" && (N.$$typeof === U || // Note: Memo only checks outer props here.
+        else if (typeof N == "object" && (N.$$typeof === F || // Note: Memo only checks outer props here.
         // Inner props are checked in the reconciler.
         N.$$typeof === L))
           V = N.propTypes;
@@ -1301,7 +1301,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
  * LICENSE file in the root directory of this source tree.
  */
 (function() {
-  var o = y, f = Symbol.for("react.element"), p = Symbol.for("react.portal"), g = Symbol.for("react.fragment"), b = Symbol.for("react.strict_mode"), S = Symbol.for("react.profiler"), d = Symbol.for("react.provider"), w = Symbol.for("react.context"), R = Symbol.for("react.forward_ref"), j = Symbol.for("react.suspense"), U = Symbol.for("react.suspense_list"), x = Symbol.for("react.memo"), T = Symbol.for("react.lazy"), L = Symbol.for("react.offscreen"), te = Symbol.iterator, pe = "@@iterator";
+  var o = y, f = Symbol.for("react.element"), p = Symbol.for("react.portal"), g = Symbol.for("react.fragment"), b = Symbol.for("react.strict_mode"), S = Symbol.for("react.profiler"), d = Symbol.for("react.provider"), w = Symbol.for("react.context"), R = Symbol.for("react.forward_ref"), j = Symbol.for("react.suspense"), F = Symbol.for("react.suspense_list"), x = Symbol.for("react.memo"), T = Symbol.for("react.lazy"), L = Symbol.for("react.offscreen"), te = Symbol.iterator, pe = "@@iterator";
   function ie(E) {
     if (E === null || typeof E != "object")
       return null;
@@ -1309,14 +1309,14 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
     return typeof ne == "function" ? ne : null;
   }
   var ce = o.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-  function W(E) {
+  function K(E) {
     {
       for (var ne = arguments.length, he = new Array(ne > 1 ? ne - 1 : 0), Ce = 1; Ce < ne; Ce++)
         he[Ce - 1] = arguments[Ce];
-      z("error", E, he);
+      P("error", E, he);
     }
   }
-  function z(E, ne, he) {
+  function P(E, ne, he) {
     {
       var Ce = ce.ReactDebugCurrentFrame, We = Ce.getStackAddendum();
       We !== "" && (ne += "%s", he = he.concat([We]));
@@ -1326,10 +1326,10 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
       Ae.unshift("Warning: " + ne), Function.prototype.apply.call(console[E], console, Ae);
     }
   }
-  var I = !1, ee = !1, F = !1, k = !1, le = !1, X;
+  var I = !1, ee = !1, z = !1, U = !1, le = !1, X;
   X = Symbol.for("react.module.reference");
-  function K(E) {
-    return !!(typeof E == "string" || typeof E == "function" || E === g || E === S || le || E === b || E === j || E === U || k || E === L || I || ee || F || typeof E == "object" && E !== null && (E.$$typeof === T || E.$$typeof === x || E.$$typeof === d || E.$$typeof === w || E.$$typeof === R || // This needs to include all possible module reference object
+  function W(E) {
+    return !!(typeof E == "string" || typeof E == "function" || E === g || E === S || le || E === b || E === j || E === F || U || E === L || I || ee || z || typeof E == "object" && E !== null && (E.$$typeof === T || E.$$typeof === x || E.$$typeof === d || E.$$typeof === w || E.$$typeof === R || // This needs to include all possible module reference object
     // types supported by any Flight configuration anywhere since
     // we don't know which Flight build this will end up being used
     // with.
@@ -1345,10 +1345,10 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
   function Q(E) {
     return E.displayName || "Context";
   }
-  function P(E) {
+  function k(E) {
     if (E == null)
       return null;
-    if (typeof E.tag == "number" && W("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof E == "function")
+    if (typeof E.tag == "number" && K("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof E == "function")
       return E.displayName || E.name || null;
     if (typeof E == "string")
       return E;
@@ -1363,7 +1363,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
         return "StrictMode";
       case j:
         return "Suspense";
-      case U:
+      case F:
         return "SuspenseList";
     }
     if (typeof E == "object")
@@ -1378,11 +1378,11 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
           return oe(E, E.render, "ForwardRef");
         case x:
           var Ce = E.displayName || null;
-          return Ce !== null ? Ce : P(E.type) || "Memo";
+          return Ce !== null ? Ce : k(E.type) || "Memo";
         case T: {
           var We = E, Ae = We._payload, He = We._init;
           try {
-            return P(He(Ae));
+            return k(He(Ae));
           } catch {
             return null;
           }
@@ -1449,7 +1449,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
           })
         });
       }
-      de < 0 && W("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+      de < 0 && K("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
     }
   }
   var Et = ce.ReactCurrentDispatcher, Vt;
@@ -1559,7 +1559,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
     switch (E) {
       case j:
         return An("Suspense");
-      case U:
+      case F:
         return An("SuspenseList");
     }
     if (typeof E == "object")
@@ -1601,7 +1601,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
           } catch (Rt) {
             Te = Rt;
           }
-          Te && !(Te instanceof Error) && (Ln(We), W("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", Ce || "React class", he, He, typeof Te), Ln(null)), Te instanceof Error && !(Te.message in zt) && (zt[Te.message] = !0, Ln(We), W("Failed %s type: %s", he, Te.message), Ln(null));
+          Te && !(Te instanceof Error) && (Ln(We), K("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", Ce || "React class", he, He, typeof Te), Ln(null)), Te instanceof Error && !(Te.message in zt) && (zt[Te.message] = !0, Ln(We), K("Failed %s type: %s", he, Te.message), Ln(null));
         }
     }
   }
@@ -1627,7 +1627,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
   }
   function pn(E) {
     if (sa(E))
-      return W("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", mn(E)), Ht(E);
+      return K("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", mn(E)), Ht(E);
   }
   var hn = ce.ReactCurrentOwner, xa = {
     key: !0,
@@ -1654,14 +1654,14 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
   }
   function St(E, ne) {
     if (typeof E.ref == "string" && hn.current && ne && hn.current.stateNode !== ne) {
-      var he = P(hn.current.type);
-      De[he] || (W('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', P(hn.current.type), E.ref), De[he] = !0);
+      var he = k(hn.current.type);
+      De[he] || (K('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', k(hn.current.type), E.ref), De[he] = !0);
     }
   }
   function _t(E, ne) {
     {
       var he = function() {
-        ua || (ua = !0, W("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", ne));
+        ua || (ua = !0, K("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", ne));
       };
       he.isReactWarning = !0, Object.defineProperty(E, "key", {
         get: he,
@@ -1672,7 +1672,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
   function Ot(E, ne) {
     {
       var he = function() {
-        fe || (fe = !0, W("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", ne));
+        fe || (fe = !0, K("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", ne));
       };
       he.isReactWarning = !0, Object.defineProperty(E, "ref", {
         get: he,
@@ -1743,7 +1743,7 @@ const Nx = /* @__PURE__ */ rw(y), lw = /* @__PURE__ */ aw({
   function or() {
     {
       if (gt.current) {
-        var E = P(gt.current.type);
+        var E = k(gt.current.type);
         if (E)
           return `
 
@@ -1786,7 +1786,7 @@ Check the top-level render call using <` + he + ">.");
         return;
       di[he] = !0;
       var Ce = "";
-      E && E._owner && E._owner !== gt.current && (Ce = " It was passed a child from " + P(E._owner.type) + "."), Ea(E), W('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', he, Ce), Ea(null);
+      E && E._owner && E._owner !== gt.current && (Ce = " It was passed a child from " + k(E._owner.type) + "."), Ea(E), K('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', he, Ce), Ea(null);
     }
   }
   function fi(E, ne) {
@@ -1823,14 +1823,14 @@ Check the top-level render call using <` + he + ">.");
       else
         return;
       if (he) {
-        var Ce = P(ne);
+        var Ce = k(ne);
         Dn(he, E.props, "prop", Ce, E);
       } else if (ne.PropTypes !== void 0 && !Sa) {
         Sa = !0;
-        var We = P(ne);
-        W("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", We || "Unknown");
+        var We = k(ne);
+        K("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", We || "Unknown");
       }
-      typeof ne.getDefaultProps == "function" && !ne.getDefaultProps.isReactClassApproved && W("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
+      typeof ne.getDefaultProps == "function" && !ne.getDefaultProps.isReactClassApproved && K("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
     }
   }
   function da(E) {
@@ -1838,24 +1838,24 @@ Check the top-level render call using <` + he + ">.");
       for (var ne = Object.keys(E.props), he = 0; he < ne.length; he++) {
         var Ce = ne[he];
         if (Ce !== "children" && Ce !== "key") {
-          Ea(E), W("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", Ce), Ea(null);
+          Ea(E), K("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", Ce), Ea(null);
           break;
         }
       }
-      E.ref !== null && (Ea(E), W("Invalid attribute `ref` supplied to `React.Fragment`."), Ea(null));
+      E.ref !== null && (Ea(E), K("Invalid attribute `ref` supplied to `React.Fragment`."), Ea(null));
     }
   }
   var Jn = {};
   function Ia(E, ne, he, Ce, We, Ae) {
     {
-      var He = K(E);
+      var He = W(E);
       if (!He) {
         var Te = "";
         (E === void 0 || typeof E == "object" && E !== null && Object.keys(E).length === 0) && (Te += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
         var Qt = io(We);
         Qt ? Te += Qt : Te += or();
         var Rt;
-        E === null ? Rt = "null" : Kt(E) ? Rt = "array" : E !== void 0 && E.$$typeof === f ? (Rt = "<" + (P(E.type) || "Unknown") + " />", Te = " Did you accidentally export a JSX literal instead of a component?") : Rt = typeof E, W("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", Rt, Te);
+        E === null ? Rt = "null" : Kt(E) ? Rt = "array" : E !== void 0 && E.$$typeof === f ? (Rt = "<" + (k(E.type) || "Unknown") + " />", Te = " Did you accidentally export a JSX literal instead of a component?") : Rt = typeof E, K("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", Rt, Te);
       }
       var Dt = At(E, ne, he, We, Ae);
       if (Dt == null)
@@ -1869,17 +1869,17 @@ Check the top-level render call using <` + he + ">.");
                 fi(jn[Ya], E);
               Object.freeze && Object.freeze(jn);
             } else
-              W("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
+              K("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
           else
             fi(jn, E);
       }
       if (ot.call(ne, "key")) {
-        var Da = P(E), Xt = Object.keys(ne).filter(function(Ie) {
+        var Da = k(E), Xt = Object.keys(ne).filter(function(Ie) {
           return Ie !== "key";
         }), pi = Xt.length > 0 ? "{key: someKey, " + Xt.join(": ..., ") + ": ...}" : "{key: someKey}";
         if (!Jn[Da + pi]) {
           var Ca = Xt.length > 0 ? "{" + Xt.join(": ..., ") + ": ...}" : "{}";
-          W(`A props object containing a "key" prop is being spread into JSX:
+          K(`A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
@@ -1945,7 +1945,7 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
       var $e = fe.sortIndex - De.sortIndex;
       return $e !== 0 ? $e : fe.id - De.id;
     }
-    var j = 1, U = 2, x = 3, T = 4, L = 5;
+    var j = 1, F = 2, x = 3, T = 4, L = 5;
     function te(fe, De) {
     }
     var pe = typeof performance == "object" && typeof performance.now == "function";
@@ -1955,22 +1955,22 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
         return ie.now();
       };
     } else {
-      var ce = Date, W = ce.now();
+      var ce = Date, K = ce.now();
       o.unstable_now = function() {
-        return ce.now() - W;
+        return ce.now() - K;
       };
     }
-    var z = 1073741823, I = -1, ee = 250, F = 5e3, k = 1e4, le = z, X = [], K = [], oe = 1, Q = null, P = x, ue = !1, de = !1, Y = !1, q = typeof setTimeout == "function" ? setTimeout : null, re = typeof clearTimeout == "function" ? clearTimeout : null, Re = typeof setImmediate < "u" ? setImmediate : null;
+    var P = 1073741823, I = -1, ee = 250, z = 5e3, U = 1e4, le = P, X = [], W = [], oe = 1, Q = null, k = x, ue = !1, de = !1, Y = !1, q = typeof setTimeout == "function" ? setTimeout : null, re = typeof clearTimeout == "function" ? clearTimeout : null, Re = typeof setImmediate < "u" ? setImmediate : null;
     typeof navigator < "u" && navigator.scheduling !== void 0 && navigator.scheduling.isInputPending !== void 0 && navigator.scheduling.isInputPending.bind(navigator.scheduling);
     function Pe(fe) {
-      for (var De = b(K); De !== null; ) {
+      for (var De = b(W); De !== null; ) {
         if (De.callback === null)
-          S(K);
+          S(W);
         else if (De.startTime <= fe)
-          S(K), De.sortIndex = De.expirationTime, g(X, De);
+          S(W), De.sortIndex = De.expirationTime, g(X, De);
         else
           return;
-        De = b(K);
+        De = b(W);
       }
     }
     function et(fe) {
@@ -1978,18 +1978,18 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
         if (b(X) !== null)
           de = !0, Ht(Ve);
         else {
-          var De = b(K);
+          var De = b(W);
           De !== null && pn(et, De.startTime - fe);
         }
     }
     function Ve(fe, De) {
       de = !1, Y && (Y = !1, hn()), ue = !0;
-      var $e = P;
+      var $e = k;
       try {
         var ct;
         if (!f) return Ke(fe, De);
       } finally {
-        Q = null, P = $e, ue = !1;
+        Q = null, k = $e, ue = !1;
       }
     }
     function Ke(fe, De) {
@@ -1997,7 +1997,7 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
       for (Pe($e), Q = b(X); Q !== null && !(Q.expirationTime > $e && (!fe || Pt())); ) {
         var ct = Q.callback;
         if (typeof ct == "function") {
-          Q.callback = null, P = Q.priorityLevel;
+          Q.callback = null, k = Q.priorityLevel;
           var St = Q.expirationTime <= $e, _t = ct(St);
           $e = o.unstable_now(), typeof _t == "function" ? Q.callback = _t : Q === b(X) && S(X), Pe($e);
         } else
@@ -2006,13 +2006,13 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
       }
       if (Q !== null)
         return !0;
-      var Ot = b(K);
+      var Ot = b(W);
       return Ot !== null && pn(et, Ot.startTime - $e), !1;
     }
     function at(fe, De) {
       switch (fe) {
         case j:
-        case U:
+        case F:
         case x:
         case T:
         case L:
@@ -2020,43 +2020,43 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
         default:
           fe = x;
       }
-      var $e = P;
-      P = fe;
+      var $e = k;
+      k = fe;
       try {
         return De();
       } finally {
-        P = $e;
+        k = $e;
       }
     }
     function Ft(fe) {
       var De;
-      switch (P) {
+      switch (k) {
         case j:
-        case U:
+        case F:
         case x:
           De = x;
           break;
         default:
-          De = P;
+          De = k;
           break;
       }
-      var $e = P;
-      P = De;
+      var $e = k;
+      k = De;
       try {
         return fe();
       } finally {
-        P = $e;
+        k = $e;
       }
     }
     function Et(fe) {
-      var De = P;
+      var De = k;
       return function() {
-        var $e = P;
-        P = De;
+        var $e = k;
+        k = De;
         try {
           return fe.apply(this, arguments);
         } finally {
-          P = $e;
+          k = $e;
         }
       };
     }
@@ -2072,18 +2072,18 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
         case j:
           Ot = I;
           break;
-        case U:
+        case F:
           Ot = ee;
           break;
         case L:
           Ot = le;
           break;
         case T:
-          Ot = k;
+          Ot = U;
           break;
         case x:
         default:
-          Ot = F;
+          Ot = z;
           break;
       }
       var Cn = St + Ot, At = {
@@ -2094,7 +2094,7 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
         expirationTime: Cn,
         sortIndex: -1
       };
-      return St > ct ? (At.sortIndex = St, g(K, At), b(X) === null && At === b(K) && (Y ? hn() : Y = !0, pn(et, St - ct))) : (At.sortIndex = Cn, g(X, At), !de && !ue && (de = !0, Ht(Ve))), At;
+      return St > ct ? (At.sortIndex = St, g(W, At), b(X) === null && At === b(W) && (Y ? hn() : Y = !0, pn(et, St - ct))) : (At.sortIndex = Cn, g(X, At), !de && !ue && (de = !0, Ht(Ve))), At;
     }
     function An() {
     }
@@ -2108,7 +2108,7 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
       fe.callback = null;
     }
     function Ge() {
-      return P;
+      return k;
     }
     var ut = !1, vt = null, ht = -1, ot = p, zt = -1;
     function Pt() {
@@ -2162,7 +2162,7 @@ var s = bx.exports, xx = { exports: {} }, oa = {}, Ex = { exports: {} }, Sx = {}
       re(ht), ht = -1;
     }
     var xa = Ln, ua = null;
-    o.unstable_IdlePriority = L, o.unstable_ImmediatePriority = j, o.unstable_LowPriority = T, o.unstable_NormalPriority = x, o.unstable_Profiling = ua, o.unstable_UserBlockingPriority = U, o.unstable_cancelCallback = Z, o.unstable_continueExecution = Gt, o.unstable_forceFrameRate = Dn, o.unstable_getCurrentPriorityLevel = Ge, o.unstable_getFirstCallbackNode = Wt, o.unstable_next = Ft, o.unstable_pauseExecution = An, o.unstable_requestPaint = xa, o.unstable_runWithPriority = at, o.unstable_scheduleCallback = Vt, o.unstable_shouldYield = Pt, o.unstable_wrapCallback = Et, typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ < "u" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop == "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+    o.unstable_IdlePriority = L, o.unstable_ImmediatePriority = j, o.unstable_LowPriority = T, o.unstable_NormalPriority = x, o.unstable_Profiling = ua, o.unstable_UserBlockingPriority = F, o.unstable_cancelCallback = Z, o.unstable_continueExecution = Gt, o.unstable_forceFrameRate = Dn, o.unstable_getCurrentPriorityLevel = Ge, o.unstable_getFirstCallbackNode = Wt, o.unstable_next = Ft, o.unstable_pauseExecution = An, o.unstable_requestPaint = xa, o.unstable_runWithPriority = at, o.unstable_scheduleCallback = Vt, o.unstable_shouldYield = Pt, o.unstable_wrapCallback = Et, typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ < "u" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop == "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
   })();
 })(Sx);
 Ex.exports = Sx;
@@ -2206,7 +2206,7 @@ var ow = Ex.exports;
       i.unshift("Warning: " + t), Function.prototype.apply.call(console[e], console, i);
     }
   }
-  var R = 0, j = 1, U = 2, x = 3, T = 4, L = 5, te = 6, pe = 7, ie = 8, ce = 9, W = 10, z = 11, I = 12, ee = 13, F = 14, k = 15, le = 16, X = 17, K = 18, oe = 19, Q = 21, P = 22, ue = 23, de = 24, Y = 25, q = !0, re = !1, Re = !1, Pe = !1, et = !1, Ve = !0, Ke = !0, at = !0, Ft = !0, Et = /* @__PURE__ */ new Set(), Vt = {}, An = {};
+  var R = 0, j = 1, F = 2, x = 3, T = 4, L = 5, te = 6, pe = 7, ie = 8, ce = 9, K = 10, P = 11, I = 12, ee = 13, z = 14, U = 15, le = 16, X = 17, W = 18, oe = 19, Q = 21, k = 22, ue = 23, de = 24, Y = 25, q = !0, re = !1, Re = !1, Pe = !1, et = !1, Ve = !0, Ke = !0, at = !0, Ft = !0, Et = /* @__PURE__ */ new Set(), Vt = {}, An = {};
   function Gt(e, t) {
     Wt(e, t), Wt(e + "Capture", t);
   }
@@ -2954,10 +2954,10 @@ var ow = Ex.exports;
       case oe:
         return qa("SuspenseList");
       case R:
+      case F:
       case U:
-      case k:
         return mo(e.type);
-      case z:
+      case P:
         return mo(e.type.render);
       case j:
         return al(e.type);
@@ -3048,12 +3048,12 @@ Error generating stack: ` + a.message + `
       case ce:
         var a = n;
         return sr(a) + ".Consumer";
-      case W:
+      case K:
         var r = n;
         return sr(r._context) + ".Provider";
-      case K:
+      case W:
         return "DehydratedFragment";
-      case z:
+      case P:
         return Rd(n, n.render, "ForwardRef");
       case pe:
         return "Fragment";
@@ -3069,7 +3069,7 @@ Error generating stack: ` + a.message + `
         return rt(n);
       case ie:
         return n === mi ? "StrictMode" : "Mode";
-      case P:
+      case k:
         return "Offscreen";
       case I:
         return "Profiler";
@@ -3084,9 +3084,9 @@ Error generating stack: ` + a.message + `
       case j:
       case R:
       case X:
-      case U:
       case F:
-      case k:
+      case z:
+      case U:
         if (typeof n == "function")
           return n.displayName || n.name || null;
         if (typeof n == "string")
@@ -9099,9 +9099,9 @@ See https://reactjs.org/link/refs-must-have-owner for more information.`);
           }
           l = l.next;
         }
-      } else if (a.tag === W)
+      } else if (a.tag === K)
         r = a.type === e.type ? null : a.child;
-      else if (a.tag === K) {
+      else if (a.tag === W) {
         var M = a.return;
         if (M === null)
           throw new Error("We just came from a parent so we must have had a parent. This is a bug in React.");
@@ -11160,7 +11160,7 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
   }
   function u1(e, t) {
     var n = e.tag;
-    if ((e.mode & Xe) === we && (n === R || n === z || n === k)) {
+    if ((e.mode & Xe) === we && (n === R || n === P || n === U)) {
       var a = e.alternate;
       a ? (e.updateQueue = a.updateQueue, e.memoizedState = a.memoizedState, e.lanes = a.lanes) : (e.updateQueue = null, e.memoizedState = null);
     }
@@ -11289,7 +11289,7 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
       if (gT(i) && n.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
       n.defaultProps === void 0) {
         var l = i;
-        return l = eo(i), t.tag = k, t.type = l, Fp(t, i), by(e, t, l, a, r);
+        return l = eo(i), t.tag = U, t.type = l, Fp(t, i), by(e, t, l, a, r);
       }
       {
         var u = i.propTypes;
@@ -11578,9 +11578,9 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
         return Fp(t, c), t.type = c = eo(c), C = kp(null, t, c, v, a), C;
       case j:
         return t.type = c = ph(c), C = xy(null, t, c, v, a), C;
-      case z:
+      case P:
         return t.type = c = hh(c), C = vy(null, t, c, v, a), C;
-      case F: {
+      case z: {
         if (t.type !== t.elementType) {
           var D = c.propTypes;
           D && _a(
@@ -12120,7 +12120,7 @@ Check the render method of \`` + a + "`.");
       case T:
         Fm(t, t.stateNode.containerInfo);
         break;
-      case W: {
+      case K: {
         var r = t.memoizedProps.value, i = t.type._context;
         xb(t, i, r);
         break;
@@ -12162,7 +12162,7 @@ Check the render method of \`` + a + "`.");
           break;
         return null;
       }
-      case P:
+      case k:
       case ue:
         return t.lanes = J, yy(e, t, n);
     }
@@ -12189,7 +12189,7 @@ Check the render method of \`` + a + "`.");
       ib(t, u, l);
     }
     switch (t.lanes = J, t.tag) {
-      case U:
+      case F:
         return x1(e, t, t.type, n);
       case le: {
         var c = t.elementType;
@@ -12213,7 +12213,7 @@ Check the render method of \`` + a + "`.");
         return Ry(e, t, n);
       case T:
         return k1(e, t, n);
-      case z: {
+      case P: {
         var B = t.type, ve = t.pendingProps, je = t.elementType === B ? ve : La(B, ve);
         return vy(e, t, B, je, n);
       }
@@ -12223,11 +12223,11 @@ Check the render method of \`` + a + "`.");
         return p1(e, t, n);
       case I:
         return h1(e, t, n);
-      case W:
+      case K:
         return U1(e, t, n);
       case ce:
         return F1(e, t, n);
-      case F: {
+      case z: {
         var Se = t.type, Ze = t.pendingProps, qe = La(Se, Ze);
         if (t.type !== t.elementType) {
           var _ = Se.propTypes;
@@ -12241,7 +12241,7 @@ Check the render method of \`` + a + "`.");
         }
         return qe = La(Se.type, qe), gy(e, t, Se, qe, n);
       }
-      case k:
+      case U:
         return by(e, t, t.type, t.pendingProps, n);
       case X: {
         var $ = t.type, O = t.pendingProps, ae = t.elementType === $ ? O : La($, O);
@@ -12251,7 +12251,7 @@ Check the render method of \`` + a + "`.");
         return Ty(e, t, n);
       case Q:
         break;
-      case P:
+      case k:
         return yy(e, t, n);
     }
     throw new Error("Unknown unit of work tag (" + t.tag + "). This error is likely caused by a bug in React. Please file an issue.");
@@ -12364,16 +12364,16 @@ Check the render method of \`` + a + "`.");
   function ky(e, t, n) {
     var a = t.pendingProps;
     switch (gm(t), t.tag) {
-      case U:
+      case F:
       case le:
-      case k:
+      case U:
       case R:
-      case z:
+      case P:
       case pe:
       case ie:
       case I:
       case ce:
-      case F:
+      case z:
         return yn(t), null;
       case j: {
         var r = t.type;
@@ -12456,7 +12456,7 @@ Check the render method of \`` + a + "`.");
       }
       case T:
         return Pl(t), Yp(e, t), e === null && rC(t.stateNode.containerInfo), yn(t), null;
-      case W:
+      case K:
         var ge = t.type._context;
         return Om(ge, t), yn(t), null;
       case X: {
@@ -12516,7 +12516,7 @@ Check the render method of \`` + a + "`.");
       }
       case Q:
         break;
-      case P:
+      case k:
       case ue: {
         sh(t);
         var Or = t.memoizedState, to = Or !== null;
@@ -12564,10 +12564,10 @@ Check the render method of \`` + a + "`.");
         return Bl(t), null;
       case T:
         return Pl(t), null;
-      case W:
+      case K:
         var c = t.type._context;
         return Om(c, t), null;
-      case P:
+      case k:
       case ue:
         return sh(t), null;
       case de:
@@ -12600,11 +12600,11 @@ Check the render method of \`` + a + "`.");
       case oe:
         Bl(t);
         break;
-      case W:
+      case K:
         var r = t.type._context;
         Om(r, t);
         break;
-      case P:
+      case k:
       case ue:
         sh(t);
         break;
@@ -12719,8 +12719,8 @@ Check the render method of \`` + a + "`.");
     if ((n & hl) !== Oe) {
       switch (jt(e), e.tag) {
         case R:
-        case z:
-        case k:
+        case P:
+        case U:
           break;
         case j: {
           if (t !== null) {
@@ -12830,8 +12830,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
     if ((n.flags & _o) !== Oe)
       switch (n.tag) {
         case R:
-        case z:
-        case k: {
+        case P:
+        case U: {
           if (!Nn)
             if (n.mode & ft)
               try {
@@ -12930,7 +12930,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         case oe:
         case X:
         case Q:
-        case P:
+        case k:
         case ue:
         case Y:
           break;
@@ -12942,8 +12942,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Z1(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         if (e.mode & ft)
           try {
             nr(), zy(e, e.return);
@@ -12985,7 +12985,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           } catch (l) {
             bt(e, e.return, l);
           }
-      } else if (!((a.tag === P || a.tag === ue) && a.memoizedState !== null && a !== e)) {
+      } else if (!((a.tag === k || a.tag === ue) && a.memoizedState !== null && a !== e)) {
         if (a.child !== null) {
           a.child.return = a, a = a.child;
           continue;
@@ -13061,7 +13061,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           return null;
         t = t.return;
       }
-      for (t.sibling.return = t.return, t = t.sibling; t.tag !== L && t.tag !== te && t.tag !== K; ) {
+      for (t.sibling.return = t.return, t = t.sibling; t.tag !== L && t.tag !== te && t.tag !== W; ) {
         if (t.flags & Yt || t.child === null || t.tag === T)
           continue e;
         t.child.return = t, t = t.child;
@@ -13160,7 +13160,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         }
         return;
       }
-      case K: {
+      case W: {
         xn !== null && (Fa ? DD(xn, n.stateNode) : im(xn, n.stateNode));
         return;
       }
@@ -13172,9 +13172,9 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         return;
       }
       case R:
+      case P:
       case z:
-      case F:
-      case k: {
+      case U: {
         if (!Nn) {
           var u = n.updateQueue;
           if (u !== null) {
@@ -13204,7 +13204,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         ai(e, t, n);
         return;
       }
-      case P: {
+      case k: {
         if (
           // TODO: Remove this dead flag
           n.mode & Xe
@@ -13279,9 +13279,9 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
     var a = e.alternate, r = e.flags;
     switch (e.tag) {
       case R:
+      case P:
       case z:
-      case F:
-      case k: {
+      case U: {
         if (za(t, e), ar(e), r & it) {
           try {
             Ua(Ja | Jt, e, e.return), ni(Ja | Jt, e);
@@ -13383,7 +13383,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
         }
         return;
       }
-      case P: {
+      case k: {
         var qe = a !== null && a.memoizedState !== null;
         if (
           // TODO: Remove this dead flag
@@ -13434,7 +13434,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Ky(e, t, n) {
     for (var a = (e.mode & Xe) !== we; xe !== null; ) {
       var r = xe, i = r.child;
-      if (r.tag === P && a) {
+      if (r.tag === k && a) {
         var l = r.memoizedState !== null, u = l || Xc;
         if (u) {
           Kp(e, t, n);
@@ -13486,9 +13486,9 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
       var t = xe, n = t.child;
       switch (t.tag) {
         case R:
+        case P:
         case z:
-        case F:
-        case k: {
+        case U: {
           if (t.mode & ft)
             try {
               nr(), Ua(Zt, t, t.return);
@@ -13509,7 +13509,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
           Ql(t, t.return);
           break;
         }
-        case P: {
+        case k: {
           var r = t.memoizedState !== null;
           if (r) {
             Qy(e);
@@ -13539,7 +13539,7 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function cj(e) {
     for (; xe !== null; ) {
       var t = xe, n = t.child;
-      if (t.tag === P) {
+      if (t.tag === k) {
         var a = t.memoizedState !== null;
         if (a) {
           Xy(e);
@@ -13606,8 +13606,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function pj(e, t, n, a) {
     switch (t.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         if (t.mode & ft) {
           pp();
           try {
@@ -13668,8 +13668,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function bj(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         e.mode & ft ? (pp(), Ua(bn | Jt, e, e.return), mp(e)) : Ua(bn | Jt, e, e.return);
         break;
       }
@@ -13700,8 +13700,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function xj(e, t) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         e.mode & ft ? (pp(), Ua(bn, e, t), mp(e)) : Ua(bn, e, t);
         break;
       }
@@ -13710,8 +13710,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Ej(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         try {
           ni(Zt | Jt, e);
         } catch (n) {
@@ -13733,8 +13733,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Sj(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         try {
           ni(bn | Jt, e);
         } catch (t) {
@@ -13747,8 +13747,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Rj(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k: {
+      case P:
+      case U: {
         try {
           Ua(Zt | Jt, e, e.return);
         } catch (n) {
@@ -13766,8 +13766,8 @@ Learn more about data fetching with Hooks: https://reactjs.org/link/hooks-data-f
   function Dj(e) {
     switch (e.tag) {
       case R:
-      case z:
-      case k:
+      case P:
+      case U:
         try {
           Ua(bn | Jt, e, e.return);
         } catch (t) {
@@ -14465,7 +14465,7 @@ Error message:
       if ((Je & Sn) !== nn || !(e.mode & Xe))
         return;
       var t = e.tag;
-      if (t !== U && t !== x && t !== j && t !== R && t !== z && t !== F && t !== k)
+      if (t !== F && t !== x && t !== j && t !== R && t !== P && t !== z && t !== U)
         return;
       var n = ze(e) || "ReactComponent";
       if (cd !== null) {
@@ -14506,8 +14506,8 @@ Error message:
     if (yi && !QC())
       switch (e.tag) {
         case R:
-        case z:
-        case k: {
+        case P:
+        case U: {
           var t = Mt && ze(Mt) || "Unknown", n = t;
           if (!dh.has(n)) {
             dh.add(n);
@@ -14549,7 +14549,7 @@ Error message:
       if (e.mode & Xe) {
         if (!Jy())
           return;
-      } else if (!wj() || Je !== nn || e.tag !== R && e.tag !== z && e.tag !== k)
+      } else if (!wj() || Je !== nn || e.tag !== R && e.tag !== P && e.tag !== U)
         return;
       if (Pa.current === null) {
         var t = kn;
@@ -14634,12 +14634,12 @@ This ensures that you're testing the behavior the user would see in the browser.
           (typeof a == "function" || i === Te) && (r = !0);
           break;
         }
-        case z: {
+        case P: {
           (i === Ce || i === Te) && (r = !0);
           break;
         }
-        case F:
-        case k: {
+        case z:
+        case U: {
           (i === He || i === Te) && (r = !0);
           break;
         }
@@ -14684,11 +14684,11 @@ This ensures that you're testing the behavior the user would see in the browser.
       var a = e.alternate, r = e.child, i = e.sibling, l = e.tag, u = e.type, c = null;
       switch (l) {
         case R:
-        case k:
+        case U:
         case j:
           c = u;
           break;
-        case z:
+        case P:
           c = u.render;
           break;
       }
@@ -14719,11 +14719,11 @@ This ensures that you're testing the behavior the user would see in the browser.
       var a = e.child, r = e.sibling, i = e.tag, l = e.type, u = null;
       switch (i) {
         case R:
-        case k:
+        case U:
         case j:
           u = l;
           break;
-        case z:
+        case P:
           u = l.render;
           break;
       }
@@ -14801,11 +14801,11 @@ This ensures that you're testing the behavior the user would see in the browser.
     if (e != null) {
       var t = e.$$typeof;
       if (t === Ce)
-        return z;
+        return P;
       if (t === He)
-        return F;
+        return z;
     }
-    return U;
+    return F;
   }
   function Qi(e, t) {
     var n = e.alternate;
@@ -14815,15 +14815,15 @@ This ensures that you're testing the behavior the user would see in the browser.
       lanes: a.lanes,
       firstContext: a.firstContext
     }, n.sibling = e.sibling, n.index = e.index, n.ref = e.ref, n.selfBaseDuration = e.selfBaseDuration, n.treeBaseDuration = e.treeBaseDuration, n._debugNeedsRemount = e._debugNeedsRemount, n.tag) {
-      case U:
+      case F:
       case R:
-      case k:
+      case U:
         n.type = eo(e.type);
         break;
       case j:
         n.type = ph(e.type);
         break;
-      case z:
+      case P:
         n.type = hh(e.type);
         break;
     }
@@ -14849,7 +14849,7 @@ This ensures that you're testing the behavior the user would see in the browser.
     return e === oc ? (a = Xe, t === !0 && (a |= kt, a |= Wa)) : a = we, Ta && (a |= ft), ia(x, null, null, a);
   }
   function Nh(e, t, n, a, r, i) {
-    var l = U, u = e;
+    var l = F, u = e;
     if (typeof e == "function")
       yh(e) ? (l = j, u = ph(u)) : u = eo(u);
     else if (typeof e == "string")
@@ -14878,16 +14878,16 @@ This ensures that you're testing the behavior the user would see in the browser.
           if (typeof e == "object" && e !== null)
             switch (e.$$typeof) {
               case ne:
-                l = W;
+                l = K;
                 break e;
               case he:
                 l = ce;
                 break e;
               case Ce:
-                l = z, u = hh(u);
+                l = P, u = hh(u);
                 break e;
               case He:
-                l = F;
+                l = z;
                 break e;
               case Te:
                 l = le, u = null;
@@ -14934,7 +14934,7 @@ Check the render method of \`` + h + "`.");
     return r.elementType = Ae, r.lanes = n, r;
   }
   function DN(e, t, n, a) {
-    var r = ia(P, e, a, t);
+    var r = ia(k, e, a, t);
     r.elementType = Dt, r.lanes = n;
     var i = {
       isHidden: !1
@@ -14950,7 +14950,7 @@ Check the render method of \`` + h + "`.");
     return e.elementType = "DELETED", e;
   }
   function DT(e) {
-    var t = ia(K, null, null, we);
+    var t = ia(W, null, null, we);
     return t.stateNode = e, t;
   }
   function Sh(e, t, n) {
@@ -14963,7 +14963,7 @@ Check the render method of \`` + h + "`.");
     }, r;
   }
   function CN(e, t) {
-    return e === null && (e = ia(U, null, null, we)), e.tag = t.tag, e.key = t.key, e.elementType = t.elementType, e.type = t.type, e.stateNode = t.stateNode, e.return = t.return, e.child = t.child, e.sibling = t.sibling, e.index = t.index, e.ref = t.ref, e.pendingProps = t.pendingProps, e.memoizedProps = t.memoizedProps, e.updateQueue = t.updateQueue, e.memoizedState = t.memoizedState, e.dependencies = t.dependencies, e.mode = t.mode, e.flags = t.flags, e.subtreeFlags = t.subtreeFlags, e.deletions = t.deletions, e.lanes = t.lanes, e.childLanes = t.childLanes, e.alternate = t.alternate, e.actualDuration = t.actualDuration, e.actualStartTime = t.actualStartTime, e.selfBaseDuration = t.selfBaseDuration, e.treeBaseDuration = t.treeBaseDuration, e._debugSource = t._debugSource, e._debugOwner = t._debugOwner, e._debugNeedsRemount = t._debugNeedsRemount, e._debugHookTypes = t._debugHookTypes, e;
+    return e === null && (e = ia(F, null, null, we)), e.tag = t.tag, e.key = t.key, e.elementType = t.elementType, e.type = t.type, e.stateNode = t.stateNode, e.return = t.return, e.child = t.child, e.sibling = t.sibling, e.index = t.index, e.ref = t.ref, e.pendingProps = t.pendingProps, e.memoizedProps = t.memoizedProps, e.updateQueue = t.updateQueue, e.memoizedState = t.memoizedState, e.dependencies = t.dependencies, e.mode = t.mode, e.flags = t.flags, e.subtreeFlags = t.subtreeFlags, e.deletions = t.deletions, e.lanes = t.lanes, e.childLanes = t.childLanes, e.alternate = t.alternate, e.actualDuration = t.actualDuration, e.actualStartTime = t.actualStartTime, e.selfBaseDuration = t.selfBaseDuration, e.treeBaseDuration = t.treeBaseDuration, e._debugSource = t._debugSource, e._debugOwner = t._debugOwner, e._debugNeedsRemount = t._debugNeedsRemount, e._debugHookTypes = t._debugHookTypes, e;
   }
   function CT(e, t, n, a, r) {
     this.tag = t, this.containerInfo = e, this.pendingChildren = null, this.current = null, this.pingCache = null, this.finishedWork = null, this.timeoutHandle = rm, this.context = null, this.pendingContext = null, this.callbackNode = null, this.callbackPriority = dn, this.eventTimes = jf(J), this.expirationTimes = jf(xt), this.pendingLanes = J, this.suspendedLanes = J, this.pingedLanes = J, this.expiredLanes = J, this.mutableReadLanes = J, this.finishedLanes = J, this.entangledLanes = J, this.entanglements = jf(J), this.identifierPrefix = a, this.onRecoverableError = r, this.mutableSourceEagerHydrationData = null, this.effectDuration = 0, this.passiveEffectDuration = 0;
@@ -15679,18 +15679,18 @@ function dw(o, f, p, g) {
   let {
     window: b = document.defaultView,
     v5Compat: S = !1
-  } = g, d = b.history, w = si.Pop, R = null, j = U();
+  } = g, d = b.history, w = si.Pop, R = null, j = F();
   j == null && (j = 0, d.replaceState(Js({}, d.state, {
     idx: j
   }), ""));
-  function U() {
+  function F() {
     return (d.state || {
       idx: null
     }).idx;
   }
   function x() {
     w = si.Pop;
-    let ie = U(), ce = ie == null ? null : ie - j;
+    let ie = F(), ce = ie == null ? null : ie - j;
     j = ie, R && R({
       action: w,
       location: pe.location,
@@ -15699,11 +15699,11 @@ function dw(o, f, p, g) {
   }
   function T(ie, ce) {
     w = si.Push;
-    let W = Lh(pe.location, ie, ce);
-    j = U() + 1;
-    let z = lx(W, j), I = pe.createHref(W);
+    let K = Lh(pe.location, ie, ce);
+    j = F() + 1;
+    let P = lx(K, j), I = pe.createHref(K);
     try {
-      d.pushState(z, "", I);
+      d.pushState(P, "", I);
     } catch (ee) {
       if (ee instanceof DOMException && ee.name === "DataCloneError")
         throw ee;
@@ -15717,18 +15717,18 @@ function dw(o, f, p, g) {
   }
   function L(ie, ce) {
     w = si.Replace;
-    let W = Lh(pe.location, ie, ce);
-    j = U();
-    let z = lx(W, j), I = pe.createHref(W);
-    d.replaceState(z, "", I), S && R && R({
+    let K = Lh(pe.location, ie, ce);
+    j = F();
+    let P = lx(K, j), I = pe.createHref(K);
+    d.replaceState(P, "", I), S && R && R({
       action: w,
       location: pe.location,
       delta: 0
     });
   }
   function te(ie) {
-    let ce = b.location.origin !== "null" ? b.location.origin : b.location.href, W = typeof ie == "string" ? ie : Zs(ie);
-    return W = W.replace(/ $/, "%20"), wt(ce, "No window.location.(origin|href) available to create URL for href: " + W), new URL(W, ce);
+    let ce = b.location.origin !== "null" ? b.location.origin : b.location.href, K = typeof ie == "string" ? ie : Zs(ie);
+    return K = K.replace(/ $/, "%20"), wt(ce, "No window.location.(origin|href) available to create URL for href: " + K), new URL(K, ce);
   }
   let pe = {
     get action() {
@@ -15794,16 +15794,16 @@ function Dx(o, f, p, g) {
       route: S
     };
     R.relativePath.startsWith("/") && (wt(R.relativePath.startsWith(g), 'Absolute route path "' + R.relativePath + '" nested under path ' + ('"' + g + '" is not valid. An absolute child route path ') + "must start with the combined path of all its parent routes."), R.relativePath = R.relativePath.slice(g.length));
-    let j = Vr([g, R.relativePath]), U = p.concat(R);
+    let j = Vr([g, R.relativePath]), F = p.concat(R);
     S.children && S.children.length > 0 && (wt(
       // Our types know better, but runtime JS may not!
       // @ts-expect-error
       S.index !== !0,
       "Index routes must not have child routes. Please remove " + ('all child routes from route path "' + j + '".')
-    ), Dx(S.children, f, U, j)), !(S.path == null && !S.index) && f.push({
+    ), Dx(S.children, f, F, j)), !(S.path == null && !S.index) && f.push({
       path: j,
       score: xw(j, S.index),
-      routesMeta: U
+      routesMeta: F
     });
   };
   return o.forEach((S, d) => {
@@ -15850,11 +15850,11 @@ function Sw(o, f, p) {
     routesMeta: g
   } = o, b = {}, S = "/", d = [];
   for (let w = 0; w < g.length; ++w) {
-    let R = g[w], j = w === g.length - 1, U = S === "/" ? f : f.slice(S.length) || "/", x = kh({
+    let R = g[w], j = w === g.length - 1, F = S === "/" ? f : f.slice(S.length) || "/", x = kh({
       path: R.relativePath,
       caseSensitive: R.caseSensitive,
       end: j
-    }, U), T = R.route;
+    }, F), T = R.route;
     if (!x)
       return null;
     Object.assign(b, x.params), d.push({
@@ -15877,11 +15877,11 @@ function kh(o, f) {
   if (!b) return null;
   let S = b[0], d = S.replace(/(.)\/+$/, "$1"), w = b.slice(1);
   return {
-    params: g.reduce((j, U, x) => {
+    params: g.reduce((j, F, x) => {
       let {
         paramName: T,
         isOptional: L
-      } = U;
+      } = F;
       if (T === "*") {
         let pe = w[x] || "";
         d = S.slice(0, S.length - pe.length).replace(/(.)\/+$/, "$1");
@@ -15964,8 +15964,8 @@ function Hh(o, f, p, g) {
     }
     w = x >= 0 ? f[x] : "/";
   }
-  let R = Cw(b, w), j = d && d !== "/" && d.endsWith("/"), U = (S || d === ".") && p.endsWith("/");
-  return !R.pathname.endsWith("/") && (j || U) && (R.pathname += "/"), R;
+  let R = Cw(b, w), j = d && d !== "/" && d.endsWith("/"), F = (S || d === ".") && p.endsWith("/");
+  return !R.pathname.endsWith("/") && (j || F) && (R.pathname += "/"), R;
 }
 const Vr = (o) => o.join("/").replace(/\/\/+/g, "/"), ww = (o) => o.replace(/\/+$/, "").replace(/^\/*/, "/"), _w = (o) => !o || o === "?" ? "" : o.startsWith("?") ? o : "?" + o, Ow = (o) => !o || o === "#" ? "" : o.startsWith("#") ? o : "#" + o;
 function Mw(o) {
@@ -16078,14 +16078,14 @@ function kw() {
   } = Ji(), d = JSON.stringify(Ph(b, p.v7_relativeSplatPath)), w = y.useRef(!1);
   return wx(() => {
     w.current = !0;
-  }), y.useCallback(function(j, U) {
-    if (U === void 0 && (U = {}), Ha(w.current, Tx), !w.current) return;
+  }), y.useCallback(function(j, F) {
+    if (F === void 0 && (F = {}), Ha(w.current, Tx), !w.current) return;
     if (typeof j == "number") {
       g.go(j);
       return;
     }
-    let x = Hh(j, JSON.parse(d), S, U.relative === "path");
-    o == null && f !== "/" && (x.pathname = x.pathname === "/" ? f : Vr([f, x.pathname])), (U.replace ? g.replace : g.push)(x, U.state, U);
+    let x = Hh(j, JSON.parse(d), S, F.relative === "path");
+    o == null && f !== "/" && (x.pathname = x.pathname === "/" ? f : Vr([f, x.pathname])), (F.replace ? g.replace : g.push)(x, F.state, F);
   }, [f, g, d, S, o]);
 }
 function Uw() {
@@ -16120,40 +16120,40 @@ function zw(o, f, p, g) {
     navigator: b
   } = y.useContext(Na), {
     matches: S
-  } = y.useContext($a), d = S[S.length - 1], w = d ? d.params : {}, R = d ? d.pathname : "/", j = d ? d.pathnameBase : "/", U = d && d.route;
+  } = y.useContext($a), d = S[S.length - 1], w = d ? d.params : {}, R = d ? d.pathname : "/", j = d ? d.pathnameBase : "/", F = d && d.route;
   {
-    let W = U && U.path || "";
-    Ox(R, !U || W.endsWith("*"), "You rendered descendant <Routes> (or called `useRoutes()`) at " + ('"' + R + '" (under <Route path="' + W + '">) but the ') + `parent route path has no trailing "*". This means if you navigate deeper, the parent won't match anymore and therefore the child routes will never render.
+    let K = F && F.path || "";
+    Ox(R, !F || K.endsWith("*"), "You rendered descendant <Routes> (or called `useRoutes()`) at " + ('"' + R + '" (under <Route path="' + K + '">) but the ') + `parent route path has no trailing "*". This means if you navigate deeper, the parent won't match anymore and therefore the child routes will never render.
 
-` + ('Please change the parent <Route path="' + W + '"> to <Route ') + ('path="' + (W === "/" ? "*" : W + "/*") + '">.'));
+` + ('Please change the parent <Route path="' + K + '"> to <Route ') + ('path="' + (K === "/" ? "*" : K + "/*") + '">.'));
   }
   let x = Ji(), T;
   if (f) {
     var L;
-    let W = typeof f == "string" ? ao(f) : f;
-    j === "/" || (L = W.pathname) != null && L.startsWith(j) || wt(!1, "When overriding the location using `<Routes location>` or `useRoutes(routes, location)`, the location pathname must begin with the portion of the URL pathname that was " + ('matched by all parent routes. The current pathname base is "' + j + '" ') + ('but pathname "' + W.pathname + '" was given in the `location` prop.')), T = W;
+    let K = typeof f == "string" ? ao(f) : f;
+    j === "/" || (L = K.pathname) != null && L.startsWith(j) || wt(!1, "When overriding the location using `<Routes location>` or `useRoutes(routes, location)`, the location pathname must begin with the portion of the URL pathname that was " + ('matched by all parent routes. The current pathname base is "' + j + '" ') + ('but pathname "' + K.pathname + '" was given in the `location` prop.')), T = K;
   } else
     T = x;
   let te = T.pathname || "/", pe = te;
   if (j !== "/") {
-    let W = j.replace(/^\//, "").split("/");
-    pe = "/" + te.replace(/^\//, "").split("/").slice(W.length).join("/");
+    let K = j.replace(/^\//, "").split("/");
+    pe = "/" + te.replace(/^\//, "").split("/").slice(K.length).join("/");
   }
   let ie = fw(o, {
     pathname: pe
   });
-  Ha(U || ie != null, 'No routes matched location "' + T.pathname + T.search + T.hash + '" '), Ha(ie == null || ie[ie.length - 1].route.element !== void 0 || ie[ie.length - 1].route.Component !== void 0 || ie[ie.length - 1].route.lazy !== void 0, 'Matched leaf route at location "' + T.pathname + T.search + T.hash + '" does not have an element or Component. This means it will render an <Outlet /> with a null value by default resulting in an "empty" page.');
-  let ce = Iw(ie && ie.map((W) => Object.assign({}, W, {
-    params: Object.assign({}, w, W.params),
+  Ha(F || ie != null, 'No routes matched location "' + T.pathname + T.search + T.hash + '" '), Ha(ie == null || ie[ie.length - 1].route.element !== void 0 || ie[ie.length - 1].route.Component !== void 0 || ie[ie.length - 1].route.lazy !== void 0, 'Matched leaf route at location "' + T.pathname + T.search + T.hash + '" does not have an element or Component. This means it will render an <Outlet /> with a null value by default resulting in an "empty" page.');
+  let ce = Iw(ie && ie.map((K) => Object.assign({}, K, {
+    params: Object.assign({}, w, K.params),
     pathname: Vr([
       j,
       // Re-encode pathnames that were decoded inside matchRoutes
-      b.encodeLocation ? b.encodeLocation(W.pathname).pathname : W.pathname
+      b.encodeLocation ? b.encodeLocation(K.pathname).pathname : K.pathname
     ]),
-    pathnameBase: W.pathnameBase === "/" ? j : Vr([
+    pathnameBase: K.pathnameBase === "/" ? j : Vr([
       j,
       // Re-encode pathnames that were decoded inside matchRoutes
-      b.encodeLocation ? b.encodeLocation(W.pathnameBase).pathname : W.pathnameBase
+      b.encodeLocation ? b.encodeLocation(K.pathnameBase).pathname : K.pathnameBase
     ])
   })), S, p, g);
   return f && ce ? /* @__PURE__ */ y.createElement(au.Provider, {
@@ -16251,14 +16251,14 @@ function Iw(o, f, p, g) {
   }
   let d = o, w = (b = p) == null ? void 0 : b.errors;
   if (w != null) {
-    let U = d.findIndex((x) => x.route.id && (w == null ? void 0 : w[x.route.id]) !== void 0);
-    U >= 0 || wt(!1, "Could not find a matching route for errors on route IDs: " + Object.keys(w).join(",")), d = d.slice(0, Math.min(d.length, U + 1));
+    let F = d.findIndex((x) => x.route.id && (w == null ? void 0 : w[x.route.id]) !== void 0);
+    F >= 0 || wt(!1, "Could not find a matching route for errors on route IDs: " + Object.keys(w).join(",")), d = d.slice(0, Math.min(d.length, F + 1));
   }
   let R = !1, j = -1;
   if (p && g && g.v7_partialHydration)
-    for (let U = 0; U < d.length; U++) {
-      let x = d[U];
-      if ((x.route.HydrateFallback || x.route.hydrateFallbackElement) && (j = U), x.route.id) {
+    for (let F = 0; F < d.length; F++) {
+      let x = d[F];
+      if ((x.route.HydrateFallback || x.route.hydrateFallbackElement) && (j = F), x.route.id) {
         let {
           loaderData: T,
           errors: L
@@ -16269,19 +16269,19 @@ function Iw(o, f, p, g) {
         }
       }
     }
-  return d.reduceRight((U, x, T) => {
+  return d.reduceRight((F, x, T) => {
     let L, te = !1, pe = null, ie = null;
     p && (L = w && x.route.id ? w[x.route.id] : void 0, pe = x.route.errorElement || Hw, R && (j < 0 && T === 0 ? (Ox("route-fallback", !1, "No `HydrateFallback` element provided to render during initial hydration"), te = !0, ie = null) : j === T && (te = !0, ie = x.route.hydrateFallbackElement || null)));
-    let ce = f.concat(d.slice(0, T + 1)), W = () => {
-      let z;
-      return L ? z = pe : te ? z = ie : x.route.Component ? z = /* @__PURE__ */ y.createElement(x.route.Component, null) : x.route.element ? z = x.route.element : z = U, /* @__PURE__ */ y.createElement($w, {
+    let ce = f.concat(d.slice(0, T + 1)), K = () => {
+      let P;
+      return L ? P = pe : te ? P = ie : x.route.Component ? P = /* @__PURE__ */ y.createElement(x.route.Component, null) : x.route.element ? P = x.route.element : P = F, /* @__PURE__ */ y.createElement($w, {
         match: x,
         routeContext: {
-          outlet: U,
+          outlet: F,
           matches: ce,
           isDataRoute: p != null
         },
-        children: z
+        children: P
       });
     };
     return p && (x.route.ErrorBoundary || x.route.errorElement || T === 0) ? /* @__PURE__ */ y.createElement(Bw, {
@@ -16289,13 +16289,13 @@ function Iw(o, f, p, g) {
       revalidation: p.revalidation,
       component: pe,
       error: L,
-      children: W(),
+      children: K(),
       routeContext: {
         outlet: null,
         matches: ce,
         isDataRoute: !0
       }
-    }) : W();
+    }) : K();
   }, null);
 }
 var _x = /* @__PURE__ */ function(o) {
@@ -16376,7 +16376,7 @@ function Zw(o) {
     matches: w
   } = y.useContext($a), {
     pathname: R
-  } = Ji(), j = Ih(), U = Hh(f, Ph(w, S.v7_relativeSplatPath), R, b === "path"), x = JSON.stringify(U);
+  } = Ji(), j = Ih(), F = Hh(f, Ph(w, S.v7_relativeSplatPath), R, b === "path"), x = JSON.stringify(F);
   return y.useEffect(() => j(JSON.parse(x), {
     replace: p,
     state: g,
@@ -16407,13 +16407,13 @@ function e_(o) {
   }), [R, w, S, d]);
   typeof g == "string" && (g = ao(g));
   let {
-    pathname: U = "/",
+    pathname: F = "/",
     search: x = "",
     hash: T = "",
     state: L = null,
     key: te = "default"
   } = g, pe = y.useMemo(() => {
-    let ie = ci(U, R);
+    let ie = ci(F, R);
     return ie == null ? null : {
       location: {
         pathname: ie,
@@ -16424,8 +16424,8 @@ function e_(o) {
       },
       navigationType: b
     };
-  }, [R, U, x, T, L, te, b]);
-  return Ha(pe != null, '<Router basename="' + R + '"> is not able to match the URL ' + ('"' + U + x + T + '" because it does not start with the ') + "basename, so the <Router> won't render anything."), pe == null ? null : /* @__PURE__ */ y.createElement(Na.Provider, {
+  }, [R, F, x, T, L, te, b]);
+  return Ha(pe != null, '<Router basename="' + R + '"> is not able to match the URL ' + ('"' + F + x + T + '" because it does not start with the ') + "basename, so the <Router> won't render anything."), pe == null ? null : /* @__PURE__ */ y.createElement(Na.Provider, {
     value: j
   }, /* @__PURE__ */ y.createElement(au.Provider, {
     children: p,
@@ -16551,10 +16551,10 @@ function u_(o, f) {
     if (g = R ? ci(R, f) : null, p = o.getAttribute("formmethod") || w.getAttribute("method") || vd, b = Vh(o.getAttribute("formenctype")) || Vh(w.getAttribute("enctype")) || gd, S = new FormData(w, o), !o_()) {
       let {
         name: j,
-        type: U,
+        type: F,
         value: x
       } = o;
-      if (U === "image") {
+      if (F === "image") {
         let T = j ? j + "." : "";
         S.append(T + "x", "0"), S.append(T + "y", "0");
       } else j && S.append(j, x);
@@ -16600,10 +16600,10 @@ function v_(o) {
     location: d.location
   }), {
     v7_startTransition: j
-  } = g || {}, U = y.useCallback((x) => {
+  } = g || {}, F = y.useCallback((x) => {
     j && fx ? fx(() => R(x)) : R(x);
   }, [R, j]);
-  return y.useLayoutEffect(() => d.listen(U), [d, U]), y.useEffect(() => Jw(g), [g]), /* @__PURE__ */ y.createElement(e_, {
+  return y.useLayoutEffect(() => d.listen(F), [d, F]), y.useEffect(() => Jw(g), [g]), /* @__PURE__ */ y.createElement(e_, {
     basename: f,
     children: p,
     location: w.location,
@@ -16621,15 +16621,15 @@ const g_ = typeof window < "u" && typeof window.document < "u" && typeof window.
     state: w,
     target: R,
     to: j,
-    preventScrollReset: U,
+    preventScrollReset: F,
     viewTransition: x
   } = f, T = Gh(f, c_), {
     basename: L
   } = y.useContext(Na), te, pe = !1;
   if (typeof j == "string" && b_.test(j) && (te = j, g_))
     try {
-      let z = new URL(window.location.href), I = j.startsWith("//") ? new URL(z.protocol + j) : new URL(j), ee = ci(I.pathname, L);
-      I.origin === z.origin && ee != null ? j = ee + I.search + I.hash : pe = !0;
+      let P = new URL(window.location.href), I = j.startsWith("//") ? new URL(P.protocol + j) : new URL(j), ee = ci(I.pathname, L);
+      I.origin === P.origin && ee != null ? j = ee + I.search + I.hash : pe = !0;
     } catch {
       Ha(!1, '<Link to="' + j + '"> contains an invalid URL which will probably break when clicked - please update to a valid URL path.');
     }
@@ -16639,18 +16639,18 @@ const g_ = typeof window < "u" && typeof window.document < "u" && typeof window.
     replace: d,
     state: w,
     target: R,
-    preventScrollReset: U,
+    preventScrollReset: F,
     relative: b,
     viewTransition: x
   });
-  function W(z) {
-    g && g(z), z.defaultPrevented || ce(z);
+  function K(P) {
+    g && g(P), P.defaultPrevented || ce(P);
   }
   return (
     // eslint-disable-next-line jsx-a11y/anchor-has-content
     /* @__PURE__ */ y.createElement("a", no({}, T, {
       href: te || ie,
-      onClick: pe || S ? g : W,
+      onClick: pe || S ? g : K,
       ref: p,
       target: R
     }))
@@ -16666,7 +16666,7 @@ const y_ = /* @__PURE__ */ y.forwardRef(function(f, p) {
     style: w,
     to: R,
     viewTransition: j,
-    children: U
+    children: F
   } = f, x = Gh(f, d_), T = ru(R, {
     relative: x.relative
   }), L = Ji(), te = y.useContext(Bh), {
@@ -16674,24 +16674,24 @@ const y_ = /* @__PURE__ */ y.forwardRef(function(f, p) {
     basename: ie
   } = y.useContext(Na), ce = te != null && // Conditional usage is OK here because the usage of a data router is static
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  T_(T) && j === !0, W = pe.encodeLocation ? pe.encodeLocation(T).pathname : T.pathname, z = L.pathname, I = te && te.navigation && te.navigation.location ? te.navigation.location.pathname : null;
-  b || (z = z.toLowerCase(), I = I ? I.toLowerCase() : null, W = W.toLowerCase()), I && ie && (I = ci(I, ie) || I);
-  const ee = W !== "/" && W.endsWith("/") ? W.length - 1 : W.length;
-  let F = z === W || !d && z.startsWith(W) && z.charAt(ee) === "/", k = I != null && (I === W || !d && I.startsWith(W) && I.charAt(W.length) === "/"), le = {
-    isActive: F,
-    isPending: k,
+  T_(T) && j === !0, K = pe.encodeLocation ? pe.encodeLocation(T).pathname : T.pathname, P = L.pathname, I = te && te.navigation && te.navigation.location ? te.navigation.location.pathname : null;
+  b || (P = P.toLowerCase(), I = I ? I.toLowerCase() : null, K = K.toLowerCase()), I && ie && (I = ci(I, ie) || I);
+  const ee = K !== "/" && K.endsWith("/") ? K.length - 1 : K.length;
+  let z = P === K || !d && P.startsWith(K) && P.charAt(ee) === "/", U = I != null && (I === K || !d && I.startsWith(K) && I.charAt(K.length) === "/"), le = {
+    isActive: z,
+    isPending: U,
     isTransitioning: ce
-  }, X = F ? g : void 0, K;
-  typeof S == "function" ? K = S(le) : K = [S, F ? "active" : null, k ? "pending" : null, ce ? "transitioning" : null].filter(Boolean).join(" ");
+  }, X = z ? g : void 0, W;
+  typeof S == "function" ? W = S(le) : W = [S, z ? "active" : null, U ? "pending" : null, ce ? "transitioning" : null].filter(Boolean).join(" ");
   let oe = typeof w == "function" ? w(le) : w;
   return /* @__PURE__ */ y.createElement(Xi, no({}, x, {
     "aria-current": X,
-    className: K,
+    className: W,
     ref: p,
     style: oe,
     to: R,
     viewTransition: j
-  }), typeof U == "function" ? U(le) : U);
+  }), typeof F == "function" ? F(le) : F);
 });
 y_.displayName = "NavLink";
 const N_ = /* @__PURE__ */ y.forwardRef((o, f) => {
@@ -16704,22 +16704,22 @@ const N_ = /* @__PURE__ */ y.forwardRef((o, f) => {
     method: w = vd,
     action: R,
     onSubmit: j,
-    relative: U,
+    relative: F,
     preventScrollReset: x,
     viewTransition: T
   } = o, L = Gh(o, f_), te = C_(), pe = j_(R, {
-    relative: U
-  }), ie = w.toLowerCase() === "get" ? "get" : "post", ce = (W) => {
-    if (j && j(W), W.defaultPrevented) return;
-    W.preventDefault();
-    let z = W.nativeEvent.submitter, I = (z == null ? void 0 : z.getAttribute("formmethod")) || w;
-    te(z || W.currentTarget, {
+    relative: F
+  }), ie = w.toLowerCase() === "get" ? "get" : "post", ce = (K) => {
+    if (j && j(K), K.defaultPrevented) return;
+    K.preventDefault();
+    let P = K.nativeEvent.submitter, I = (P == null ? void 0 : P.getAttribute("formmethod")) || w;
+    te(P || K.currentTarget, {
       fetcherKey: p,
       method: I,
       navigate: g,
       replace: S,
       state: d,
-      relative: U,
+      relative: F,
       preventScrollReset: x,
       viewTransition: T
     });
@@ -16755,13 +16755,13 @@ function E_(o, f) {
     preventScrollReset: S,
     relative: d,
     viewTransition: w
-  } = f === void 0 ? {} : f, R = Ih(), j = Ji(), U = ru(o, {
+  } = f === void 0 ? {} : f, R = Ih(), j = Ji(), F = ru(o, {
     relative: d
   });
   return y.useCallback((x) => {
     if (l_(x, p)) {
       x.preventDefault();
-      let T = g !== void 0 ? g : Zs(j) === Zs(U);
+      let T = g !== void 0 ? g : Zs(j) === Zs(F);
       R(o, {
         replace: T,
         state: b,
@@ -16770,7 +16770,7 @@ function E_(o, f) {
         viewTransition: w
       });
     }
-  }, [j, R, U, g, b, p, o, S, d, w]);
+  }, [j, R, F, g, b, p, o, S, d, w]);
 }
 function S_() {
   if (typeof document > "u")
@@ -16793,8 +16793,8 @@ function C_() {
       body: j
     } = u_(g, f);
     if (b.navigate === !1) {
-      let U = b.fetcherKey || D_();
-      o.fetch(U, p, b.action || S, {
+      let F = b.fetcherKey || D_();
+      o.fetch(F, p, b.action || S, {
         preventScrollReset: b.preventScrollReset,
         formData: R,
         body: j,
@@ -16853,9 +16853,9 @@ function T_(o, f) {
   return kh(b.pathname, d) != null || kh(b.pathname, S) != null;
 }
 function w_() {
-  const [o, f] = y.useState(null), [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(!0), [R, j] = y.useState(""), [U, x] = y.useState(""), [T, L] = y.useState(!1), [te, pe] = y.useState(!1);
+  const [o, f] = y.useState(null), [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(!0), [R, j] = y.useState(""), [F, x] = y.useState(""), [T, L] = y.useState(!1), [te, pe] = y.useState(!1);
   y.useEffect(() => {
-    const z = typeof window < "u" ? window : void 0, I = z && z.__FIREBASE__ ? z.__FIREBASE__ : null;
+    const P = typeof window < "u" ? window : void 0, I = P && P.__FIREBASE__ ? P.__FIREBASE__ : null;
     f({
       apiKey: I && I.apiKey || void 0 || "AIzaSyD-zBSQk_OIyIDzRG0wBNlQCloBqu25ijo",
       authDomain: I && I.authDomain || void 0 || "fresh-basket-a8933.firebaseapp.com",
@@ -16865,18 +16865,18 @@ function w_() {
       measurementId: I && I.measurementId || void 0 || "G-7M8H5YJF18"
     });
   }, []);
-  function ie(z) {
-    const I = (z == null ? void 0 : z.code) || "", ee = (z == null ? void 0 : z.message) || "";
+  function ie(P) {
+    const I = (P == null ? void 0 : P.code) || "", ee = (P == null ? void 0 : P.message) || "";
     return I.includes("invalid-email") ? "Please enter a valid email address." : I.includes("user-not-found") ? "No account found with that email." : I.includes("wrong-password") || I.includes("invalid-credential") || ee.includes("INVALID_LOGIN_CREDENTIALS") ? "Incorrect email or password." : I.includes("too-many-requests") ? "Too many attempts. Please wait and try again." : I.includes("network-request-failed") ? "Network error. Check your connection and try again." : ee || "Something went wrong.";
   }
-  async function ce(z) {
-    z.preventDefault(), j(""), x(""), L(!0);
+  async function ce(P) {
+    P.preventDefault(), j(""), x(""), L(!0);
     try {
       if (!(o != null && o.apiKey)) throw new Error("Firebase not configured");
-      const I = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), ee = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), { getAuth: F, setPersistence: k, browserLocalPersistence: le, browserSessionPersistence: X, signInWithEmailAndPassword: K } = ee, oe = F();
-      await k(oe, d ? le : X);
-      const P = await (await K(oe, p.trim(), b)).user.getIdToken();
-      if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: P }) })).ok) throw new Error("Session creation failed");
+      const I = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), ee = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), { getAuth: z, setPersistence: U, browserLocalPersistence: le, browserSessionPersistence: X, signInWithEmailAndPassword: W } = ee, oe = z();
+      await U(oe, d ? le : X);
+      const k = await (await W(oe, p.trim(), b)).user.getIdToken();
+      if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: k }) })).ok) throw new Error("Session creation failed");
       x("Signed in successfully."), setTimeout(() => window.location.href = "/dashboard", 600);
     } catch (I) {
       j(ie(I));
@@ -16884,14 +16884,14 @@ function w_() {
       L(!1);
     }
   }
-  async function W() {
+  async function K() {
     j(""), x("");
     try {
       if (!(o != null && o.apiKey)) throw new Error("Firebase not configured");
-      const z = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), { getAuth: I, sendPasswordResetEmail: ee } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), F = I();
-      await ee(F, p.trim()), x("If an account exists for that email, a reset link has been sent.");
-    } catch (z) {
-      j(ie(z));
+      const P = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), { getAuth: I, sendPasswordResetEmail: ee } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), z = I();
+      await ee(z, p.trim()), x("If an account exists for that email, a reset link has been sent.");
+    } catch (P) {
+      j(ie(P));
     }
   }
   return /* @__PURE__ */ s.jsxDEV("section", { className: "auth-layout", children: [
@@ -16948,7 +16948,7 @@ function w_() {
         lineNumber: 81,
         columnNumber: 19
       }, this),
-      U && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-success", children: U }, void 0, !1, {
+      F && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-success", children: F }, void 0, !1, {
         fileName: "/app/code/client/pages/Login.jsx",
         lineNumber: 82,
         columnNumber: 16
@@ -16956,7 +16956,7 @@ function w_() {
       /* @__PURE__ */ s.jsxDEV("form", { className: "auth-form", onSubmit: ce, children: [
         /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
           "Email",
-          /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "email", value: p, onChange: (z) => g(z.target.value), required: !0 }, void 0, !1, {
+          /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "email", value: p, onChange: (P) => g(P.target.value), required: !0 }, void 0, !1, {
             fileName: "/app/code/client/pages/Login.jsx",
             lineNumber: 85,
             columnNumber: 13
@@ -16969,12 +16969,12 @@ function w_() {
         /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
           "Password",
           /* @__PURE__ */ s.jsxDEV("span", { className: "password-field", children: [
-            /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: te ? "text" : "password", value: b, onChange: (z) => S(z.target.value), required: !0 }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: te ? "text" : "password", value: b, onChange: (P) => S(P.target.value), required: !0 }, void 0, !1, {
               fileName: "/app/code/client/pages/Login.jsx",
               lineNumber: 89,
               columnNumber: 15
             }, this),
-            /* @__PURE__ */ s.jsxDEV("button", { type: "button", id: "togglePwd", className: "toggle-password", "aria-label": te ? "Hide password" : "Show password", onClick: () => pe((z) => !z), children: "👁️" }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("button", { type: "button", id: "togglePwd", className: "toggle-password", "aria-label": te ? "Hide password" : "Show password", onClick: () => pe((P) => !P), children: "👁️" }, void 0, !1, {
               fileName: "/app/code/client/pages/Login.jsx",
               lineNumber: 90,
               columnNumber: 15
@@ -16991,7 +16991,7 @@ function w_() {
         }, this),
         /* @__PURE__ */ s.jsxDEV("div", { className: "auth-actions", children: [
           /* @__PURE__ */ s.jsxDEV("label", { className: "remember", children: [
-            /* @__PURE__ */ s.jsxDEV("input", { type: "checkbox", checked: d, onChange: (z) => w(z.target.checked) }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("input", { type: "checkbox", checked: d, onChange: (P) => w(P.target.checked) }, void 0, !1, {
               fileName: "/app/code/client/pages/Login.jsx",
               lineNumber: 94,
               columnNumber: 41
@@ -17002,7 +17002,7 @@ function w_() {
             lineNumber: 94,
             columnNumber: 13
           }, this),
-          /* @__PURE__ */ s.jsxDEV("button", { className: "link-button", type: "button", onClick: W, children: "Forgot password?" }, void 0, !1, {
+          /* @__PURE__ */ s.jsxDEV("button", { className: "link-button", type: "button", onClick: K, children: "Forgot password?" }, void 0, !1, {
             fileName: "/app/code/client/pages/Login.jsx",
             lineNumber: 95,
             columnNumber: 13
@@ -17046,9 +17046,9 @@ function w_() {
   }, this);
 }
 function __() {
-  const [o, f] = y.useState(null), [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(""), [U, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(""), [ie, ce] = y.useState(!1), [W, z] = y.useState(!1), [I, ee] = y.useState(!1), [F, k] = y.useState(!1);
+  const [o, f] = y.useState(null), [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(""), [F, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(""), [ie, ce] = y.useState(!1), [K, P] = y.useState(!1), [I, ee] = y.useState(!1), [z, U] = y.useState(!1);
   y.useEffect(() => {
-    const K = typeof window < "u" ? window : void 0, oe = K && K.__FIREBASE__ ? K.__FIREBASE__ : null;
+    const W = typeof window < "u" ? window : void 0, oe = W && W.__FIREBASE__ ? W.__FIREBASE__ : null;
     f({
       apiKey: oe && oe.apiKey || void 0 || "AIzaSyD-zBSQk_OIyIDzRG0wBNlQCloBqu25ijo",
       authDomain: oe && oe.authDomain || void 0 || "fresh-basket-a8933.firebaseapp.com",
@@ -17058,23 +17058,23 @@ function __() {
       measurementId: oe && oe.measurementId || void 0 || "G-7M8H5YJF18"
     });
   }, []);
-  function le(K) {
-    const oe = (K == null ? void 0 : K.code) || "";
-    return oe.includes("email-already-in-use") ? "An account with this email already exists." : oe.includes("weak-password") ? "Password should be at least 6 characters." : oe.includes("invalid-email") ? "Please enter a valid email address." : oe.includes("network-request-failed") ? "Network error. Check your connection and try again." : (K == null ? void 0 : K.message) || "Something went wrong.";
+  function le(W) {
+    const oe = (W == null ? void 0 : W.code) || "";
+    return oe.includes("email-already-in-use") ? "An account with this email already exists." : oe.includes("weak-password") ? "Password should be at least 6 characters." : oe.includes("invalid-email") ? "Please enter a valid email address." : oe.includes("network-request-failed") ? "Network error. Check your connection and try again." : (W == null ? void 0 : W.message) || "Something went wrong.";
   }
-  async function X(K) {
-    K.preventDefault(), L(""), pe(""), ce(!0);
+  async function X(W) {
+    W.preventDefault(), L(""), pe(""), ce(!0);
     try {
-      const oe = String(p).trim(), Q = String(b).trim(), P = Q.replace(/\D+/g, ""), ue = { fn: !oe, cn: !Q };
-      if (ee(ue.fn), k(ue.cn || P.length < 7), ue.fn || ue.cn) {
+      const oe = String(p).trim(), Q = String(b).trim(), k = Q.replace(/\D+/g, ""), ue = { fn: !oe, cn: !Q };
+      if (ee(ue.fn), U(ue.cn || k.length < 7), ue.fn || ue.cn) {
         L("Please fill in required fields");
         return;
       }
-      if (P.length < 7) {
+      if (k.length < 7) {
         L("Please enter a valid mobile number");
         return;
       }
-      if (R !== U) throw new Error("Passwords do not match");
+      if (R !== F) throw new Error("Passwords do not match");
       if (!(o != null && o.apiKey)) throw new Error("Firebase not configured");
       const de = (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js")).initializeApp(o), { getAuth: Y, createUserWithEmailAndPassword: q } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"), re = Y(), Pe = await (await q(re, d.trim(), R)).user.getIdToken();
       if (!(await fetch("/auth/session", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ idToken: Pe, profile: { fullName: oe, contactNumber: Q } }) })).ok) throw new Error("Session creation failed");
@@ -17104,8 +17104,8 @@ function __() {
     /* @__PURE__ */ s.jsxDEV("form", { className: "auth-form", onSubmit: X, children: [
       /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
         "Full name",
-        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input" + (I && !String(p).trim() ? " input-error" : ""), value: p, onChange: (K) => {
-          g(K.target.value), I && ee(!String(K.target.value).trim());
+        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input" + (I && !String(p).trim() ? " input-error" : ""), value: p, onChange: (W) => {
+          g(W.target.value), I && ee(!String(W.target.value).trim());
         }, onBlur: () => ee(!String(p).trim()), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 72,
@@ -17118,14 +17118,14 @@ function __() {
       }, this),
       /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
         "Contact number",
-        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input" + (F ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: b, onChange: (K) => {
-          if (S(K.target.value), F) {
-            const oe = String(K.target.value).trim().replace(/\D+/g, "");
-            k(!(oe.length >= 7));
+        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input" + (z ? " input-error" : ""), type: "tel", inputMode: "tel", pattern: "[0-9+()\\-\\s]{7,}", value: b, onChange: (W) => {
+          if (S(W.target.value), z) {
+            const oe = String(W.target.value).trim().replace(/\D+/g, "");
+            U(!(oe.length >= 7));
           }
         }, onBlur: () => {
-          const K = String(b).trim().replace(/\D+/g, "");
-          k(!(K.length >= 7));
+          const W = String(b).trim().replace(/\D+/g, "");
+          U(!(W.length >= 7));
         }, placeholder: "e.g. +1 555 123 4567", required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 75,
@@ -17138,7 +17138,7 @@ function __() {
       }, this),
       /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
         "Email",
-        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "email", value: d, onChange: (K) => w(K.target.value), required: !0 }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "email", value: d, onChange: (W) => w(W.target.value), required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 78,
           columnNumber: 11
@@ -17151,12 +17151,12 @@ function __() {
       /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
         "Password",
         /* @__PURE__ */ s.jsxDEV("span", { className: "password-field", children: [
-          /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: W ? "text" : "password", value: R, onChange: (K) => j(K.target.value), minLength: 6, required: !0 }, void 0, !1, {
+          /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: K ? "text" : "password", value: R, onChange: (W) => j(W.target.value), minLength: 6, required: !0 }, void 0, !1, {
             fileName: "/app/code/client/pages/Register.jsx",
             lineNumber: 82,
             columnNumber: 13
           }, this),
-          /* @__PURE__ */ s.jsxDEV("button", { type: "button", className: "toggle-password", "aria-label": W ? "Hide password" : "Show password", onClick: () => z((K) => !K), children: "👁️" }, void 0, !1, {
+          /* @__PURE__ */ s.jsxDEV("button", { type: "button", className: "toggle-password", "aria-label": K ? "Hide password" : "Show password", onClick: () => P((W) => !W), children: "👁️" }, void 0, !1, {
             fileName: "/app/code/client/pages/Register.jsx",
             lineNumber: 83,
             columnNumber: 13
@@ -17173,7 +17173,7 @@ function __() {
       }, this),
       /* @__PURE__ */ s.jsxDEV("label", { className: "auth-label", children: [
         "Confirm Password",
-        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "password", value: U, onChange: (K) => x(K.target.value), minLength: 6, required: !0 }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("input", { className: "auth-input", type: "password", value: F, onChange: (W) => x(W.target.value), minLength: 6, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/pages/Register.jsx",
           lineNumber: 87,
           columnNumber: 11
@@ -17296,16 +17296,16 @@ function Mr({ children: o }) {
     function j(x) {
       x.key === "Escape" && w();
     }
-    function U(x) {
+    function F(x) {
       x && x.querySelectorAll(".dropdown-item").forEach((T) => {
         T.addEventListener("click", () => w());
       });
     }
     return p && g && (p.addEventListener("click", (x) => {
       x.stopPropagation(), d(S, b, !1), d(g, p, g.classList.contains("hidden"));
-    }), U(g)), b && S && (b.addEventListener("click", (x) => {
+    }), F(g)), b && S && (b.addEventListener("click", (x) => {
       x.stopPropagation(), d(g, p, !1), d(S, b, S.classList.contains("hidden"));
-    }), U(S)), document.addEventListener("click", R), document.addEventListener("keydown", j), () => {
+    }), F(S)), document.addEventListener("click", R), document.addEventListener("keydown", j), () => {
       document.removeEventListener("click", R), document.removeEventListener("keydown", j);
     };
   }, []), /* @__PURE__ */ s.jsxDEV(s.Fragment, { children: [
@@ -17515,16 +17515,16 @@ function Mr({ children: o }) {
   }, this);
 }
 function M_({ onClose: o, onCreated: f }) {
-  const [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(!1), [U, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(!1), [ie, ce] = y.useState(!1), [W, z] = y.useState(!1), [I, ee] = y.useState(!1), F = "+92";
-  function k(X) {
-    const K = String(X || "").replace(/\D+/g, "");
-    return K.length === 0 ? "" : K.startsWith("92") ? F + K.slice(2) : F + K;
+  const [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(!1), [F, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(!1), [ie, ce] = y.useState(!1), [K, P] = y.useState(!1), [I, ee] = y.useState(!1), z = "+92";
+  function U(X) {
+    const W = String(X || "").replace(/\D+/g, "");
+    return W.length === 0 ? "" : W.startsWith("92") ? z + W.slice(2) : z + W;
   }
-  k(d);
+  U(d);
   async function le() {
     x(""), L(""), ee(!0);
-    const X = String(p), K = String(b).trim(), oe = String(d).trim(), Q = oe.replace(/\D+/g, ""), P = { fn: !K, cn: !oe, pw: !X };
-    if (pe(P.fn), ce(P.cn || Q.length < 7), z(P.pw), P.fn || P.cn || P.pw) {
+    const X = String(p), W = String(b).trim(), oe = String(d).trim(), Q = oe.replace(/\D+/g, ""), k = { fn: !W, cn: !oe, pw: !X };
+    if (pe(k.fn), ce(k.cn || Q.length < 7), P(k.pw), k.fn || k.cn || k.pw) {
       x("Full name, mobile and password are required");
       return;
     }
@@ -17533,20 +17533,20 @@ function M_({ onClose: o, onCreated: f }) {
       return;
     }
     if (X.length < 6) {
-      z(!0), x("Password must be at least 6 characters");
+      P(!0), x("Password must be at least 6 characters");
       return;
     }
     j(!0);
     try {
-      const ue = k(oe), de = await fetch("/api/mobile/register", {
+      const ue = U(oe), de = await fetch("/api/mobile/register", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: X, fullName: K, contactNumber: ue })
+        body: JSON.stringify({ password: X, fullName: W, contactNumber: ue })
       }), Y = await de.json().catch(() => null);
       if (!de.ok) {
         const q = String(Y && (Y.error || Y.message) || ""), re = q.toUpperCase();
-        /MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(q) || /MISSING\s*PASSWORD/i.test(q) ? (x("Full name, mobile and password are required"), pe(!K), ce(!oe || Q.length !== 10), z(!X)) : re.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(q) ? (z(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(q) ? (ce(!0), x("numbers should be 10 digit")) : /FIREBASE NOT CONFIGURED/i.test(q) ? x("Service temporarily unavailable. Please try again later.") : x(q || "Failed to create rider");
+        /MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(q) || /MISSING\s*PASSWORD/i.test(q) ? (x("Full name, mobile and password are required"), pe(!W), ce(!oe || Q.length !== 10), P(!X)) : re.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(q) ? (P(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(q) ? (ce(!0), x("numbers should be 10 digit")) : /FIREBASE NOT CONFIGURED/i.test(q) ? x("Service temporarily unavailable. Please try again later.") : x(q || "Failed to create rider");
         return;
       }
       L("Rider created successfully"), f && f(), setTimeout(() => {
@@ -17554,7 +17554,7 @@ function M_({ onClose: o, onCreated: f }) {
       }, 600);
     } catch (ue) {
       const de = String((ue == null ? void 0 : ue.message) || "");
-      /Missing\s*(fullName\/contactNumber|password)/i.test(de) ? x("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(de) || /AT LEAST 6 CHARACTERS/i.test(de) ? (z(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(de) ? (ce(!0), x("numbers should be 10 digit")) : x(de || "Failed to create rider");
+      /Missing\s*(fullName\/contactNumber|password)/i.test(de) ? x("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(de) || /AT LEAST 6 CHARACTERS/i.test(de) ? (P(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(de) ? (ce(!0), x("numbers should be 10 digit")) : x(de || "Failed to create rider");
     } finally {
       j(!1);
     }
@@ -17599,7 +17599,7 @@ function M_({ onClose: o, onCreated: f }) {
       /* @__PURE__ */ s.jsxDEV("label", { className: "field-label", children: [
         "Password",
         /* @__PURE__ */ s.jsxDEV("input", { className: "field-input" + (I && !String(p) ? " input-error" : ""), type: "password", value: p, onChange: (X) => {
-          g(X.target.value), I && z(!String(X.target.value));
+          g(X.target.value), I && P(!String(X.target.value));
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreateRiderModal.jsx",
           lineNumber: 109,
@@ -17628,8 +17628,8 @@ function M_({ onClose: o, onCreated: f }) {
               placeholder: "3001234567",
               value: d,
               onChange: (X) => {
-                const K = X.target.value.replace(/\D+/g, "").slice(0, 10);
-                w(K), I && ce(K.length !== 10);
+                const W = X.target.value.replace(/\D+/g, "").slice(0, 10);
+                w(W), I && ce(W.length !== 10);
               },
               required: !0
             },
@@ -17652,7 +17652,7 @@ function M_({ onClose: o, onCreated: f }) {
         lineNumber: 111,
         columnNumber: 11
       }, this),
-      U && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: U }, void 0, !1, {
+      F && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: F }, void 0, !1, {
         fileName: "/app/code/client/components/CreateRiderModal.jsx",
         lineNumber: 132,
         columnNumber: 21
@@ -17692,8 +17692,8 @@ function V_({ rider: o, onClose: f, onUpdated: p }) {
   const g = y.useMemo(() => String((o == null ? void 0 : o.name) || (o == null ? void 0 : o.displayName) || ""), [o]), b = y.useMemo(() => {
     const ee = String((o == null ? void 0 : o.contactNumber) || "").trim().replace(/\D+/g, "");
     return ee.length >= 10 ? ee.slice(-10) : ee;
-  }, [o]), [S, d] = y.useState(g), [w, R] = y.useState(b), [j, U] = y.useState(!1), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!1), ce = "+92";
-  function W(I) {
+  }, [o]), [S, d] = y.useState(g), [w, R] = y.useState(b), [j, F] = y.useState(!1), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!1), ce = "+92";
+  function K(I) {
     const ee = String(I || "").replace(/\D+/g, "");
     return ee.length === 0 ? "" : ee.startsWith("92") ? ce + ee.slice(2) : ce + ee;
   }
@@ -17706,36 +17706,36 @@ function V_({ rider: o, onClose: f, onUpdated: p }) {
           window.location.href = "/auth/login";
           return;
         }
-        const F = await ee.json().catch(() => null), k = F && (F.data || F) || {}, le = k.rider || k || {};
+        const z = await ee.json().catch(() => null), U = z && (z.data || z) || {}, le = U.rider || U || {};
         if (!I) return;
-        const X = String(le.displayName || le.name || "").trim(), K = String(le.contactNumber || "").replace(/\D+/g, "");
-        X && d(X), K && R(K.slice(-10));
+        const X = String(le.displayName || le.name || "").trim(), W = String(le.contactNumber || "").replace(/\D+/g, "");
+        X && d(X), W && R(W.slice(-10));
       } catch {
       }
     })(), () => {
       I = !1;
     };
   }, [o == null ? void 0 : o.id]);
-  async function z() {
+  async function P() {
     ie(!0), T(""), te("");
-    const I = String(S).trim(), F = String(w).trim().replace(/\D+/g, "");
-    if (!I && F.length === 0) {
+    const I = String(S).trim(), z = String(w).trim().replace(/\D+/g, "");
+    if (!I && z.length === 0) {
       T("Enter a name or mobile");
       return;
     }
-    if (F && F.length !== 10) {
+    if (z && z.length !== 10) {
       T("numbers should be 10 digit");
       return;
     }
-    U(!0);
+    F(!0);
     try {
-      const k = {};
-      I && (k.displayName = I), F && (k.contactNumber = W(F));
+      const U = {};
+      I && (U.displayName = I), z && (U.contactNumber = K(z));
       const le = await fetch(`/api/riders/${encodeURIComponent(o.id)}`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(k)
+        body: JSON.stringify(U)
       }), X = await le.json().catch(() => ({}));
       if (le.status === 401) {
         window.location.href = "/auth/login";
@@ -17748,10 +17748,10 @@ function V_({ rider: o, onClose: f, onUpdated: p }) {
       te("Saved"), p && p(X.data && X.data.rider ? X.data.rider : null), setTimeout(() => {
         f && f();
       }, 450);
-    } catch (k) {
-      T(String((k == null ? void 0 : k.message) || "Failed to update rider"));
+    } catch (U) {
+      T(String((U == null ? void 0 : U.message) || "Failed to update rider"));
     } finally {
-      U(!1);
+      F(!1);
     }
   }
   return /* @__PURE__ */ s.jsxDEV("div", { className: "edit-modal-backdrop", role: "dialog", "aria-modal": "true", children: /* @__PURE__ */ s.jsxDEV("div", { className: "edit-modal", children: [
@@ -17841,7 +17841,7 @@ function V_({ rider: o, onClose: f, onUpdated: p }) {
           lineNumber: 104,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: z, disabled: j, children: j ? "Saving…" : "Save" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: P, disabled: j, children: j ? "Saving…" : "Save" }, void 0, !1, {
           fileName: "/app/code/client/components/EditRiderModal.jsx",
           lineNumber: 105,
           columnNumber: 13
@@ -17998,7 +17998,7 @@ function H_() {
   const o = () => {
     const Y = /* @__PURE__ */ new Date(), q = new Date(Y.getFullYear(), Y.getMonth(), 1), re = `${q.getFullYear()}-${String(q.getMonth() + 1).padStart(2, "0")}-${String(q.getDate()).padStart(2, "0")}`, Re = `${Y.getFullYear()}-${String(Y.getMonth() + 1).padStart(2, "0")}-${String(Y.getDate()).padStart(2, "0")}`;
     return { from: re, to: Re };
-  }, f = y.useMemo(() => o(), []), [p, g] = y.useState([]), [b, S] = y.useState(""), [d, w] = y.useState(!0), [R, j] = y.useState(""), [U, x] = y.useState(1), [T, L] = y.useState(20), [te, pe] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [ie, ce] = y.useState(!1), [W, z] = y.useState(null), [I, ee] = y.useState(Xn), [F, k] = y.useState(f.from), [le, X] = y.useState(f.to), [K, oe] = y.useState(/* @__PURE__ */ new Map());
+  }, f = y.useMemo(() => o(), []), [p, g] = y.useState([]), [b, S] = y.useState(""), [d, w] = y.useState(!0), [R, j] = y.useState(""), [F, x] = y.useState(1), [T, L] = y.useState(20), [te, pe] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [ie, ce] = y.useState(!1), [K, P] = y.useState(null), [I, ee] = y.useState(Xn), [z, U] = y.useState(f.from), [le, X] = y.useState(f.to), [W, oe] = y.useState(/* @__PURE__ */ new Map());
   y.useEffect(() => {
     function Y() {
       ee(Wh());
@@ -18017,7 +18017,7 @@ function H_() {
       w(!0), j("");
       try {
         const et = new URLSearchParams();
-        b && et.set("q", b), et.set("page", String(U)), et.set("limit", String(T));
+        b && et.set("q", b), et.set("page", String(F)), et.set("limit", String(T));
         const Ve = await fetch(`/api/riders?${et.toString()}`, { credentials: "include" });
         if (Ve.status === 401) {
           window.location.href = "/auth/login";
@@ -18034,8 +18034,8 @@ function H_() {
     })(), () => {
       Y = !1;
     };
-  }, [b, U, T]), y.useEffect(() => {
-    if (!F || !le || !p.length) {
+  }, [b, F, T]), y.useEffect(() => {
+    if (!z || !le || !p.length) {
       oe(/* @__PURE__ */ new Map());
       return;
     }
@@ -18047,9 +18047,9 @@ function H_() {
     })();
     oe(/* @__PURE__ */ new Map());
     const Pe = p.map((Ve) => async () => {
-      const Ke = `${Ve.id}:${F}:${le}`;
+      const Ke = `${Ve.id}:${z}:${le}`;
       try {
-        const at = await fetch(`/api/riders/${Ve.id}/km-in-range?fromDate=${F}&toDate=${le}`, { credentials: "include", signal: q });
+        const at = await fetch(`/api/riders/${Ve.id}/km-in-range?fromDate=${z}&toDate=${le}`, { credentials: "include", signal: q });
         if (at.status === 401) {
           window.location.href = "/auth/login";
           return;
@@ -18088,11 +18088,11 @@ function H_() {
     return et(Pe, Re), () => {
       re = !0, Y.abort();
     };
-  }, [F, le, p]);
+  }, [z, le, p]);
   const Q = y.useMemo(() => p.filter((Y) => {
     if (b && !String(Y.name || "").toLowerCase().includes(b.toLowerCase().trim())) return !1;
-    if (F || le) {
-      const q = Number(Y.lastActiveDays ?? 0), re = F ? new Date(F) : null, Re = le ? new Date(le) : null;
+    if (z || le) {
+      const q = Number(Y.lastActiveDays ?? 0), re = z ? new Date(z) : null, Re = le ? new Date(le) : null;
       if (re && Re) {
         const Pe = Math.floor((Date.now() - re.getTime()) / 864e5), et = Math.floor((Date.now() - Re.getTime()) / (1e3 * 60 * 60 * 24));
         if (q < et || q > Pe) return !1;
@@ -18105,7 +18105,7 @@ function H_() {
       }
     }
     return !0;
-  }), [p, b, F, le]), P = y.useMemo(() => {
+  }), [p, b, z, le]), k = y.useMemo(() => {
     const Y = Number(I.farePerKm);
     return Number.isFinite(Y) ? Y : Xn.farePerKm;
   }, [I]), ue = y.useMemo(() => {
@@ -18182,8 +18182,8 @@ function H_() {
         columnNumber: 11
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "rc-filters", children: /* @__PURE__ */ s.jsxDEV("div", { className: "date-range-filter", children: [
-        /* @__PURE__ */ s.jsxDEV("input", { type: "date", className: "date-range-input", value: F, onChange: (Y) => {
-          k(Y.target.value), x(1);
+        /* @__PURE__ */ s.jsxDEV("input", { type: "date", className: "date-range-input", value: z, onChange: (Y) => {
+          U(Y.target.value), x(1);
         }, placeholder: "From", title: "Filter from date" }, void 0, !1, {
           fileName: "/app/code/client/pages/Riders.jsx",
           lineNumber: 280,
@@ -18223,17 +18223,17 @@ function H_() {
         lineNumber: 289,
         columnNumber: 13
       }, this),
-      W && /* @__PURE__ */ s.jsxDEV(
+      K && /* @__PURE__ */ s.jsxDEV(
         V_,
         {
-          rider: W,
-          onClose: () => z(null),
+          rider: K,
+          onClose: () => P(null),
           onUpdated: (Y) => {
             if (!Y) {
-              z(null);
+              P(null);
               return;
             }
-            g((q) => q.map((re) => String(re.id) === String(Y.id) ? { ...re, name: Y.displayName || Y.name || re.name, contactNumber: Y.contactNumber ?? re.contactNumber } : re)), z(null);
+            g((q) => q.map((re) => String(re.id) === String(Y.id) ? { ...re, name: Y.displayName || Y.name || re.name, contactNumber: Y.contactNumber ?? re.contactNumber } : re)), P(null);
           }
         },
         void 0,
@@ -18320,8 +18320,8 @@ function H_() {
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-month", children: (() => {
               var q;
-              if (F && le) {
-                const re = `${Y.id}:${F}:${le}`, Re = K.get(re);
+              if (z && le) {
+                const re = `${Y.id}:${z}:${le}`, Re = W.get(re);
                 if (!Re) return /* @__PURE__ */ s.jsxDEV("span", { className: "cell-loader loader-sm", "aria-busy": "true", "aria-label": "Loading range" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 327,
@@ -18338,9 +18338,9 @@ function H_() {
             }, this),
             (() => {
               var Pe, et;
-              if (F && le) {
-                const Ve = `${Y.id}:${F}:${le}`;
-                if (!K.get(Ve)) return /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-earnings", children: /* @__PURE__ */ s.jsxDEV("span", { className: "cell-loader loader-md", "aria-busy": "true", "aria-label": "Loading earnings" }, void 0, !1, {
+              if (z && le) {
+                const Ve = `${Y.id}:${z}:${le}`;
+                if (!W.get(Ve)) return /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-earnings", children: /* @__PURE__ */ s.jsxDEV("span", { className: "cell-loader loader-md", "aria-busy": "true", "aria-label": "Loading earnings" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 337,
                   columnNumber: 74
@@ -18351,8 +18351,8 @@ function H_() {
                 }, this);
               }
               let q = 0, re = 0;
-              if (F && le) {
-                const Ve = `${Y.id}:${F}:${le}`, Ke = K.get(Ve);
+              if (z && le) {
+                const Ve = `${Y.id}:${z}:${le}`, Ke = W.get(Ve);
                 q = (Ke == null ? void 0 : Ke.km) ?? 0, re = (Ke == null ? void 0 : Ke.rideCount) ?? 0;
               } else {
                 const Ve = de.keys[de.keys.length - 2];
@@ -18360,7 +18360,7 @@ function H_() {
                 const Ke = Array.isArray(Y.orders) ? Y.orders : [];
                 re = Number(((et = Y.monthlyRideCounts) == null ? void 0 : et[Ve]) ?? P_(Ke, Ve) ?? 0);
               }
-              const Re = q * P + re * ue;
+              const Re = q * k + re * ue;
               return /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-earnings", children: Number.isFinite(Re) ? `${Re.toFixed(2)} Rs.` : "0 Rs." }, void 0, !1, {
                 fileName: "/app/code/client/pages/Riders.jsx",
                 lineNumber: 356,
@@ -18368,8 +18368,8 @@ function H_() {
               }, this);
             })(),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-performance", children: (() => {
-              if (F && le) {
-                const q = `${Y.id}:${F}:${le}`, re = K.get(q);
+              if (z && le) {
+                const q = `${Y.id}:${z}:${le}`, re = W.get(q);
                 if (!re) return /* @__PURE__ */ s.jsxDEV("span", { className: "cell-loader loader-sm", "aria-busy": "true", "aria-label": "Loading performance" }, void 0, !1, {
                   fileName: "/app/code/client/pages/Riders.jsx",
                   lineNumber: 362,
@@ -18390,7 +18390,7 @@ function H_() {
               columnNumber: 19
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-actions", children: /* @__PURE__ */ s.jsxDEV("div", { className: "actions-container", children: [
-              /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip btn-edit-rider", "aria-label": "Edit rider", title: "Edit rider", onClick: () => z(Y), children: /* @__PURE__ */ s.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ s.jsxDEV("path", { d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" }, void 0, !1, {
+              /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip btn-edit-rider", "aria-label": "Edit rider", title: "Edit rider", onClick: () => P(Y), children: /* @__PURE__ */ s.jsxDEV("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ s.jsxDEV("path", { d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" }, void 0, !1, {
                 fileName: "/app/code/client/pages/Riders.jsx",
                 lineNumber: 372,
                 columnNumber: 147
@@ -18701,7 +18701,7 @@ function zx(o) {
   return String(o);
 }
 function Px(o) {
-  var g, b, S, d, w, R, j, U;
+  var g, b, S, d, w, R, j, F;
   if (!Ba(o)) return null;
   const f = [
     o.expected_delivery_time,
@@ -18713,7 +18713,7 @@ function Px(o) {
     (w = o.delivery) == null ? void 0 : w.expected_delivery_time,
     (R = o.delivery) == null ? void 0 : R.expectedDeliveryTime,
     (j = o.expected_delivery) == null ? void 0 : j.time,
-    (U = o.expected_delivery) == null ? void 0 : U.minutes,
+    (F = o.expected_delivery) == null ? void 0 : F.minutes,
     o.expected_time,
     o.expectedTime,
     o.expectedMinutes
@@ -18809,7 +18809,7 @@ function Y_() {
       lineNumber: 35,
       columnNumber: 12
     }, this);
-  const { rider: w, metrics: R, history: j } = f, U = Number.isFinite(Number(R == null ? void 0 : R.onTimeRate)) ? Math.round(Number(R.onTimeRate)) : 0;
+  const { rider: w, metrics: R, history: j } = f, F = Number.isFinite(Number(R == null ? void 0 : R.onTimeRate)) ? Math.round(Number(R.onTimeRate)) : 0;
   return /* @__PURE__ */ s.jsxDEV(Mr, { children: /* @__PURE__ */ s.jsxDEV("section", { className: "rider-commissions", children: [
     /* @__PURE__ */ s.jsxDEV("header", { className: "rc-header", children: [
       /* @__PURE__ */ s.jsxDEV("h2", { className: "rc-title", children: "Rider Profile" }, void 0, !1, {
@@ -18877,7 +18877,7 @@ function Y_() {
       /* @__PURE__ */ s.jsxDEV("div", { className: "rc-select rc-chip", children: [
         "On-Time Rate ",
         /* @__PURE__ */ s.jsxDEV("strong", { children: [
-          U,
+          F,
           "%"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/RiderProfile.jsx",
@@ -18956,7 +18956,7 @@ function Y_() {
       }, this),
       /* @__PURE__ */ s.jsxDEV("tbody", { children: [
         (f.riderOrders || []).map((T, L) => {
-          const te = T.name || T.orderId, pe = ui(T.created_at), ie = pe instanceof Date && !Number.isNaN(pe.getTime()) ? pe.toISOString().slice(0, 10) : "-", ce = Fx(T.deliveryStartTime), W = Px(T), z = zx(W), I = Ux(T), ee = Hx(I), F = Number(T.distance_km), k = Number.isFinite(F) ? `${F.toFixed(2)} km` : typeof T.distance_km == "string" && T.distance_km.trim() ? T.distance_km : "-";
+          const te = T.name || T.orderId, pe = ui(T.created_at), ie = pe instanceof Date && !Number.isNaN(pe.getTime()) ? pe.toISOString().slice(0, 10) : "-", ce = Fx(T.deliveryStartTime), K = Px(T), P = zx(K), I = Ux(T), ee = Hx(I), z = Number(T.distance_km), U = Number.isFinite(z) ? `${z.toFixed(2)} km` : typeof T.distance_km == "string" && T.distance_km.trim() ? T.distance_km : "-";
           return /* @__PURE__ */ s.jsxDEV("tr", { children: [
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-name order-cell", children: te }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
@@ -18973,7 +18973,7 @@ function Y_() {
               lineNumber: 97,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-expected expected-cell", children: z }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-expected expected-cell", children: P }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 98,
               columnNumber: 21
@@ -18983,7 +18983,7 @@ function Y_() {
               lineNumber: 99,
               columnNumber: 21
             }, this),
-            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-commission distance-cell", children: k }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-commission distance-cell", children: U }, void 0, !1, {
               fileName: "/app/code/client/pages/RiderProfile.jsx",
               lineNumber: 100,
               columnNumber: 21
@@ -19055,9 +19055,9 @@ function Y_() {
   }, this);
 }
 function Bx({ orderId: o, onClose: f, onAssigned: p }) {
-  const [g, b] = y.useState([]), [S, d] = y.useState([]), [w, R] = y.useState(""), [j, U] = y.useState(""), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!0), [ce, W] = y.useState(!0), [z, I] = y.useState(""), [ee, F] = y.useState(""), [k, le] = y.useState(!1);
+  const [g, b] = y.useState([]), [S, d] = y.useState([]), [w, R] = y.useState(""), [j, F] = y.useState(""), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!0), [ce, K] = y.useState(!0), [P, I] = y.useState(""), [ee, z] = y.useState(""), [U, le] = y.useState(!1);
   y.useEffect(() => {
-    let P = !0;
+    let k = !0;
     return (async () => {
       ie(!0), I("");
       try {
@@ -19068,19 +19068,19 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
         }
         if (!ue.ok) throw new Error("Failed to load riders");
         const de = await ue.json();
-        P && b(Array.isArray(de.riders) ? de.riders : []);
+        k && b(Array.isArray(de.riders) ? de.riders : []);
       } catch (ue) {
-        P && I(ue.message || "Failed to load riders");
+        k && I(ue.message || "Failed to load riders");
       } finally {
-        P && ie(!1);
+        k && ie(!1);
       }
     })(), () => {
-      P = !1;
+      k = !1;
     };
   }, []), y.useEffect(() => {
-    let P = !0;
+    let k = !0;
     return (async () => {
-      W(!0), F("");
+      K(!0), z("");
       try {
         const ue = await fetch("/api/packers?limit=200", { credentials: "include" });
         if (ue.status === 401) {
@@ -19089,14 +19089,14 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
         }
         if (!ue.ok) throw new Error("Failed to load packers");
         const de = await ue.json();
-        P && d(Array.isArray(de.packers) ? de.packers : []);
+        k && d(Array.isArray(de.packers) ? de.packers : []);
       } catch (ue) {
-        P && F(ue.message || "Failed to load packers");
+        k && z(ue.message || "Failed to load packers");
       } finally {
-        P && W(!1);
+        k && K(!1);
       }
     })(), () => {
-      P = !1;
+      k = !1;
     };
   }, []);
   async function X() {
@@ -19114,18 +19114,18 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
     }
     le(!0);
     try {
-      const P = await fetch(`/api/orders/${encodeURIComponent(o)}/assign`, {
+      const k = await fetch(`/api/orders/${encodeURIComponent(o)}/assign`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ riderId: w, paymentMethod: x.trim(), amount: L.trim() })
       });
-      if (P.status === 401) {
+      if (k.status === 401) {
         window.location.href = "/auth/login";
         return;
       }
-      const ue = await P.json().catch(() => null);
-      if (!P.ok) throw new Error(ue && ue.error ? ue.error : "Assign failed");
+      const ue = await k.json().catch(() => null);
+      if (!k.ok) throw new Error(ue && ue.error ? ue.error : "Assign failed");
       const de = await fetch(`/api/orders/${encodeURIComponent(o)}/assign-packer`, {
         method: "POST",
         credentials: "include",
@@ -19144,13 +19144,13 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
       } catch {
       }
       f();
-    } catch (P) {
-      alert(P.message || "Failed to assign");
+    } catch (k) {
+      alert(k.message || "Failed to assign");
     } finally {
       le(!1);
     }
   }
-  const K = z || "", oe = ee || "", Q = pe || ce;
+  const W = P || "", oe = ee || "", Q = pe || ce;
   return /* @__PURE__ */ s.jsxDEV("div", { className: "assign-modal-backdrop", role: "dialog", "aria-modal": "true", children: /* @__PURE__ */ s.jsxDEV("div", { className: "assign-modal", children: [
     /* @__PURE__ */ s.jsxDEV("header", { className: "assign-modal-header", children: [
       /* @__PURE__ */ s.jsxDEV("h3", { className: "assign-modal-title", children: "Assign Rider & Packer" }, void 0, !1, {
@@ -19182,15 +19182,15 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
               {
                 className: "field-input assign-dropdown",
                 value: w,
-                onChange: (P) => R(P.target.value),
-                disabled: k,
+                onChange: (k) => R(k.target.value),
+                disabled: U,
                 children: [
                   /* @__PURE__ */ s.jsxDEV("option", { value: "", children: "-- Choose a rider --" }, void 0, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 118,
                     columnNumber: 23
                   }, this),
-                  [...g].sort((P, ue) => P.name.localeCompare(ue.name)).map((P) => /* @__PURE__ */ s.jsxDEV("option", { value: P.id, children: P.name }, P.id, !1, {
+                  [...g].sort((k, ue) => k.name.localeCompare(ue.name)).map((k) => /* @__PURE__ */ s.jsxDEV("option", { value: k.id, children: k.name }, k.id, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 120,
                     columnNumber: 25
@@ -19211,12 +19211,12 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
             lineNumber: 111,
             columnNumber: 19
           }, this),
-          K && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: K }, void 0, !1, {
+          W && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: W }, void 0, !1, {
             fileName: "/app/code/client/components/AssignModal.jsx",
             lineNumber: 124,
             columnNumber: 34
           }, this),
-          g.length === 0 && !K && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "No riders available" }, void 0, !1, {
+          g.length === 0 && !W && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "No riders available" }, void 0, !1, {
             fileName: "/app/code/client/components/AssignModal.jsx",
             lineNumber: 125,
             columnNumber: 58
@@ -19234,15 +19234,15 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
               {
                 className: "field-input assign-dropdown",
                 value: j,
-                onChange: (P) => U(P.target.value),
-                disabled: k,
+                onChange: (k) => F(k.target.value),
+                disabled: U,
                 children: [
                   /* @__PURE__ */ s.jsxDEV("option", { value: "", children: "-- Choose a packer --" }, void 0, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 136,
                     columnNumber: 23
                   }, this),
-                  [...S].sort((P, ue) => P.name.localeCompare(ue.name)).map((P) => /* @__PURE__ */ s.jsxDEV("option", { value: P.id, children: P.name }, P.id, !1, {
+                  [...S].sort((k, ue) => k.name.localeCompare(ue.name)).map((k) => /* @__PURE__ */ s.jsxDEV("option", { value: k.id, children: k.name }, k.id, !1, {
                     fileName: "/app/code/client/components/AssignModal.jsx",
                     lineNumber: 138,
                     columnNumber: 25
@@ -19287,8 +19287,8 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
               className: "field-input assign-dropdown",
               placeholder: "e.g., Cash, Card, Online",
               value: x,
-              onChange: (P) => T(P.target.value),
-              disabled: k
+              onChange: (k) => T(k.target.value),
+              disabled: U
             },
             void 0,
             !1,
@@ -19317,8 +19317,8 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
               className: "field-input assign-dropdown",
               placeholder: "e.g., 500",
               value: L,
-              onChange: (P) => te(P.target.value),
-              disabled: k
+              onChange: (k) => te(k.target.value),
+              disabled: U
             },
             void 0,
             !1,
@@ -19344,12 +19344,12 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
         columnNumber: 15
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "assign-modal-actions", children: [
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary", onClick: f, disabled: k, children: "Cancel" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary", onClick: f, disabled: U, children: "Cancel" }, void 0, !1, {
           fileName: "/app/code/client/components/AssignModal.jsx",
           lineNumber: 174,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: X, disabled: k || !w || !j, children: k ? "Assigning…" : "Assign" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: X, disabled: U || !w || !j, children: U ? "Assigning…" : "Assign" }, void 0, !1, {
           fileName: "/app/code/client/components/AssignModal.jsx",
           lineNumber: 175,
           columnNumber: 17
@@ -19379,12 +19379,12 @@ function Bx({ orderId: o, onClose: f, onAssigned: p }) {
   }, this);
 }
 function q_({ order: o, onClose: f, onUpdated: p }) {
-  const [g, b] = y.useState([]), [S, d] = y.useState([]), [w, R] = y.useState(""), [j, U] = y.useState(""), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!0), [ce, W] = y.useState(""), [z, I] = y.useState(!1);
+  const [g, b] = y.useState([]), [S, d] = y.useState([]), [w, R] = y.useState(""), [j, F] = y.useState(""), [x, T] = y.useState(""), [L, te] = y.useState(""), [pe, ie] = y.useState(!0), [ce, K] = y.useState(""), [P, I] = y.useState(!1);
   y.useEffect(() => {
-    let F = !0;
+    let z = !0;
     return (async () => {
-      var k;
-      ie(!0), W("");
+      var U;
+      ie(!0), K("");
       try {
         const le = await fetch("/api/riders?limit=200", { credentials: "include" });
         if (le.status === 401) {
@@ -19393,23 +19393,23 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
         }
         if (!le.ok) throw new Error("Failed to load riders");
         const X = await le.json();
-        if (F) {
+        if (z) {
           b(Array.isArray(X.riders) ? X.riders : []);
-          const K = ((k = o.assignment) == null ? void 0 : k.riderId) || o.riderId || o.rider_id || "";
-          R(String(K));
+          const W = ((U = o.assignment) == null ? void 0 : U.riderId) || o.riderId || o.rider_id || "";
+          R(String(W));
         }
       } catch (le) {
-        F && W(le.message || "Failed to load riders");
+        z && K(le.message || "Failed to load riders");
       } finally {
-        F && ie(!1);
+        z && ie(!1);
       }
     })(), () => {
-      F = !1;
+      z = !1;
     };
   }, [o]), y.useEffect(() => {
-    let F = !0;
+    let z = !0;
     return (async () => {
-      var k;
+      var U;
       try {
         const le = await fetch("/api/packers?limit=200", { credentials: "include" });
         if (le.status === 401) {
@@ -19418,21 +19418,21 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
         }
         if (!le.ok) throw new Error("Failed to load packers");
         const X = await le.json();
-        if (F) {
+        if (z) {
           d(Array.isArray(X.packers) ? X.packers : []);
-          const K = ((k = o.assignment) == null ? void 0 : k.packerId) || o.packed_by || o.packer_id || "";
-          U(String(K));
+          const W = ((U = o.assignment) == null ? void 0 : U.packerId) || o.packed_by || o.packer_id || "";
+          F(String(W));
         }
       } catch (le) {
-        F && W(le.message || "Failed to load packers");
+        z && K(le.message || "Failed to load packers");
       }
     })(), () => {
-      F = !1;
+      z = !1;
     };
   }, [o]), y.useEffect(() => {
     var le, X;
-    const F = ((le = o.assignment) == null ? void 0 : le.paymentMethod) || o.paymentMethod || "", k = ((X = o.assignment) == null ? void 0 : X.amount) || o.amount || "";
-    T(String(F)), te(String(k));
+    const z = ((le = o.assignment) == null ? void 0 : le.paymentMethod) || o.paymentMethod || "", U = ((X = o.assignment) == null ? void 0 : X.amount) || o.amount || "";
+    T(String(z)), te(String(U));
   }, [o]);
   async function ee() {
     if (!w || !j) {
@@ -19449,19 +19449,19 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
     }
     I(!0);
     try {
-      const F = o.name || o.order_number || o.id, k = await fetch(`/api/orders/${encodeURIComponent(F)}/assign`, {
+      const z = o.name || o.order_number || o.id, U = await fetch(`/api/orders/${encodeURIComponent(z)}/assign`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ riderId: w, paymentMethod: x.trim(), amount: L.trim() })
       });
-      if (k.status === 401) {
+      if (U.status === 401) {
         window.location.href = "/auth/login";
         return;
       }
-      const le = await k.json().catch(() => null);
-      if (!k.ok) throw new Error(le && le.error ? le.error : "Update failed");
-      const X = await fetch(`/api/orders/${encodeURIComponent(F)}/assign-packer`, {
+      const le = await U.json().catch(() => null);
+      if (!U.ok) throw new Error(le && le.error ? le.error : "Update failed");
+      const X = await fetch(`/api/orders/${encodeURIComponent(z)}/assign-packer`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -19471,15 +19471,15 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
         window.location.href = "/auth/login";
         return;
       }
-      const K = await X.json().catch(() => null);
-      if (!X.ok) throw new Error(K && K.error ? K.error : "Update failed");
+      const W = await X.json().catch(() => null);
+      if (!X.ok) throw new Error(W && W.error ? W.error : "Update failed");
       try {
         window && typeof window.showToast == "function" && window.showToast("Order updated successfully", { type: "success" });
       } catch {
       }
       p && p(), f();
-    } catch (F) {
-      alert(F.message || "Failed to update order");
+    } catch (z) {
+      alert(z.message || "Failed to update order");
     } finally {
       I(!1);
     }
@@ -19520,15 +19520,15 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
               {
                 className: "field-input edit-dropdown",
                 value: w,
-                onChange: (F) => R(F.target.value),
-                disabled: z,
+                onChange: (z) => R(z.target.value),
+                disabled: P,
                 children: [
                   /* @__PURE__ */ s.jsxDEV("option", { value: "", children: "-- Choose a rider --" }, void 0, !1, {
                     fileName: "/app/code/client/components/EditOrderModal.jsx",
                     lineNumber: 126,
                     columnNumber: 23
                   }, this),
-                  [...g].sort((F, k) => F.name.localeCompare(k.name)).map((F) => /* @__PURE__ */ s.jsxDEV("option", { value: F.id, children: F.name }, F.id, !1, {
+                  [...g].sort((z, U) => z.name.localeCompare(U.name)).map((z) => /* @__PURE__ */ s.jsxDEV("option", { value: z.id, children: z.name }, z.id, !1, {
                     fileName: "/app/code/client/components/EditOrderModal.jsx",
                     lineNumber: 128,
                     columnNumber: 25
@@ -19567,15 +19567,15 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
               {
                 className: "field-input edit-dropdown",
                 value: j,
-                onChange: (F) => U(F.target.value),
-                disabled: z,
+                onChange: (z) => F(z.target.value),
+                disabled: P,
                 children: [
                   /* @__PURE__ */ s.jsxDEV("option", { value: "", children: "-- Choose a packer --" }, void 0, !1, {
                     fileName: "/app/code/client/components/EditOrderModal.jsx",
                     lineNumber: 143,
                     columnNumber: 23
                   }, this),
-                  [...S].sort((F, k) => F.name.localeCompare(k.name)).map((F) => /* @__PURE__ */ s.jsxDEV("option", { value: F.id, children: F.name }, F.id, !1, {
+                  [...S].sort((z, U) => z.name.localeCompare(U.name)).map((z) => /* @__PURE__ */ s.jsxDEV("option", { value: z.id, children: z.name }, z.id, !1, {
                     fileName: "/app/code/client/components/EditOrderModal.jsx",
                     lineNumber: 145,
                     columnNumber: 25
@@ -19615,8 +19615,8 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
               className: "field-input edit-dropdown",
               placeholder: "e.g., Cash, Card, Online",
               value: x,
-              onChange: (F) => T(F.target.value),
-              disabled: z
+              onChange: (z) => T(z.target.value),
+              disabled: P
             },
             void 0,
             !1,
@@ -19645,8 +19645,8 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
               className: "field-input edit-dropdown",
               placeholder: "e.g., 500",
               value: L,
-              onChange: (F) => te(F.target.value),
-              disabled: z
+              onChange: (z) => te(z.target.value),
+              disabled: P
             },
             void 0,
             !1,
@@ -19672,12 +19672,12 @@ function q_({ order: o, onClose: f, onUpdated: p }) {
         columnNumber: 15
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "edit-modal-actions", children: [
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary", onClick: f, disabled: z, children: "Cancel" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary", onClick: f, disabled: P, children: "Cancel" }, void 0, !1, {
           fileName: "/app/code/client/components/EditOrderModal.jsx",
           lineNumber: 180,
           columnNumber: 17
         }, this),
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: ee, disabled: z || !w || !j, children: z ? "Updating…" : "Update" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-primary", onClick: ee, disabled: P || !w || !j, children: P ? "Updating…" : "Update" }, void 0, !1, {
           fileName: "/app/code/client/components/EditOrderModal.jsx",
           lineNumber: 181,
           columnNumber: 17
@@ -19772,7 +19772,7 @@ const W_ = [
   "in-transit": "in_progress"
 };
 function K_() {
-  const [o, f] = y.useState([]), [p, g] = y.useState(""), [b, S] = y.useState("all"), [d, w] = y.useState(1), [R, j] = y.useState(20), [U, x] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [T, L] = y.useState(!0), [te, pe] = y.useState(""), [ie, ce] = y.useState(""), [W, z] = y.useState(!0), [I, ee] = y.useState(0), [F, k] = y.useState(!1), [le, X] = y.useState(null), [K, oe] = y.useState(!1), [Q, P] = y.useState(null), [ue, de] = y.useState(!1), [Y, q] = y.useState(null), [re, Re] = y.useState(""), [Pe, et] = y.useState("");
+  const [o, f] = y.useState([]), [p, g] = y.useState(""), [b, S] = y.useState("all"), [d, w] = y.useState(1), [R, j] = y.useState(20), [F, x] = y.useState({ total: 0, page: 1, limit: 20, pages: 1 }), [T, L] = y.useState(!0), [te, pe] = y.useState(""), [ie, ce] = y.useState(""), [K, P] = y.useState(!0), [I, ee] = y.useState(0), [z, U] = y.useState(!1), [le, X] = y.useState(null), [W, oe] = y.useState(!1), [Q, k] = y.useState(null), [ue, de] = y.useState(!1), [Y, q] = y.useState(null), [re, Re] = y.useState(""), [Pe, et] = y.useState("");
   y.useEffect(() => {
     let Z = !0;
     return (async () => {
@@ -19792,7 +19792,7 @@ function K_() {
         }
         if (!zt.ok) throw new Error("Failed to load orders");
         const Pt = await zt.json();
-        Z && (f(Array.isArray(Pt.orders) ? Pt.orders : []), ce(Pt.shopifyError || ""), z(!!Pt.shopifyConfigured), x({ total: ((Ge = Pt.meta) == null ? void 0 : Ge.total) || 0, page: ((ut = Pt.meta) == null ? void 0 : ut.page) || 1, limit: ((vt = Pt.meta) == null ? void 0 : vt.limit) || R, pages: ((ht = Pt.meta) == null ? void 0 : ht.pages) || 1 }));
+        Z && (f(Array.isArray(Pt.orders) ? Pt.orders : []), ce(Pt.shopifyError || ""), P(!!Pt.shopifyConfigured), x({ total: ((Ge = Pt.meta) == null ? void 0 : Ge.total) || 0, page: ((ut = Pt.meta) == null ? void 0 : ut.page) || 1, limit: ((vt = Pt.meta) == null ? void 0 : vt.limit) || R, pages: ((ht = Pt.meta) == null ? void 0 : ht.pages) || 1 }));
       } catch (ot) {
         Z && pe(ot.message || "Failed to load orders");
       } finally {
@@ -19829,13 +19829,13 @@ function K_() {
     return o.filter((Ge) => hx(Ge) === Z);
   }, [o, b]);
   function at() {
-    X(null), k(!1);
+    X(null), U(!1);
   }
   function Ft(Z) {
-    P(Z), oe(!0);
+    k(Z), oe(!0);
   }
   function Et() {
-    P(null), oe(!1);
+    k(null), oe(!1);
   }
   function Vt(Z) {
     q(Z), de(!0);
@@ -19982,7 +19982,7 @@ function K_() {
       lineNumber: 187,
       columnNumber: 9
     }, this),
-    !W && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "Shopify is not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN to enable orders sync." }, void 0, !1, {
+    !K && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "Shopify is not configured. Set SHOPIFY_SHOP and SHOPIFY_ADMIN_TOKEN to enable orders sync." }, void 0, !1, {
       fileName: "/app/code/client/pages/Orders.jsx",
       lineNumber: 202,
       columnNumber: 11
@@ -20274,12 +20274,12 @@ function K_() {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ s.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: [
-      F && le && /* @__PURE__ */ s.jsxDEV(Bx, { orderId: le, onClose: at, onAssigned: Gt }, void 0, !1, {
+      z && le && /* @__PURE__ */ s.jsxDEV(Bx, { orderId: le, onClose: at, onAssigned: Gt }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
         lineNumber: 315,
         columnNumber: 11
       }, this),
-      K && Q && /* @__PURE__ */ s.jsxDEV(q_, { order: Q, onClose: Et, onUpdated: () => {
+      W && Q && /* @__PURE__ */ s.jsxDEV(q_, { order: Q, onClose: Et, onUpdated: () => {
         ee((Z) => Z + 1), Et();
       } }, void 0, !1, {
         fileName: "/app/code/client/pages/Orders.jsx",
@@ -20292,25 +20292,25 @@ function K_() {
         columnNumber: 11
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "rc-filters", children: [
-        /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: U.page <= 1 || T, onClick: () => w((Z) => Math.max(1, Z - 1)), children: "Prev" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: F.page <= 1 || T, onClick: () => w((Z) => Math.max(1, Z - 1)), children: "Prev" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 324,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ s.jsxDEV("span", { className: "section-note", children: [
           "Page ",
-          U.page,
+          F.page,
           " of ",
-          U.pages,
+          F.pages,
           " • ",
-          U.total,
+          F.total,
           " total"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 325,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: U.page >= U.pages || T, onClick: () => w((Z) => Math.min(U.pages, Z + 1)), children: "Next" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: F.page >= F.pages || T, onClick: () => w((Z) => Math.min(F.pages, Z + 1)), children: "Next" }, void 0, !1, {
           fileName: "/app/code/client/pages/Orders.jsx",
           lineNumber: 326,
           columnNumber: 13
@@ -20337,15 +20337,15 @@ function K_() {
 }
 function Q_() {
   const o = () => {
-    const Q = /* @__PURE__ */ new Date(), P = Q.getFullYear(), ue = String(Q.getMonth() + 1).padStart(2, "0");
-    return `${P}-${ue}-01`;
+    const Q = /* @__PURE__ */ new Date(), k = Q.getFullYear(), ue = String(Q.getMonth() + 1).padStart(2, "0");
+    return `${k}-${ue}-01`;
   }, f = () => {
-    const Q = /* @__PURE__ */ new Date(), P = Q.getFullYear(), ue = String(Q.getMonth() + 1).padStart(2, "0"), de = String(Q.getDate()).padStart(2, "0");
-    return `${P}-${ue}-${de}`;
-  }, [p, g] = y.useState(o()), [b, S] = y.useState(f()), [d, w] = y.useState([]), [R, j] = y.useState([]), [U, x] = y.useState(!1), [T, L] = y.useState(!0), [te, pe] = y.useState(""), [ie, ce] = y.useState([]), [W, z] = y.useState(!1), [I, ee] = y.useState("");
+    const Q = /* @__PURE__ */ new Date(), k = Q.getFullYear(), ue = String(Q.getMonth() + 1).padStart(2, "0"), de = String(Q.getDate()).padStart(2, "0");
+    return `${k}-${ue}-${de}`;
+  }, [p, g] = y.useState(o()), [b, S] = y.useState(f()), [d, w] = y.useState([]), [R, j] = y.useState([]), [F, x] = y.useState(!1), [T, L] = y.useState(!0), [te, pe] = y.useState(""), [ie, ce] = y.useState([]), [K, P] = y.useState(!1), [I, ee] = y.useState("");
   y.useEffect(() => {
     (async () => {
-      var P;
+      var k;
       try {
         const ue = await fetch("/api/riders", { credentials: "include" });
         if (ue.status === 401) {
@@ -20353,7 +20353,7 @@ function Q_() {
           return;
         }
         if (!ue.ok) throw new Error("Failed to load riders");
-        const de = await ue.json(), Y = Array.isArray(de.riders) ? de.riders : Array.isArray((P = de.data) == null ? void 0 : P.riders) ? de.data.riders : Array.isArray(de.data) ? de.data : [];
+        const de = await ue.json(), Y = Array.isArray(de.riders) ? de.riders : Array.isArray((k = de.data) == null ? void 0 : k.riders) ? de.data.riders : Array.isArray(de.data) ? de.data : [];
         w(Y), j(Y.map((q) => q.id || q._id || ""));
       } catch (ue) {
         pe(ue.message || "Failed to load riders");
@@ -20362,19 +20362,19 @@ function Q_() {
       }
     })();
   }, []);
-  const F = () => {
+  const z = () => {
     R.length === d.length ? j([]) : j(d.map((Q) => Q.id || Q._id || ""));
-  }, k = (Q) => {
+  }, U = (Q) => {
     j(
-      (P) => P.includes(Q) ? P.filter((ue) => ue !== Q) : [...P, Q]
+      (k) => k.includes(Q) ? k.filter((ue) => ue !== Q) : [...k, Q]
     );
   }, le = () => {
     x(!0);
   };
   async function X() {
-    ee(""), z(!0);
+    ee(""), P(!0);
     try {
-      const Q = Wh(), P = Number(Q == null ? void 0 : Q.baseFare) || Xn.baseFare, ue = Number(Q == null ? void 0 : Q.farePerKm) || Xn.farePerKm, de = R.length ? d.filter((re) => R.includes(re.id || re._id || "")) : d, q = (await Promise.all(de.map(async (re, Re) => {
+      const Q = Wh(), k = Number(Q == null ? void 0 : Q.baseFare) || Xn.baseFare, ue = Number(Q == null ? void 0 : Q.farePerKm) || Xn.farePerKm, de = R.length ? d.filter((re) => R.includes(re.id || re._id || "")) : d, q = (await Promise.all(de.map(async (re, Re) => {
         const Pe = re.id || re._id || "";
         let et = 0, Ve = 0;
         try {
@@ -20385,7 +20385,7 @@ function Q_() {
           Ft.ok && Et && Et.ok && (et = Number(Et.totalKm) || 0, Ve = Number(Et.rideCount) || 0);
         } catch {
         }
-        const Ke = et * ue + Ve * P;
+        const Ke = et * ue + Ve * k;
         return {
           serial: Re + 1,
           riderName: re.name || re.firstName || "Unknown",
@@ -20400,19 +20400,21 @@ function Q_() {
     } catch (Q) {
       return ee((Q == null ? void 0 : Q.message) || "Failed to generate report"), [];
     } finally {
-      z(!1), x(!1);
+      P(!1), x(!1);
     }
   }
-  function K(Q) {
-    return Q.map((P) => `"${String(P ?? "").replace(/"/g, '""')}"`).join(",");
+  function W(Q) {
+    return Q.map((k) => `"${String(k ?? "").replace(/"/g, '""')}"`).join(",");
   }
   async function oe() {
     const Q = ie.length ? ie : await X();
     if (!Q || !Q.length) return;
-    const ue = [K(["#", "Rider Name", "Total Shopify Rides", "Extra Rides", "Distance travelled (km)", "Per km Rate", "Total Commission"])];
+    const k = [];
+    k.push(W(["Rider Commission Report"])), k.push(""), k.push(W(["To Date:", b])), k.push(W(["From Date:", p])), k.push("");
+    const ue = ["Rider Name", "Total Shopify Rides", "Total Extra Rides", "Total Distance Travelled", "per km rate", "Total Commission"];
+    k.push(W(ue));
     for (const Re of Q)
-      ue.push(K([
-        Re.serial,
+      k.push(W([
         Re.riderName,
         Re.totalShopifyRides,
         Re.extraRides,
@@ -20420,21 +20422,21 @@ function Q_() {
         Number(Re.perKmRate).toFixed(2),
         Number(Re.totalCommission).toFixed(2)
       ]));
-    const de = "\uFEFF" + ue.join(`
+    const de = "\uFEFF" + k.join(`
 `), Y = new Blob([de], { type: "text/csv;charset=utf-8;" }), q = URL.createObjectURL(Y), re = document.createElement("a");
     re.href = q, re.download = `rider-commission-${p}_to_${b}.csv`, document.body.appendChild(re), re.click(), document.body.removeChild(re), URL.revokeObjectURL(q);
   }
   return /* @__PURE__ */ s.jsxDEV(Mr, { children: /* @__PURE__ */ s.jsxDEV("section", { className: "rider-commissions", children: /* @__PURE__ */ s.jsxDEV("div", { id: "tab-overview", children: [
     /* @__PURE__ */ s.jsxDEV("h3", { className: "rc-section-title", children: "Rider Commission Report" }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 152,
+      lineNumber: 160,
       columnNumber: 11
     }, this),
     /* @__PURE__ */ s.jsxDEV("div", { className: "rc-toolbar report-filter-bar", children: /* @__PURE__ */ s.jsxDEV("div", { className: "date-range-filters", children: [
       /* @__PURE__ */ s.jsxDEV("div", { className: "date-filter", children: [
         /* @__PURE__ */ s.jsxDEV("label", { htmlFor: "fromDate", className: "date-label", children: "From Date:" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 157,
+          lineNumber: 165,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ s.jsxDEV(
@@ -20450,20 +20452,20 @@ function Q_() {
           !1,
           {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 158,
+            lineNumber: 166,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 156,
+        lineNumber: 164,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "date-filter", children: [
         /* @__PURE__ */ s.jsxDEV("label", { htmlFor: "toDate", className: "date-label", children: "To Date:" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 168,
+          lineNumber: 176,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ s.jsxDEV(
@@ -20479,45 +20481,45 @@ function Q_() {
           !1,
           {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 169,
+            lineNumber: 177,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 167,
+        lineNumber: 175,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ s.jsxDEV("button", { className: "rc-button report-button", onClick: le, children: "Create Report" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 178,
+        lineNumber: 186,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ s.jsxDEV("button", { className: "rc-button download-button", onClick: oe, children: "Download" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 182,
+        lineNumber: 190,
         columnNumber: 15
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 155,
+      lineNumber: 163,
       columnNumber: 13
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 154,
+      lineNumber: 162,
       columnNumber: 11
     }, this),
-    U && /* @__PURE__ */ s.jsxDEV("div", { className: "rider-selection-modal-overlay", onClick: () => x(!1), children: /* @__PURE__ */ s.jsxDEV("div", { className: "rider-selection-modal", onClick: (Q) => Q.stopPropagation(), children: [
+    F && /* @__PURE__ */ s.jsxDEV("div", { className: "rider-selection-modal-overlay", onClick: () => x(!1), children: /* @__PURE__ */ s.jsxDEV("div", { className: "rider-selection-modal", onClick: (Q) => Q.stopPropagation(), children: [
       /* @__PURE__ */ s.jsxDEV("h4", { className: "modal-title", children: "Select Riders for Report" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 191,
+        lineNumber: 199,
         columnNumber: 17
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "modal-content", children: [
-        /* @__PURE__ */ s.jsxDEV("button", { className: "select-all-button", onClick: F, children: R.length === d.length ? "Deselect All" : "Select All" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "select-all-button", onClick: z, children: R.length === d.length ? "Deselect All" : "Select All" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 194,
+          lineNumber: 202,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ s.jsxDEV("div", { className: "riders-list", children: d.map((Q) => /* @__PURE__ */ s.jsxDEV("label", { className: "rider-checkbox-label", children: [
@@ -20527,201 +20529,212 @@ function Q_() {
               type: "checkbox",
               className: "rider-checkbox",
               checked: R.includes(Q.id || Q._id || ""),
-              onChange: () => k(Q.id || Q._id || "")
+              onChange: () => U(Q.id || Q._id || "")
             },
             void 0,
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 201,
+              lineNumber: 209,
               columnNumber: 25
             },
             this
           ),
           /* @__PURE__ */ s.jsxDEV("span", { className: "rider-name", children: Q.name || Q.firstName || "Unknown" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 207,
+            lineNumber: 215,
             columnNumber: 25
           }, this)
         ] }, Q.id || Q._id, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 200,
+          lineNumber: 208,
           columnNumber: 23
         }, this)) }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 198,
+          lineNumber: 206,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 193,
+        lineNumber: 201,
         columnNumber: 17
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "modal-actions", children: [
         /* @__PURE__ */ s.jsxDEV("button", { className: "cancel-button", onClick: () => x(!1), children: "Cancel" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 214,
+          lineNumber: 222,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ s.jsxDEV("button", { className: "confirm-button", onClick: X, children: "Generate Report" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 215,
+          lineNumber: 223,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 213,
+        lineNumber: 221,
         columnNumber: 17
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 190,
+      lineNumber: 198,
       columnNumber: 15
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 189,
+      lineNumber: 197,
       columnNumber: 13
     }, this),
     I && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: I }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 221,
+      lineNumber: 229,
       columnNumber: 27
     }, this),
-    W && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "Generating…" }, void 0, !1, {
+    K && /* @__PURE__ */ s.jsxDEV("div", { className: "section-note", children: "Generating…" }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 222,
+      lineNumber: 230,
       columnNumber: 29
     }, this),
-    !W && ie.length > 0 && /* @__PURE__ */ s.jsxDEV("div", { className: "report-table-wrap", children: /* @__PURE__ */ s.jsxDEV("table", { className: "report-table", children: [
-      /* @__PURE__ */ s.jsxDEV("thead", { children: /* @__PURE__ */ s.jsxDEV("tr", { children: [
-        /* @__PURE__ */ s.jsxDEV("th", { children: "#" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 228,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Rider Name" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 229,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Total Shopify Rides" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 230,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Extra Rides" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 231,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Distance travelled" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 232,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Per km Rate" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 233,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("th", { children: "Total Commission" }, void 0, !1, {
+    !K && ie.length > 0 && /* @__PURE__ */ s.jsxDEV("div", { className: "report-table-wrap", children: [
+      /* @__PURE__ */ s.jsxDEV("div", { className: "report-meta", children: [
+        /* @__PURE__ */ s.jsxDEV("div", { children: [
+          "To Date: ",
+          b
+        ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
           lineNumber: 234,
-          columnNumber: 21
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ s.jsxDEV("div", { children: [
+          "From Date: ",
+          p
+        ] }, void 0, !0, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 235,
+          columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 227,
-        columnNumber: 19
-      }, this) }, void 0, !1, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 226,
-        columnNumber: 17
+        lineNumber: 233,
+        columnNumber: 15
       }, this),
-      /* @__PURE__ */ s.jsxDEV("tbody", { children: ie.map((Q, P) => /* @__PURE__ */ s.jsxDEV("tr", { children: [
-        /* @__PURE__ */ s.jsxDEV("td", { children: Q.serial }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 240,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: Q.riderName }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 241,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: Q.totalShopifyRides }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 242,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: Q.extraRides }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 243,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: [
-          Number(Q.distanceKm).toFixed(2),
-          " km"
+      /* @__PURE__ */ s.jsxDEV("table", { className: "report-table", children: [
+        /* @__PURE__ */ s.jsxDEV("thead", { children: /* @__PURE__ */ s.jsxDEV("tr", { children: [
+          /* @__PURE__ */ s.jsxDEV("th", { children: "Rider Name" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 240,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("th", { children: "Total Shopify Rides" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 241,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("th", { children: "Total Extra Rides" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 242,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("th", { children: "Total Distance Travelled" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 243,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("th", { children: "per km rate" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 244,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("th", { children: "Total Commission" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 245,
+            columnNumber: 21
+          }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 244,
-          columnNumber: 23
-        }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: Number(Q.perKmRate).toFixed(2) }, void 0, !1, {
+          lineNumber: 239,
+          columnNumber: 19
+        }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 245,
-          columnNumber: 23
+          lineNumber: 238,
+          columnNumber: 17
         }, this),
-        /* @__PURE__ */ s.jsxDEV("td", { children: [
-          Number(Q.totalCommission).toFixed(2),
-          " Rs."
-        ] }, void 0, !0, {
+        /* @__PURE__ */ s.jsxDEV("tbody", { children: ie.map((Q, k) => /* @__PURE__ */ s.jsxDEV("tr", { children: [
+          /* @__PURE__ */ s.jsxDEV("td", { children: Q.riderName }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 251,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("td", { children: Q.totalShopifyRides }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 252,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("td", { children: Q.extraRides }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 253,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("td", { children: Number(Q.distanceKm).toFixed(2) }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 254,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("td", { children: Number(Q.perKmRate).toFixed(2) }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 255,
+            columnNumber: 23
+          }, this),
+          /* @__PURE__ */ s.jsxDEV("td", { children: [
+            Number(Q.totalCommission).toFixed(2),
+            " Rs."
+          ] }, void 0, !0, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 256,
+            columnNumber: 23
+          }, this)
+        ] }, k, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 246,
-          columnNumber: 23
+          lineNumber: 250,
+          columnNumber: 21
+        }, this)) }, void 0, !1, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 248,
+          columnNumber: 17
         }, this)
-      ] }, P, !0, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 239,
-        columnNumber: 21
-      }, this)) }, void 0, !1, {
+      ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
         lineNumber: 237,
-        columnNumber: 17
+        columnNumber: 15
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 225,
-      columnNumber: 15
-    }, this) }, void 0, !1, {
-      fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 224,
+      lineNumber: 232,
       columnNumber: 13
     }, this)
   ] }, void 0, !0, {
     fileName: "/app/code/client/pages/Reports.jsx",
-    lineNumber: 151,
+    lineNumber: 159,
     columnNumber: 9
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/pages/Reports.jsx",
-    lineNumber: 150,
+    lineNumber: 158,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/pages/Reports.jsx",
-    lineNumber: 149,
+    lineNumber: 157,
     columnNumber: 5
   }, this);
 }
 function X_({ onClose: o, onCreated: f }) {
-  const [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(!1), [U, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(!1), [ie, ce] = y.useState(!1), [W, z] = y.useState(!1), [I, ee] = y.useState(!1), F = "+92";
-  function k(X) {
-    const K = String(X || "").replace(/\D+/g, "");
-    return K.length === 0 ? "" : K.startsWith("92") ? F + K.slice(2) : F + K;
+  const [p, g] = y.useState(""), [b, S] = y.useState(""), [d, w] = y.useState(""), [R, j] = y.useState(!1), [F, x] = y.useState(""), [T, L] = y.useState(""), [te, pe] = y.useState(!1), [ie, ce] = y.useState(!1), [K, P] = y.useState(!1), [I, ee] = y.useState(!1), z = "+92";
+  function U(X) {
+    const W = String(X || "").replace(/\D+/g, "");
+    return W.length === 0 ? "" : W.startsWith("92") ? z + W.slice(2) : z + W;
   }
   async function le() {
     x(""), L(""), ee(!0);
-    const X = String(p), K = String(b).trim(), oe = String(d).trim(), Q = oe.replace(/\D+/g, ""), P = { fn: !K, cn: !oe, pw: !X };
-    if (pe(P.fn), ce(P.cn || Q.length !== 10), z(P.pw), P.fn || P.cn || P.pw) {
+    const X = String(p), W = String(b).trim(), oe = String(d).trim(), Q = oe.replace(/\D+/g, ""), k = { fn: !W, cn: !oe, pw: !X };
+    if (pe(k.fn), ce(k.cn || Q.length !== 10), P(k.pw), k.fn || k.cn || k.pw) {
       x("Full name, mobile and password are required");
       return;
     }
@@ -20730,23 +20743,23 @@ function X_({ onClose: o, onCreated: f }) {
       return;
     }
     if (X.length < 6) {
-      z(!0), x("Password must be at least 6 characters");
+      P(!0), x("Password must be at least 6 characters");
       return;
     }
     j(!0);
     try {
-      const ue = k(oe), de = await fetch("/api/packers", {
+      const ue = U(oe), de = await fetch("/api/packers", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: X, fullName: K, contactNumber: ue })
+        body: JSON.stringify({ password: X, fullName: W, contactNumber: ue })
       }), Y = await de.json().catch(() => null);
       if (!de.ok) {
         const q = String(Y && (Y.error || Y.message) || ""), re = q.toUpperCase();
         if (/MISSING\s*FULLNAME\/CONTACTNUMBER/i.test(q) || /MISSING\s*PASSWORD/i.test(q))
-          x("Full name, mobile and password are required"), pe(!K), ce(!oe || Q.length !== 10), z(!X);
+          x("Full name, mobile and password are required"), pe(!W), ce(!oe || Q.length !== 10), P(!X);
         else if (re.includes("WEAK_PASSWORD") || /AT LEAST 6 CHARACTERS/i.test(q))
-          z(!0), x("Password must be at least 6 characters");
+          P(!0), x("Password must be at least 6 characters");
         else if (/INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(q))
           ce(!0), x("numbers should be 10 digit");
         else if (/FIREBASE NOT CONFIGURED/i.test(q))
@@ -20760,7 +20773,7 @@ function X_({ onClose: o, onCreated: f }) {
       }, 600);
     } catch (ue) {
       const de = String((ue == null ? void 0 : ue.message) || "");
-      /Missing\s*(fullName\/contactNumber|password)/i.test(de) ? x("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(de) || /AT LEAST 6 CHARACTERS/i.test(de) ? (z(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(de) ? (ce(!0), x("numbers should be 10 digit")) : x(de || "Failed to create packer");
+      /Missing\s*(fullName\/contactNumber|password)/i.test(de) ? x("Full name, mobile and password are required") : /WEAK_PASSWORD/i.test(de) || /AT LEAST 6 CHARACTERS/i.test(de) ? (P(!0), x("Password must be at least 6 characters")) : /INVALID CONTACT NUMBER|MUST BE EXACTLY 10 DIGITS|NUMBERS SHOULD BE 10 DIGIT/i.test(de) ? (ce(!0), x("numbers should be 10 digit")) : x(de || "Failed to create packer");
     } finally {
       j(!1);
     }
@@ -20805,7 +20818,7 @@ function X_({ onClose: o, onCreated: f }) {
       /* @__PURE__ */ s.jsxDEV("label", { className: "field-label", children: [
         "Password",
         /* @__PURE__ */ s.jsxDEV("input", { className: "field-input" + (I && !String(p) ? " input-error" : ""), type: "password", value: p, onChange: (X) => {
-          g(X.target.value), I && z(!String(X.target.value));
+          g(X.target.value), I && P(!String(X.target.value));
         }, required: !0 }, void 0, !1, {
           fileName: "/app/code/client/components/CreatePackerModal.jsx",
           lineNumber: 104,
@@ -20834,8 +20847,8 @@ function X_({ onClose: o, onCreated: f }) {
               placeholder: "3001234567",
               value: d,
               onChange: (X) => {
-                const K = X.target.value.replace(/\D+/g, "").slice(0, 10);
-                w(K), I && ce(K.length !== 10);
+                const W = X.target.value.replace(/\D+/g, "").slice(0, 10);
+                w(W), I && ce(W.length !== 10);
               },
               required: !0
             },
@@ -20858,7 +20871,7 @@ function X_({ onClose: o, onCreated: f }) {
         lineNumber: 106,
         columnNumber: 11
       }, this),
-      U && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: U }, void 0, !1, {
+      F && /* @__PURE__ */ s.jsxDEV("div", { className: "auth-error", children: F }, void 0, !1, {
         fileName: "/app/code/client/components/CreatePackerModal.jsx",
         lineNumber: 127,
         columnNumber: 21
@@ -20895,11 +20908,11 @@ function X_({ onClose: o, onCreated: f }) {
   }, this);
 }
 function J_() {
-  const [o, f] = y.useState([]), [p, g] = y.useState(!0), [b, S] = y.useState(""), [d, w] = y.useState(1), [R, j] = y.useState(25), [U, x] = y.useState({ total: 0, page: 1, limit: 25, pages: 1 });
+  const [o, f] = y.useState([]), [p, g] = y.useState(!0), [b, S] = y.useState(""), [d, w] = y.useState(1), [R, j] = y.useState(25), [F, x] = y.useState({ total: 0, page: 1, limit: 25, pages: 1 });
   y.useEffect(() => {
-    let F = !0;
+    let z = !0;
     return (async () => {
-      var k, le, X, K;
+      var U, le, X, W;
       g(!0), S("");
       try {
         const oe = new URLSearchParams();
@@ -20910,38 +20923,38 @@ function J_() {
           return;
         }
         if (!Q.ok) throw new Error("Failed to load orders");
-        const P = await Q.json();
-        F && (f(Array.isArray(P.orders) ? P.orders : []), x({ total: ((k = P.meta) == null ? void 0 : k.total) || 0, page: ((le = P.meta) == null ? void 0 : le.page) || d, limit: ((X = P.meta) == null ? void 0 : X.limit) || R, pages: ((K = P.meta) == null ? void 0 : K.pages) || 1 }));
+        const k = await Q.json();
+        z && (f(Array.isArray(k.orders) ? k.orders : []), x({ total: ((U = k.meta) == null ? void 0 : U.total) || 0, page: ((le = k.meta) == null ? void 0 : le.page) || d, limit: ((X = k.meta) == null ? void 0 : X.limit) || R, pages: ((W = k.meta) == null ? void 0 : W.pages) || 1 }));
       } catch (oe) {
-        F && S(oe.message || "Failed to load orders");
+        z && S(oe.message || "Failed to load orders");
       } finally {
-        F && g(!1);
+        z && g(!1);
       }
     })(), () => {
-      F = !1;
+      z = !1;
     };
   }, [d]);
-  function T(F) {
-    return !F || typeof F != "object" ? "new" : typeof F.current_status == "string" && String(F.current_status).trim() ? String(F.current_status).toLowerCase().trim() : "new";
+  function T(z) {
+    return !z || typeof z != "object" ? "new" : typeof z.current_status == "string" && String(z.current_status).trim() ? String(z.current_status).toLowerCase().trim() : "new";
   }
-  const [L, te] = y.useState(!1), [pe, ie] = y.useState(null), [ce, W] = y.useState(!1);
-  function z(F) {
-    ie(F), te(!0);
+  const [L, te] = y.useState(!1), [pe, ie] = y.useState(null), [ce, K] = y.useState(!1);
+  function P(z) {
+    ie(z), te(!0);
   }
   function I() {
     ie(null), te(!1);
   }
-  function ee(F) {
+  function ee(z) {
     try {
-      const { orderId: k } = F || {};
-      if (!k) return;
-      const le = String(k).replace(/^#+/, "");
-      f((X) => X.filter((K, oe) => {
-        const Q = String(K.id || K.name || K.order_number || oe).replace(/^#+/, "");
+      const { orderId: U } = z || {};
+      if (!U) return;
+      const le = String(U).replace(/^#+/, "");
+      f((X) => X.filter((W, oe) => {
+        const Q = String(W.id || W.name || W.order_number || oe).replace(/^#+/, "");
         return String(Q) !== String(le);
       })), x((X) => ({ ...X || {}, total: Math.max(0, ((X == null ? void 0 : X.total) || 0) - 1) }));
       try {
-        window && typeof window.showToast == "function" && window.showToast(`Order assigned: ${k}`, { type: "success" });
+        window && typeof window.showToast == "function" && window.showToast(`Order assigned: ${U}`, { type: "success" });
       } catch {
       }
     } catch {
@@ -20967,7 +20980,7 @@ function J_() {
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "dashboard-header-right", children: [
         /* @__PURE__ */ s.jsxDEV("div", { className: "stat-card", children: [
-          /* @__PURE__ */ s.jsxDEV("div", { className: "stat-value", children: p ? "…" : U.total || o.length }, void 0, !1, {
+          /* @__PURE__ */ s.jsxDEV("div", { className: "stat-value", children: p ? "…" : F.total || o.length }, void 0, !1, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
             lineNumber: 78,
             columnNumber: 15
@@ -20982,7 +20995,7 @@ function J_() {
           lineNumber: 77,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary btn-create-packer", onClick: () => W(!0), children: "Create Packer" }, void 0, !1, {
+        /* @__PURE__ */ s.jsxDEV("button", { className: "btn-secondary btn-create-packer", onClick: () => K(!0), children: "Create Packer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
           lineNumber: 81,
           columnNumber: 13
@@ -21067,18 +21080,18 @@ function J_() {
           lineNumber: 101,
           columnNumber: 28
         }, this),
-        !p && !b && (Array.isArray(o) ? o.filter((k) => T(k) === "new") : []).map((k, le) => {
-          const X = T(k), K = k.full_name || (k.customer && k.customer.full_name ? k.customer.full_name : "");
+        !p && !b && (Array.isArray(o) ? o.filter((U) => T(U) === "new") : []).map((U, le) => {
+          const X = T(U), W = U.full_name || (U.customer && U.customer.full_name ? U.customer.full_name : "");
           let oe = "-";
-          typeof k.shipping_address == "string" && String(k.shipping_address).trim() ? oe = String(k.shipping_address).trim() : k.shipping_address && typeof k.shipping_address == "object" ? oe = [k.shipping_address.address1 || "", k.shipping_address.city || "", k.shipping_address.province || "", k.shipping_address.country || ""].map((q) => String(q || "").trim()).filter(Boolean).join(", ") || "-" : typeof k.billing_address == "string" && String(k.billing_address).trim() ? oe = String(k.billing_address).trim() : k.billing_address && typeof k.billing_address == "object" && (oe = [k.billing_address.address1 || "", k.billing_address.city || "", k.billing_address.province || "", k.billing_address.country || ""].map((q) => String(q || "").trim()).filter(Boolean).join(", ") || "-");
-          const Q = k.name || k.order_number || k.id || le, P = String(k.id || k.name || k.order_number || le).replace(/^#+/, ""), ue = k.created_at ? new Date(k.created_at) : null, de = ue ? ue.toLocaleDateString() : "-", Y = ue ? ue.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
+          typeof U.shipping_address == "string" && String(U.shipping_address).trim() ? oe = String(U.shipping_address).trim() : U.shipping_address && typeof U.shipping_address == "object" ? oe = [U.shipping_address.address1 || "", U.shipping_address.city || "", U.shipping_address.province || "", U.shipping_address.country || ""].map((q) => String(q || "").trim()).filter(Boolean).join(", ") || "-" : typeof U.billing_address == "string" && String(U.billing_address).trim() ? oe = String(U.billing_address).trim() : U.billing_address && typeof U.billing_address == "object" && (oe = [U.billing_address.address1 || "", U.billing_address.city || "", U.billing_address.province || "", U.billing_address.country || ""].map((q) => String(q || "").trim()).filter(Boolean).join(", ") || "-");
+          const Q = U.name || U.order_number || U.id || le, k = String(U.id || U.name || U.order_number || le).replace(/^#+/, ""), ue = U.created_at ? new Date(U.created_at) : null, de = ue ? ue.toLocaleDateString() : "-", Y = ue ? ue.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
           return /* @__PURE__ */ s.jsxDEV("tr", { "data-status": X, children: [
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-order", children: Q }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 126,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-customer", children: K || "-" }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-customer", children: W || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 127,
               columnNumber: 23
@@ -21107,7 +21120,7 @@ function J_() {
               lineNumber: 131,
               columnNumber: 23
             }, this),
-            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ s.jsxDEV("button", { className: "order-action btn-manage", onClick: () => z(String(k.id || k.name || k.order_number || le)), children: "Assign" }, void 0, !1, {
+            /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-action", children: /* @__PURE__ */ s.jsxDEV("button", { className: "order-action btn-manage", onClick: () => P(String(U.id || U.name || U.order_number || le)), children: "Assign" }, void 0, !1, {
               fileName: "/app/code/client/pages/Dashboard.jsx",
               lineNumber: 132,
               columnNumber: 53
@@ -21116,7 +21129,7 @@ function J_() {
               lineNumber: 132,
               columnNumber: 23
             }, this)
-          ] }, P, !0, {
+          ] }, k, !0, {
             fileName: "/app/code/client/pages/Dashboard.jsx",
             lineNumber: 125,
             columnNumber: 21
@@ -21146,25 +21159,25 @@ function J_() {
       columnNumber: 9
     }, this),
     /* @__PURE__ */ s.jsxDEV("div", { className: "rc-toolbar", "aria-label": "pagination", children: /* @__PURE__ */ s.jsxDEV("div", { className: "rc-filters", children: [
-      /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: U.page <= 1 || p, onClick: () => w((F) => Math.max(1, F - 1)), children: "Prev" }, void 0, !1, {
+      /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: F.page <= 1 || p, onClick: () => w((z) => Math.max(1, z - 1)), children: "Prev" }, void 0, !1, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
         lineNumber: 144,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ s.jsxDEV("span", { className: "section-note", children: [
         "Page ",
-        U.page,
+        F.page,
         " of ",
-        U.pages,
+        F.pages,
         " • ",
-        U.total,
+        F.total,
         " total"
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
         lineNumber: 145,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: U.page >= U.pages || p, onClick: () => w((F) => Math.min(U.pages, F + 1)), children: "Next" }, void 0, !1, {
+      /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", disabled: F.page >= F.pages || p, onClick: () => w((z) => Math.min(F.pages, z + 1)), children: "Next" }, void 0, !1, {
         fileName: "/app/code/client/pages/Dashboard.jsx",
         lineNumber: 146,
         columnNumber: 13
@@ -21183,7 +21196,7 @@ function J_() {
       lineNumber: 151,
       columnNumber: 11
     }, this),
-    ce && /* @__PURE__ */ s.jsxDEV(X_, { onClose: () => W(!1), onCreated: () => {
+    ce && /* @__PURE__ */ s.jsxDEV(X_, { onClose: () => K(!1), onCreated: () => {
       try {
         window && typeof window.showToast == "function" && window.showToast("Packer created", { type: "success" });
       } catch {
