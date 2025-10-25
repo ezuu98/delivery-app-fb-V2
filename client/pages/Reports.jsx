@@ -32,7 +32,6 @@ export default function Reports(){
       <section className="rider-commissions">
         <header className="rc-header">
           <h2 className="rc-title">Reporting & Analytics</h2>
-          <p className="rc-subtitle">Gain insights into your delivery operations with detailed reports and visualizations.</p>
         </header>
 
         <div className="rc-toolbar">
