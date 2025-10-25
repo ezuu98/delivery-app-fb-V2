@@ -20359,18 +20359,11 @@ function Q_() {
       M = !1;
     };
   }, []), /* @__PURE__ */ s.jsxDEV(Mr, { children: /* @__PURE__ */ s.jsxDEV("section", { className: "rider-commissions", children: [
-    /* @__PURE__ */ s.jsxDEV("header", { className: "rc-header", children: [
-      /* @__PURE__ */ s.jsxDEV("h2", { className: "rc-title", children: "Reporting & Analytics" }, void 0, !1, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 34,
-        columnNumber: 11
-      }, this),
-      /* @__PURE__ */ s.jsxDEV("p", { className: "rc-subtitle", children: "Gain insights into your delivery operations with detailed reports and visualizations." }, void 0, !1, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 35,
-        columnNumber: 11
-      }, this)
-    ] }, void 0, !0, {
+    /* @__PURE__ */ s.jsxDEV("header", { className: "rc-header", children: /* @__PURE__ */ s.jsxDEV("h2", { className: "rc-title", children: "Reporting & Analytics" }, void 0, !1, {
+      fileName: "/app/code/client/pages/Reports.jsx",
+      lineNumber: 34,
+      columnNumber: 11
+    }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
       lineNumber: 33,
       columnNumber: 9
@@ -20378,26 +20371,26 @@ function Q_() {
     /* @__PURE__ */ s.jsxDEV("div", { className: "rc-toolbar", children: /* @__PURE__ */ s.jsxDEV("div", { className: "rc-filters", children: [
       /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", "data-tab": "overview", children: "Overview" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 40,
+        lineNumber: 39,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", "data-tab": "performance", children: "Performance" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 41,
+        lineNumber: 40,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ s.jsxDEV("button", { className: "rc-select rc-chip", "data-tab": "custom", children: "Custom Reports" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 42,
+        lineNumber: 41,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 39,
+      lineNumber: 38,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 38,
+      lineNumber: 37,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ s.jsxDEV("div", { id: "tab-overview", children: [
@@ -20405,23 +20398,23 @@ function Q_() {
         /* @__PURE__ */ s.jsxDEV("div", { className: "rc-select rc-chip block-chip", children: [
           /* @__PURE__ */ s.jsxDEV("div", { className: "section-title reports-stat-title", children: "Total Deliveries" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 49,
+            lineNumber: 48,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ s.jsxDEV("div", { className: "reports-stat-value", children: o.totalDeliveries }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 50,
+            lineNumber: 49,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 48,
+          lineNumber: 47,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ s.jsxDEV("div", { className: "rc-select rc-chip block-chip", children: [
           /* @__PURE__ */ s.jsxDEV("div", { className: "section-title reports-stat-title", children: "Average Delivery Time" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 53,
+            lineNumber: 52,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ s.jsxDEV("div", { className: "reports-stat-value", children: [
@@ -20429,81 +20422,81 @@ function Q_() {
             " mins"
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 54,
+            lineNumber: 53,
             columnNumber: 15
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 52,
+          lineNumber: 51,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 47,
+        lineNumber: 46,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ s.jsxDEV("div", { className: "rc-toolbar reports-toolbar-center", children: [
         /* @__PURE__ */ s.jsxDEV("div", { className: "section-title reports-stat-title", children: "Delivery Data" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 59,
+          lineNumber: 58,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ s.jsxDEV("label", { className: "rc-select rc-chip toggle-data-label", children: [
           /* @__PURE__ */ s.jsxDEV("input", { type: "checkbox", checked: b, onChange: (M) => S(M.target.checked) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 61,
+            lineNumber: 60,
             columnNumber: 15
           }, this),
           " Show Delivery Data Table"
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 60,
+          lineNumber: 59,
           columnNumber: 13
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 58,
+        lineNumber: 57,
         columnNumber: 11
       }, this),
       b && /* @__PURE__ */ s.jsxDEV("div", { className: "rc-table-wrapper", children: /* @__PURE__ */ s.jsxDEV("table", { className: "rc-table", children: [
         /* @__PURE__ */ s.jsxDEV("thead", { children: /* @__PURE__ */ s.jsxDEV("tr", { children: [
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-name", children: "Order Number" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 70,
+            lineNumber: 69,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-km", children: "Rider Assigned" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 71,
+            lineNumber: 70,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-perf", children: "Expected Time" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 72,
+            lineNumber: 71,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-perf", children: "Actual Delivery Time" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 73,
+            lineNumber: 72,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-perf", children: "Distance Traveled" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 74,
+            lineNumber: 73,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ s.jsxDEV("th", { className: "col-comm", children: "Status" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 75,
+            lineNumber: 74,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 69,
+          lineNumber: 68,
           columnNumber: 19
         }, this) }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 68,
+          lineNumber: 67,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ s.jsxDEV("tbody", { children: [
@@ -20513,83 +20506,83 @@ function Q_() {
               M.orderNumber || M.orderId
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 81,
+              lineNumber: 80,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-km", children: M.riderId || "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 82,
+              lineNumber: 81,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-perf", children: M.expectedMinutes != null ? `${M.expectedMinutes} mins` : "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 83,
+              lineNumber: 82,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-perf", children: M.durationMins != null ? `${M.durationMins} mins` : "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 84,
+              lineNumber: 83,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-perf", children: "-" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 85,
+              lineNumber: 84,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ s.jsxDEV("td", { className: "rc-col-commission", children: M.status || "new" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 86,
+              lineNumber: 85,
               columnNumber: 23
             }, this)
           ] }, M.orderId || x, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 80,
+            lineNumber: 79,
             columnNumber: 21
           }, this)),
           !d && !R && m.length === 0 && /* @__PURE__ */ s.jsxDEV("tr", { children: /* @__PURE__ */ s.jsxDEV("td", { colSpan: 6, className: "section-note", children: "No data." }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 90,
+            lineNumber: 89,
             columnNumber: 25
           }, this) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 90,
+            lineNumber: 89,
             columnNumber: 21
           }, this),
           d && /* @__PURE__ */ s.jsxDEV("tr", { children: /* @__PURE__ */ s.jsxDEV("td", { colSpan: 6, className: "section-note", children: "Loading…" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 93,
+            lineNumber: 92,
             columnNumber: 25
           }, this) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 93,
+            lineNumber: 92,
             columnNumber: 21
           }, this),
           R && /* @__PURE__ */ s.jsxDEV("tr", { children: /* @__PURE__ */ s.jsxDEV("td", { colSpan: 6, className: "auth-error", children: R }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 96,
+            lineNumber: 95,
             columnNumber: 25
           }, this) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 96,
+            lineNumber: 95,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 78,
+          lineNumber: 77,
           columnNumber: 17
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 67,
+        lineNumber: 66,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 66,
+        lineNumber: 65,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 46,
+      lineNumber: 45,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
