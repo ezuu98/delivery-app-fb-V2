@@ -32,7 +32,7 @@ export default function Reports(){
         if (res.status === 401) { window.location.href = '/auth/login'; return; }
         if (!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        const ridersList = data.data || [];
+        const ridersList = Array.isArray(data.riders) ? data.riders : (Array.isArray(data.data?.riders) ? data.data.riders : (Array.isArray(data.data) ? data.data : []));
         setRiders(ridersList);
         setSelectedRiders(ridersList.map(r => r.id || r._id || ''));
       } catch (e) {
