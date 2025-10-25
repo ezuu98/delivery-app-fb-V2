@@ -29,6 +29,7 @@ export default function Reports(){
   const [reportRows, setReportRows] = useState([]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
+  const [activeTab, setActiveTab] = useState('commission');
 
   useEffect(()=>{
     const fetchRiders = async () => {
