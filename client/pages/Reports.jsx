@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import { readFareSettings, DEFAULT_FARE_SETTINGS } from '../utils/fareSettings.js';
+import * as XLSX from 'xlsx';
 
 export default function Reports(){
   const getFirstOfMonth = () => {
