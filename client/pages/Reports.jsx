@@ -29,10 +29,6 @@ export default function Reports(){
   return (
     <SiteLayout>
       <section className="rider-commissions">
-        <header className="rc-header">
-          <h2 className="rc-title">Reporting & Analytics</h2>
-        </header>
-
         <div id="tab-overview">
           <h3 className="rc-section-title">Rider Commission Report</h3>
 
