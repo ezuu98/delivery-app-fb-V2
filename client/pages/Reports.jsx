@@ -94,7 +94,7 @@ export default function Reports(){
                 />
               </div>
 
-              <button className="rc-button report-button" onClick={() => console.log('Generate report:', {fromDate, toDate})}>
+              <button className="rc-button report-button" onClick={handleCreateReport}>
                 Create Report
               </button>
 
@@ -103,6 +103,39 @@ export default function Reports(){
               </button>
             </div>
           </div>
+
+          {showRiderSelection && (
+            <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
+              <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
+                <h4 className="modal-title">Select Riders for Report</h4>
+
+                <div className="modal-content">
+                  <button className="select-all-button" onClick={handleSelectAll}>
+                    {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+                  </button>
+
+                  <div className="riders-list">
+                    {riders.map(rider => (
+                      <label key={rider.id || rider._id} className="rider-checkbox-label">
+                        <input
+                          type="checkbox"
+                          className="rider-checkbox"
+                          checked={selectedRiders.includes(rider.id || rider._id || '')}
+                          onChange={() => handleRiderToggle(rider.id || rider._id || '')}
+                        />
+                        <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
+                  <button className="confirm-button" onClick={() => { console.log('Generate report:', {fromDate, toDate, selectedRiders}); setShowRiderSelection(false); }}>Generate Report</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </SiteLayout>
