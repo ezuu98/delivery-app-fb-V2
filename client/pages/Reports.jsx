@@ -4,11 +4,17 @@ import SiteLayout from '../components/SiteLayout.jsx';
 export default function Reports(){
   const getFirstOfMonth = () => {
     const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
   };
 
   const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const [fromDate, setFromDate] = useState(getFirstOfMonth());
