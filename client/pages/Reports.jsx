@@ -231,8 +231,8 @@ export default function Reports(){
           {!reportLoading && reportRows.length > 0 && (
             <div className="report-table-wrap">
               <div className="report-meta">
-                <div>To Date: {toDate}</div>
-                <div>From Date: {fromDate}</div>
+                <div><strong>From Date:</strong> {fromDate}</div>
+                <div><strong>To Date:</strong> {toDate}</div>
               </div>
               <table className="report-table">
                 <thead>
