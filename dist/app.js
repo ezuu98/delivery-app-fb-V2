@@ -20378,7 +20378,7 @@ function Q_() {
         const K = de.id || de._id || "";
         let se = 0, je = 0;
         try {
-          const et = new URLSearchParams({ fromDate: p, toDate: b }), Ve = await fetch(`/api/riders/${encodeURIComponent(K)}/km?${et.toString()}`, { credentials: "include" });
+          const et = new URLSearchParams({ fromDate: p, toDate: b }), Ve = await fetch(`/api/riders/${encodeURIComponent(K)}/km-in-range?${et.toString()}`, { credentials: "include" });
           if (Ve.status === 401)
             return window.location.href = "/auth/login", null;
           const Ie = await Ve.json().catch(() => null);
