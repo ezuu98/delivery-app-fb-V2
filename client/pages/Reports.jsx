@@ -2,8 +2,17 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 
 export default function Reports(){
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const getFirstOfMonth = () => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+  };
+
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
+  const [fromDate, setFromDate] = useState(getFirstOfMonth());
+  const [toDate, setToDate] = useState(getTodayDate());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
