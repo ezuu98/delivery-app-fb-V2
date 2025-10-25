@@ -114,44 +114,62 @@ export default function Reports(){
     }
   }
 
-  function toCsvRow(arr){
-    return arr.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
-  }
-
   async function handleDownload(){
     const rows = reportRows.length ? reportRows : (await handleGenerateReport());
     if (!rows || !rows.length) return;
-    const lines = [];
+
+    const workbookData = [];
+
     // Title row
-    lines.push(toCsvRow(['Rider Commission Report']));
-    lines.push('');
+    workbookData.push(['Rider Commission Report']);
+    workbookData.push([]);
+
     // Date rows
-    lines.push(toCsvRow(['From Date:', fromDate]));
-    lines.push(toCsvRow(['To Date:', toDate]));
-    lines.push('');
-    // Header and data
+    workbookData.push(['From Date:', fromDate]);
+    workbookData.push(['To Date:', toDate]);
+    workbookData.push([]);
+
+    // Header row
     const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
-    lines.push(toCsvRow(header));
+    workbookData.push(header);
+
+    // Data rows
     for (const r of rows){
-      lines.push(toCsvRow([
+      workbookData.push([
         r.riderName,
         r.totalShopifyRides,
         r.extraRides,
         Number(r.distanceKm).toFixed(2),
         Number(r.perKmRate).toFixed(2),
         Number(r.totalCommission).toFixed(2),
-      ]));
+      ]);
     }
-    const csv = '\uFEFF' + lines.join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `rider-commission-${fromDate}_to_${toDate}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+
+    // Create workbook and worksheet
+    const ws = XLSX.utils.aoa_to_sheet(workbookData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+    // Make header row bold (row 6, which is index 5 in 0-based, but in XLSX it's the 6th row)
+    const headerRowIndex = 6;
+    for (let col = 0; col < header.length; col++){
+      const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex - 1, c: col});
+      if (!ws[cellAddress]) ws[cellAddress] = {};
+      ws[cellAddress].font = { bold: true };
+    }
+
+    // Set column widths for better readability
+    ws['!cols'] = [
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 16 },
+      { wch: 22 },
+      { wch: 14 },
+      { wch: 18 }
+    ];
+
+    // Write and download
+    XLSX.writeFile(wb, `rider-commission-${fromDate}_to_${toDate}.xlsx`);
   }
 
   return (
