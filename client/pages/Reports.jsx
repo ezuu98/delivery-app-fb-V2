@@ -67,7 +67,6 @@ export default function Reports(){
                 </tbody>
               </table>
             </div>
-          )}
         </div>
       </section>
     </SiteLayout>
