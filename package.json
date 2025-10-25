@@ -19,7 +19,7 @@
   "author": "",
   "license": "MIT",
   "engines": {
-    "node": ">=18 <=22"
+    "node": "20.17.0"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.1",

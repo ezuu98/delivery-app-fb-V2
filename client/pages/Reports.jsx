@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
+import { readFareSettings, DEFAULT_FARE_SETTINGS } from '../utils/fareSettings.js';
 
 export default function Reports(){
   const getFirstOfMonth = () => {
@@ -24,6 +25,9 @@ export default function Reports(){
   const [showRiderSelection, setShowRiderSelection] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reportRows, setReportRows] = useState([]);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState('');
 
   useEffect(()=>{
     const fetchRiders = async () => {
@@ -32,7 +36,7 @@ export default function Reports(){
         if (res.status === 401) { window.location.href = '/auth/login'; return; }
         if (!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
-        const ridersList = data.data || [];
+        const ridersList = Array.isArray(data.riders) ? data.riders : (Array.isArray(data.data?.riders) ? data.data.riders : (Array.isArray(data.data) ? data.data : []));
         setRiders(ridersList);
         setSelectedRiders(ridersList.map(r => r.id || r._id || ''));
       } catch (e) {
@@ -63,6 +67,91 @@ export default function Reports(){
   const handleCreateReport = () => {
     setShowRiderSelection(true);
   };
+
+  async function handleGenerateReport(){
+    setReportError('');
+    setReportLoading(true);
+    try{
+      const settings = readFareSettings();
+      const baseFare = Number(settings?.baseFare) || DEFAULT_FARE_SETTINGS.baseFare;
+      const perKm = Number(settings?.farePerKm) || DEFAULT_FARE_SETTINGS.farePerKm;
+      const sel = (selectedRiders.length ? riders.filter(r=> selectedRiders.includes(r.id || r._id || '')) : riders);
+      const rows = await Promise.all(sel.map(async (r, idx) => {
+        const id = r.id || r._id || '';
+        let totalKm = 0;
+        let rideCount = 0;
+        try{
+          const params = new URLSearchParams({ fromDate, toDate });
+          const res = await fetch(`/api/riders/${encodeURIComponent(id)}/km-in-range?${params.toString()}`, { credentials: 'include' });
+          if(res.status === 401){ window.location.href = '/auth/login'; return null; }
+          const json = await res.json().catch(()=>null);
+          if(res.ok && json && json.ok){
+            totalKm = Number(json.totalKm) || 0;
+            rideCount = Number(json.rideCount) || 0;
+          }
+        }catch(_){ /* noop */ }
+        const totalCommission = (totalKm * perKm) + (rideCount * baseFare);
+        return {
+          serial: idx + 1,
+          riderName: r.name || r.firstName || 'Unknown',
+          totalShopifyRides: rideCount,
+          extraRides: 0,
+          distanceKm: totalKm,
+          perKmRate: perKm,
+          totalCommission,
+        };
+      }));
+      const filtered = rows.filter(Boolean);
+      setReportRows(filtered);
+      return filtered;
+    }catch(e){
+      setReportError(e?.message || 'Failed to generate report');
+      return [];
+    }finally{
+      setReportLoading(false);
+      setShowRiderSelection(false);
+    }
+  }
+
+  function toCsvRow(arr){
+    return arr.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+  }
+
+  async function handleDownload(){
+    const rows = reportRows.length ? reportRows : (await handleGenerateReport());
+    if (!rows || !rows.length) return;
+    const lines = [];
+    // Title row
+    lines.push(toCsvRow(['Rider Commission Report']));
+    lines.push('');
+    // Date rows
+    lines.push(toCsvRow(['To Date:', toDate]));
+    lines.push(toCsvRow(['From Date:', fromDate]));
+    lines.push('');
+    // Header and data
+    const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
+    lines.push(toCsvRow(header));
+    for (const r of rows){
+      lines.push(toCsvRow([
+        r.riderName,
+        r.totalShopifyRides,
+        r.extraRides,
+        Number(r.distanceKm).toFixed(2),
+        Number(r.perKmRate).toFixed(2),
+        Number(r.totalCommission).toFixed(2),
+      ]));
+    }
+    const csv = '\uFEFF' + lines.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rider-commission-${fromDate}_to_${toDate}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <SiteLayout>
@@ -98,7 +187,7 @@ export default function Reports(){
                 Create Report
               </button>
 
-              <button className="rc-button download-button" onClick={() => console.log('Download report:', {fromDate, toDate})}>
+              <button className="rc-button download-button" onClick={handleDownload}>
                 Download
               </button>
             </div>
@@ -131,9 +220,44 @@ export default function Reports(){
 
                 <div className="modal-actions">
                   <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
-                  <button className="confirm-button" onClick={() => { console.log('Generate report:', {fromDate, toDate, selectedRiders}); setShowRiderSelection(false); }}>Generate Report</button>
+                  <button className="confirm-button" onClick={handleGenerateReport}>Generate Report</button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {reportError && <div className="auth-error">{reportError}</div>}
+          {reportLoading && <div className="section-note">Generating…</div>}
+          {!reportLoading && reportRows.length > 0 && (
+            <div className="report-table-wrap">
+              <div className="report-meta">
+                <div>To Date: {toDate}</div>
+                <div>From Date: {fromDate}</div>
+              </div>
+              <table className="report-table">
+                <thead>
+                  <tr>
+                    <th>Rider Name</th>
+                    <th>Total Shopify Rides</th>
+                    <th>Total Extra Rides</th>
+                    <th>Total Distance Travelled</th>
+                    <th>per km rate</th>
+                    <th>Total Commission</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportRows.map((row, i) => (
+                    <tr key={i}>
+                      <td>{row.riderName}</td>
+                      <td>{row.totalShopifyRides}</td>
+                      <td>{row.extraRides}</td>
+                      <td>{Number(row.distanceKm).toFixed(2)}</td>
+                      <td>{Number(row.perKmRate).toFixed(2)}</td>
+                      <td>{Number(row.totalCommission).toFixed(2)} Rs.</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
