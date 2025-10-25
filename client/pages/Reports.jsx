@@ -120,11 +120,19 @@ export default function Reports(){
   async function handleDownload(){
     const rows = reportRows.length ? reportRows : (await handleGenerateReport());
     if (!rows || !rows.length) return;
-    const header = ['#','Rider Name','Total Shopify Rides','Extra Rides','Distance travelled (km)','Per km Rate','Total Commission'];
-    const lines = [toCsvRow(header)];
+    const lines = [];
+    // Title row
+    lines.push(toCsvRow(['Rider Commission Report']));
+    lines.push('');
+    // Date rows
+    lines.push(toCsvRow(['To Date:', toDate]));
+    lines.push(toCsvRow(['From Date:', fromDate]));
+    lines.push('');
+    // Header and data
+    const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
+    lines.push(toCsvRow(header));
     for (const r of rows){
       lines.push(toCsvRow([
-        r.serial,
         r.riderName,
         r.totalShopifyRides,
         r.extraRides,
@@ -222,26 +230,28 @@ export default function Reports(){
           {reportLoading && <div className="section-note">Generating…</div>}
           {!reportLoading && reportRows.length > 0 && (
             <div className="report-table-wrap">
+              <div className="report-meta">
+                <div>To Date: {toDate}</div>
+                <div>From Date: {fromDate}</div>
+              </div>
               <table className="report-table">
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Rider Name</th>
                     <th>Total Shopify Rides</th>
-                    <th>Extra Rides</th>
-                    <th>Distance travelled</th>
-                    <th>Per km Rate</th>
+                    <th>Total Extra Rides</th>
+                    <th>Total Distance Travelled</th>
+                    <th>per km rate</th>
                     <th>Total Commission</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reportRows.map((row, i) => (
                     <tr key={i}>
-                      <td>{row.serial}</td>
                       <td>{row.riderName}</td>
                       <td>{row.totalShopifyRides}</td>
                       <td>{row.extraRides}</td>
-                      <td>{Number(row.distanceKm).toFixed(2)} km</td>
+                      <td>{Number(row.distanceKm).toFixed(2)}</td>
                       <td>{Number(row.perKmRate).toFixed(2)}</td>
                       <td>{Number(row.totalCommission).toFixed(2)} Rs.</td>
                     </tr>
