@@ -301,6 +301,7 @@ export default function Reports(){
         const avgMinutes = totalOrders > 0 ? Math.round(totalDiffMinutes / totalOrders) : 0;
         const avgTotalMinutes = totalOrders > 0 ? Math.round(totalDeliveryDiffMinutes / totalOrders) : 0;
         const packagingEfficiency = (avgMinutes > 0 && benchmarkAcceptanceTime > 0) ? Math.round((benchmarkAcceptanceTime / avgMinutes) * 100) : 0;
+        const efficiencyRatio = (avgTotalMinutes > 0 && benchmarkDeliveryTime > 0) ? Math.round((benchmarkDeliveryTime / avgTotalMinutes) * 100) : 0;
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
@@ -310,6 +311,7 @@ export default function Reports(){
           packagingEfficiency,
           totalAverageMinutes: avgTotalMinutes,
           benchmarkDeliveryTime,
+          efficiencyRatio,
         };
       });
 
@@ -752,7 +754,7 @@ export default function Reports(){
                           <td>{(row.packagingEfficiency !== undefined && row.packagingEfficiency !== null) ? `${row.packagingEfficiency}%` : ''}</td>
                           <td>{(row.totalAverageMinutes !== undefined && row.totalAverageMinutes !== null) ? `${row.totalAverageMinutes} min` : ''}</td>
                           <td>{row.benchmarkDeliveryTime ? `${row.benchmarkDeliveryTime} min` : ''}</td>
-                          <td></td>
+                          <td>{(row.efficiencyRatio !== undefined && row.efficiencyRatio !== null) ? `${row.efficiencyRatio}%` : ''}</td>
                         </tr>
                       ))}
                     </tbody>
