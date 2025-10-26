@@ -241,9 +241,10 @@ export default function Reports(){
       const startTs = start.getTime();
       const endTs = end.getTime();
 
-      // Fetch settings for benchmark acceptance time
+      // Fetch settings for benchmark acceptance and delivery times
       const settings = readFareSettings();
       const benchmarkAcceptanceTime = Number(settings?.benchmarkAcceptanceTime) || DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime;
+      const benchmarkDeliveryTime = Number(settings?.benchmarkDeliveryTime) || DEFAULT_FARE_SETTINGS.benchmarkDeliveryTime;
 
       // Fetch each order doc by id (only those referenced by packers)
       const orderIdList = Array.from(allOrderIds);
@@ -308,6 +309,7 @@ export default function Reports(){
           benchmarkAcceptanceTime,
           packagingEfficiency,
           totalAverageMinutes: avgTotalMinutes,
+          benchmarkDeliveryTime,
         };
       });
 
@@ -749,7 +751,7 @@ export default function Reports(){
                           <td>{row.benchmarkAcceptanceTime ? `${row.benchmarkAcceptanceTime} min` : ''}</td>
                           <td>{(row.packagingEfficiency !== undefined && row.packagingEfficiency !== null) ? `${row.packagingEfficiency}%` : ''}</td>
                           <td>{(row.totalAverageMinutes !== undefined && row.totalAverageMinutes !== null) ? `${row.totalAverageMinutes} min` : ''}</td>
-                          <td></td>
+                          <td>{row.benchmarkDeliveryTime ? `${row.benchmarkDeliveryTime} min` : ''}</td>
                           <td></td>
                         </tr>
                       ))}
