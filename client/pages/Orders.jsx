@@ -171,17 +171,6 @@ export default function Orders(){
             <p className="rc-subtitle">Manage orders synced from Shopify.</p>
           </div>
 
-          <div className="rc-date-range">
-            <label className="date-field">
-              <span className="sr-only">From date</span>
-              <input aria-label="From date" className="date-input" type="date" value={fromDate} onChange={e=>setFromDate(e.target.value)} />
-            </label>
-            <label className="date-field">
-              <span className="sr-only">To date</span>
-              <input aria-label="To date" className="date-input" type="date" value={toDate} onChange={e=>setToDate(e.target.value)} />
-            </label>
-            <button className="rc-select rc-chip download-csv-btn" onClick={downloadCSV}>Download CSV</button>
-          </div>
         </header>
 
         <div className="rc-toolbar">
