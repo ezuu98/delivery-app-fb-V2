@@ -734,7 +734,7 @@ export default function Reports(){
                           <td>{row.dispatcherName}</td>
                           <td>{row.totalOrders}</td>
                           <td>{(row.averageAssignedMinutes !== undefined && row.averageAssignedMinutes !== null) ? `${row.averageAssignedMinutes} min` : ''}</td>
-                          <td></td>
+                          <td>{row.benchmarkAcceptanceTime ? `${row.benchmarkAcceptanceTime} min` : ''}</td>
                           <td></td>
                           <td></td>
                           <td></td>
