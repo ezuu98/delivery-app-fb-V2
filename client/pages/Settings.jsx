@@ -93,6 +93,18 @@ export default function Settings(){
                 aria-label="Benchmark Acceptance Time"
               />
             </label>
+            <label className="fare-field">
+              <span className="fare-field-label">Benchmark Delivery Time (minutes)</span>
+              <input
+                type="number"
+                className="fare-field-input"
+                value={Number.isFinite(benchmarkDeliveryTime) ? String(benchmarkDeliveryTime) : ''}
+                min="0"
+                step="1"
+                onChange={e => setBenchmarkDeliveryTime(e.target.value === '' ? 0 : Number(e.target.value))}
+                aria-label="Benchmark Delivery Time"
+              />
+            </label>
           </div>
           <div className="fare-actions">
             <button className="btn-primary" onClick={onSave} disabled={saving}>Save</button>
