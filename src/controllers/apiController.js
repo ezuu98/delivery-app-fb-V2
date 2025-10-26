@@ -490,7 +490,7 @@ module.exports = {
       const packers = [];
       snap.forEach(doc => {
         const d = doc.data() || {};
-        packers.push({ id: doc.id, name: d.fullName || d.name || null, lastActiveDays: d.lastActiveDays, contactNumber: d.contactNumber || null, email: d.email || null });
+        packers.push({ id: doc.id, fullName: d.fullName || d.name || null, name: d.fullName || d.name || null, orders: Array.isArray(d.orders) ? d.orders : [], lastActiveDays: d.lastActiveDays, contactNumber: d.contactNumber || null, email: d.email || null });
       });
       return res.json(ok({ packers }));
     }catch(e){
