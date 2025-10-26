@@ -36118,88 +36118,14 @@ function y7() {
         lineNumber: 329,
         columnNumber: 15
       }, this),
-      x && /* @__PURE__ */ g.jsxDEV("div", { className: "rider-selection-modal-overlay", onClick: () => y(!1), children: /* @__PURE__ */ g.jsxDEV("div", { className: "rider-selection-modal", onClick: (ye) => ye.stopPropagation(), children: [
-        /* @__PURE__ */ g.jsxDEV("h4", { className: "modal-title", children: "Select Riders for Report" }, void 0, !1, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 366,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ g.jsxDEV("div", { className: "modal-content", children: [
-          /* @__PURE__ */ g.jsxDEV("button", { className: "select-all-button", onClick: Oe, children: m.length === u.length ? "Deselect All" : "Select All" }, void 0, !1, {
-            fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 369,
-            columnNumber: 23
-          }, this),
-          /* @__PURE__ */ g.jsxDEV("div", { className: "riders-list", children: u.map((ye) => /* @__PURE__ */ g.jsxDEV("label", { className: "rider-checkbox-label", children: [
-            /* @__PURE__ */ g.jsxDEV(
-              "input",
-              {
-                type: "checkbox",
-                className: "rider-checkbox",
-                checked: m.includes(ye.id || ye._id || ""),
-                onChange: () => we(ye.id || ye._id || "")
-              },
-              void 0,
-              !1,
-              {
-                fileName: "/app/code/client/pages/Reports.jsx",
-                lineNumber: 376,
-                columnNumber: 29
-              },
-              this
-            ),
-            /* @__PURE__ */ g.jsxDEV("span", { className: "rider-name", children: ye.name || ye.firstName || "Unknown" }, void 0, !1, {
-              fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 382,
-              columnNumber: 29
-            }, this)
-          ] }, ye.id || ye._id, !0, {
-            fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 375,
-            columnNumber: 27
-          }, this)) }, void 0, !1, {
-            fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 373,
-            columnNumber: 23
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 368,
-          columnNumber: 21
-        }, this),
-        /* @__PURE__ */ g.jsxDEV("div", { className: "modal-actions", children: [
-          /* @__PURE__ */ g.jsxDEV("button", { className: "cancel-button", onClick: () => y(!1), children: "Cancel" }, void 0, !1, {
-            fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 389,
-            columnNumber: 23
-          }, this),
-          /* @__PURE__ */ g.jsxDEV("button", { className: "confirm-button", onClick: xe, children: "Generate Report" }, void 0, !1, {
-            fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 390,
-            columnNumber: 23
-          }, this)
-        ] }, void 0, !0, {
-          fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 388,
-          columnNumber: 21
-        }, this)
-      ] }, void 0, !0, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 365,
-        columnNumber: 19
-      }, this) }, void 0, !1, {
-        fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 364,
-        columnNumber: 17
-      }, this),
       U && /* @__PURE__ */ g.jsxDEV("div", { className: "auth-error", children: U }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 396,
+        lineNumber: 363,
         columnNumber: 31
       }, this),
       I && /* @__PURE__ */ g.jsxDEV("div", { className: "section-note", children: "Generating…" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 397,
+        lineNumber: 364,
         columnNumber: 33
       }, this),
       !I && D.length > 0 && /* @__PURE__ */ g.jsxDEV("div", { className: "report-table-wrap", children: [
@@ -36207,99 +36133,99 @@ function y7() {
           /* @__PURE__ */ g.jsxDEV("div", { children: [
             /* @__PURE__ */ g.jsxDEV("strong", { children: "From Date:" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 401,
+              lineNumber: 368,
               columnNumber: 26
             }, this),
             " ",
             n
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 401,
+            lineNumber: 368,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV("div", { children: [
             /* @__PURE__ */ g.jsxDEV("strong", { children: "To Date:" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 402,
+              lineNumber: 369,
               columnNumber: 26
             }, this),
             " ",
             s
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 402,
+            lineNumber: 369,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 400,
+          lineNumber: 367,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("table", { className: "report-table", children: [
           /* @__PURE__ */ g.jsxDEV("thead", { children: /* @__PURE__ */ g.jsxDEV("tr", { children: [
             /* @__PURE__ */ g.jsxDEV("th", { children: "Rider Name" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 407,
+              lineNumber: 374,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Shopify Rides" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 408,
+              lineNumber: 375,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Extra Rides" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 409,
+              lineNumber: 376,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Distance Travelled" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 410,
+              lineNumber: 377,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "per km rate" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 411,
+              lineNumber: 378,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Commission" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 412,
+              lineNumber: 379,
               columnNumber: 25
             }, this)
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 406,
+            lineNumber: 373,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 405,
+            lineNumber: 372,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV("tbody", { children: D.map((ye, V) => /* @__PURE__ */ g.jsxDEV("tr", { children: [
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.riderName }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 418,
+              lineNumber: 385,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.totalShopifyRides }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 419,
+              lineNumber: 386,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.extraRides }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 420,
+              lineNumber: 387,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: Number(ye.distanceKm).toFixed(2) }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 421,
+              lineNumber: 388,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: Number(ye.perKmRate).toFixed(2) }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 422,
+              lineNumber: 389,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: [
@@ -36307,26 +36233,26 @@ function y7() {
               " Rs."
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 423,
+              lineNumber: 390,
               columnNumber: 27
             }, this)
           ] }, V, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 417,
+            lineNumber: 384,
             columnNumber: 25
           }, this)) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 415,
+            lineNumber: 382,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 404,
+          lineNumber: 371,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 399,
+        lineNumber: 366,
         columnNumber: 17
       }, this)
     ] }, void 0, !0, {
@@ -36337,14 +36263,14 @@ function y7() {
     ce === "performance" && /* @__PURE__ */ g.jsxDEV("div", { id: "tab-performance", className: "reports-tab-content", children: [
       /* @__PURE__ */ g.jsxDEV("h3", { className: "rc-section-title", children: "Rider Performance Report" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 435,
+        lineNumber: 402,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "rc-toolbar report-filter-bar", children: /* @__PURE__ */ g.jsxDEV("div", { className: "date-range-filters", children: [
         /* @__PURE__ */ g.jsxDEV("div", { className: "date-filter", children: [
           /* @__PURE__ */ g.jsxDEV("label", { htmlFor: "perfFromDate", className: "date-label", children: "From Date:" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 440,
+            lineNumber: 407,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV(
@@ -36360,20 +36286,20 @@ function y7() {
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 441,
+              lineNumber: 408,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 439,
+          lineNumber: 406,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("div", { className: "date-filter", children: [
           /* @__PURE__ */ g.jsxDEV("label", { htmlFor: "perfToDate", className: "date-label", children: "To Date:" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 451,
+            lineNumber: 418,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV(
@@ -36389,43 +36315,43 @@ function y7() {
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 452,
+              lineNumber: 419,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 450,
+          lineNumber: 417,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("button", { className: "rc-button report-button", onClick: ge, children: "Create Report" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 461,
+          lineNumber: 428,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("button", { className: "rc-button download-button", onClick: at, children: "Download" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 465,
+          lineNumber: 432,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 438,
+        lineNumber: 405,
         columnNumber: 17
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 437,
+        lineNumber: 404,
         columnNumber: 15
       }, this),
       K && /* @__PURE__ */ g.jsxDEV("div", { className: "auth-error", children: K }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 471,
+        lineNumber: 438,
         columnNumber: 36
       }, this),
       Z && /* @__PURE__ */ g.jsxDEV("div", { className: "section-note", children: "Generating…" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 472,
+        lineNumber: 439,
         columnNumber: 38
       }, this),
       !Z && X.length > 0 && /* @__PURE__ */ g.jsxDEV("div", { className: "report-table-wrap", children: [
@@ -36433,134 +36359,134 @@ function y7() {
           /* @__PURE__ */ g.jsxDEV("div", { children: [
             /* @__PURE__ */ g.jsxDEV("strong", { children: "From Date:" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 476,
+              lineNumber: 443,
               columnNumber: 26
             }, this),
             " ",
             n
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 476,
+            lineNumber: 443,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV("div", { children: [
             /* @__PURE__ */ g.jsxDEV("strong", { children: "To Date:" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 477,
+              lineNumber: 444,
               columnNumber: 26
             }, this),
             " ",
             s
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 477,
+            lineNumber: 444,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 475,
+          lineNumber: 442,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("table", { className: "report-table", children: [
           /* @__PURE__ */ g.jsxDEV("thead", { children: /* @__PURE__ */ g.jsxDEV("tr", { children: [
             /* @__PURE__ */ g.jsxDEV("th", { children: "S.no" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 482,
+              lineNumber: 449,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Rider Name" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 483,
+              lineNumber: 450,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Shopify Rides" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 484,
+              lineNumber: 451,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Extra Rides" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 485,
+              lineNumber: 452,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Total Distance Travelled" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 486,
+              lineNumber: 453,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Expected Time for Deliveries" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 487,
+              lineNumber: 454,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Actual Delivery Time" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 488,
+              lineNumber: 455,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "On Time Rate" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 489,
+              lineNumber: 456,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "% of Orders Accepted" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 490,
+              lineNumber: 457,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Average Rider Acceptance Time" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 491,
+              lineNumber: 458,
               columnNumber: 25
             }, this),
             /* @__PURE__ */ g.jsxDEV("th", { children: "Benchmark Acceptance Time" }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 492,
+              lineNumber: 459,
               columnNumber: 25
             }, this)
           ] }, void 0, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 481,
+            lineNumber: 448,
             columnNumber: 23
           }, this) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 480,
+            lineNumber: 447,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV("tbody", { children: X.map((ye, V) => /* @__PURE__ */ g.jsxDEV("tr", { children: [
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.serial }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 498,
+              lineNumber: 465,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.riderName }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 499,
+              lineNumber: 466,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.totalShopifyRides }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 500,
+              lineNumber: 467,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.totalExtraRides }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 501,
+              lineNumber: 468,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: Number(ye.totalDistanceKm).toFixed(2) }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 502,
+              lineNumber: 469,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.expectedDeliveryTime }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 503,
+              lineNumber: 470,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.actualDeliveryTime }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 504,
+              lineNumber: 471,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: [
@@ -36568,7 +36494,7 @@ function y7() {
               "%"
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 505,
+              lineNumber: 472,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: [
@@ -36576,54 +36502,54 @@ function y7() {
               "%"
             ] }, void 0, !0, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 506,
+              lineNumber: 473,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.averageAcceptanceTime }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 507,
+              lineNumber: 474,
               columnNumber: 27
             }, this),
             /* @__PURE__ */ g.jsxDEV("td", { children: ye.benchmarkAcceptanceTime }, void 0, !1, {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 508,
+              lineNumber: 475,
               columnNumber: 27
             }, this)
           ] }, V, !0, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 497,
+            lineNumber: 464,
             columnNumber: 25
           }, this)) }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 495,
+            lineNumber: 462,
             columnNumber: 21
           }, this)
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 479,
+          lineNumber: 446,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 474,
+        lineNumber: 441,
         columnNumber: 17
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 434,
+      lineNumber: 401,
       columnNumber: 13
     }, this),
     ce === "dispatcher" && /* @__PURE__ */ g.jsxDEV("div", { id: "tab-dispatcher", className: "reports-tab-content", children: [
       /* @__PURE__ */ g.jsxDEV("h3", { className: "rc-section-title", children: "Dispatcher Performance Report" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 520,
+        lineNumber: 487,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "rc-toolbar report-filter-bar", children: /* @__PURE__ */ g.jsxDEV("div", { className: "date-range-filters", children: [
         /* @__PURE__ */ g.jsxDEV("div", { className: "date-filter", children: [
           /* @__PURE__ */ g.jsxDEV("label", { htmlFor: "dispFromDate", className: "date-label", children: "From Date:" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 525,
+            lineNumber: 492,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV(
@@ -36639,20 +36565,20 @@ function y7() {
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 526,
+              lineNumber: 493,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 524,
+          lineNumber: 491,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("div", { className: "date-filter", children: [
           /* @__PURE__ */ g.jsxDEV("label", { htmlFor: "dispToDate", className: "date-label", children: "To Date:" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 536,
+            lineNumber: 503,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ g.jsxDEV(
@@ -36668,47 +36594,121 @@ function y7() {
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 537,
+              lineNumber: 504,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 535,
+          lineNumber: 502,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("button", { className: "rc-button report-button", onClick: ge, children: "Create Report" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 546,
+          lineNumber: 513,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("button", { className: "rc-button download-button", onClick: at, children: "Download" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 550,
+          lineNumber: 517,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 523,
+        lineNumber: 490,
         columnNumber: 17
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 522,
+        lineNumber: 489,
         columnNumber: 15
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "reports-empty-state", children: /* @__PURE__ */ g.jsxDEV("p", { children: "Dispatcher Performance Report - Coming Soon" }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 557,
+        lineNumber: 524,
         columnNumber: 17
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 556,
+        lineNumber: 523,
         columnNumber: 15
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/pages/Reports.jsx",
-      lineNumber: 519,
+      lineNumber: 486,
+      columnNumber: 13
+    }, this),
+    x && /* @__PURE__ */ g.jsxDEV("div", { className: "rider-selection-modal-overlay", onClick: () => y(!1), children: /* @__PURE__ */ g.jsxDEV("div", { className: "rider-selection-modal", onClick: (ye) => ye.stopPropagation(), children: [
+      /* @__PURE__ */ g.jsxDEV("h4", { className: "modal-title", children: "Select Riders for Report" }, void 0, !1, {
+        fileName: "/app/code/client/pages/Reports.jsx",
+        lineNumber: 532,
+        columnNumber: 17
+      }, this),
+      /* @__PURE__ */ g.jsxDEV("div", { className: "modal-content", children: [
+        /* @__PURE__ */ g.jsxDEV("button", { className: "select-all-button", onClick: Oe, children: m.length === u.length ? "Deselect All" : "Select All" }, void 0, !1, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 535,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ g.jsxDEV("div", { className: "riders-list", children: u.map((ye) => /* @__PURE__ */ g.jsxDEV("label", { className: "rider-checkbox-label", children: [
+          /* @__PURE__ */ g.jsxDEV(
+            "input",
+            {
+              type: "checkbox",
+              className: "rider-checkbox",
+              checked: m.includes(ye.id || ye._id || ""),
+              onChange: () => we(ye.id || ye._id || "")
+            },
+            void 0,
+            !1,
+            {
+              fileName: "/app/code/client/pages/Reports.jsx",
+              lineNumber: 542,
+              columnNumber: 25
+            },
+            this
+          ),
+          /* @__PURE__ */ g.jsxDEV("span", { className: "rider-name", children: ye.name || ye.firstName || "Unknown" }, void 0, !1, {
+            fileName: "/app/code/client/pages/Reports.jsx",
+            lineNumber: 548,
+            columnNumber: 25
+          }, this)
+        ] }, ye.id || ye._id, !0, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 541,
+          columnNumber: 23
+        }, this)) }, void 0, !1, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 539,
+          columnNumber: 19
+        }, this)
+      ] }, void 0, !0, {
+        fileName: "/app/code/client/pages/Reports.jsx",
+        lineNumber: 534,
+        columnNumber: 17
+      }, this),
+      /* @__PURE__ */ g.jsxDEV("div", { className: "modal-actions", children: [
+        /* @__PURE__ */ g.jsxDEV("button", { className: "cancel-button", onClick: () => y(!1), children: "Cancel" }, void 0, !1, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 555,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ g.jsxDEV("button", { className: "confirm-button", onClick: xe, children: "Generate Report" }, void 0, !1, {
+          fileName: "/app/code/client/pages/Reports.jsx",
+          lineNumber: 556,
+          columnNumber: 19
+        }, this)
+      ] }, void 0, !0, {
+        fileName: "/app/code/client/pages/Reports.jsx",
+        lineNumber: 554,
+        columnNumber: 17
+      }, this)
+    ] }, void 0, !0, {
+      fileName: "/app/code/client/pages/Reports.jsx",
+      lineNumber: 531,
+      columnNumber: 15
+    }, this) }, void 0, !1, {
+      fileName: "/app/code/client/pages/Reports.jsx",
+      lineNumber: 530,
       columnNumber: 13
     }, this)
   ] }, void 0, !0, {
