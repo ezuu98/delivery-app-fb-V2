@@ -467,6 +467,21 @@ export default function Reports(){
       const header = ['S.no','Dispatcher Name','Total Orders','Average time','Benchmark Time','Packaging efficiency','Total Average Time','Benchmark total','Efficiency Ratio'];
       workbookData.push(header);
 
+      // Data rows
+      for (const r of rows){
+        workbookData.push([
+          r.serial,
+          r.dispatcherName,
+          r.totalOrders,
+          (r.averageAssignedMinutes !== undefined && r.averageAssignedMinutes !== null) ? `${r.averageAssignedMinutes} min` : '',
+          (r.benchmarkAcceptanceTime !== undefined && r.benchmarkAcceptanceTime !== null) ? `${r.benchmarkAcceptanceTime} min` : '',
+          (r.packagingEfficiency !== undefined && r.packagingEfficiency !== null) ? `${r.packagingEfficiency}%` : '',
+          (r.totalAverageMinutes !== undefined && r.totalAverageMinutes !== null) ? `${r.totalAverageMinutes} min` : '',
+          (r.benchmarkDeliveryTime !== undefined && r.benchmarkDeliveryTime !== null) ? `${r.benchmarkDeliveryTime} min` : '',
+          (r.efficiencyRatio !== undefined && r.efficiencyRatio !== null) ? `${r.efficiencyRatio}%` : '',
+        ]);
+      }
+
       // Create workbook and worksheet
       const ws = XLSX.utils.aoa_to_sheet(workbookData);
       const wb = XLSX.utils.book_new();
