@@ -688,6 +688,8 @@ module.exports = {
       let acceptedCount = 0;
       let totalOrders = 0;
       let acceptanceTimeValues = [];
+      let unAssignedOrders = null;
+      let hasUnAssignedOrdersField = false;
       const debug = { ordersProcessed: 0, errors: [] };
 
       try {
@@ -703,6 +705,10 @@ module.exports = {
               const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
               for (const oid of orderIds) {
                 if (oid !== undefined && oid !== null) toCheckIds.add(String(oid));
+              }
+              if (Array.isArray(riderData.unAssignedOrders)) {
+                hasUnAssignedOrdersField = true;
+                unAssignedOrders = new Set(riderData.unAssignedOrders.map(id => String(id)));
               }
             }
           } catch (e) {
