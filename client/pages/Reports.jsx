@@ -232,21 +232,33 @@ export default function Reports(){
       const list = Array.isArray(packers) ? packers : [];
       const sel = (Array.isArray(selectedIds) && selectedIds.length) ? list.filter(p => selectedIds.includes(p.id || p._id || '')) : list;
 
-      const rows = sel.map((p, idx) => {
-        const ordersArr = Array.isArray(p.orders) ? p.orders : [];
-        let totalOrders = 0;
-        if (ordersArr.length){
-          totalOrders = ordersArr.reduce((count, o) => {
-            if (!o) return count;
-            const created = o.createdAt || o.created_at || o.created || o.date || o.timestamp;
-            let ts = NaN;
-            if (typeof created === 'number') ts = Number(created);
-            else if (typeof created === 'string') ts = Date.parse(created);
-            if (Number.isNaN(ts)) return count;
-            return (ts >= startTs && ts <= endTs) ? count + 1 : count;
-          }, 0);
-        }
+      // Fetch orders in date range and count per packer
+      const orderParams = new URLSearchParams();
+      if (fromDate) orderParams.set('created_at_min', fromDate);
+      if (toDate) orderParams.set('created_at_max', toDate);
+      orderParams.set('limit', '10000');
 
+      let ordersList = [];
+      try{
+        const orRes = await fetch(`/api/orders?${orderParams.toString()}`, { credentials: 'include' });
+        if (orRes.status === 401){ window.location.href = '/auth/login'; return []; }
+        if (orRes.ok){
+          const od = await orRes.json().catch(()=>null);
+          ordersList = Array.isArray(od?.orders) ? od.orders : (Array.isArray(od?.data?.orders) ? od.data.orders : []);
+        }
+      }catch(_){ /* ignore fetch errors */ }
+
+      const countMap = new Map();
+      for (const o of ordersList){
+        if (!o) continue;
+        const pid = (o.packed_by || o.packer_id || o.packerId || (o.assignment && o.assignment.packerId) || (o.packedBy) || (o.packer && o.packer.id) || '').toString();
+        if(!pid) continue;
+        countMap.set(pid, (countMap.get(pid) || 0) + 1);
+      }
+
+      const rows = sel.map((p, idx) => {
+        const pid = (p.id || p._id || '').toString();
+        const totalOrders = Number(countMap.get(pid) || 0);
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
