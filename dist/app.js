@@ -35809,7 +35809,7 @@ function y7() {
     (async () => {
       var V;
       try {
-        const Q = await fetch("/api/riders", { credentials: "include" });
+        const Q = await fetch("/api/riders?limit=10000", { credentials: "include" });
         if (Q.status === 401) {
           window.location.href = "/auth/login";
           return;
