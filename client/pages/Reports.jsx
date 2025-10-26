@@ -241,6 +241,10 @@ export default function Reports(){
       const startTs = start.getTime();
       const endTs = end.getTime();
 
+      // Fetch settings for benchmark acceptance time
+      const settings = readFareSettings();
+      const benchmarkAcceptanceTime = Number(settings?.benchmarkAcceptanceTime) || DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime;
+
       // Fetch each order doc by id (only those referenced by packers)
       const orderIdList = Array.from(allOrderIds);
       const orderInfoMap = new Map(); // id -> { createdTs, assignedTs }
