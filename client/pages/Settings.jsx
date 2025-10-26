@@ -18,7 +18,11 @@ export default function Settings(){
   function onSave(){
     setSaving(true);
     try{
-      const payload = { baseFare: Number(baseFare) || 0, farePerKm: Number(farePerKm) || 0 };
+      const payload = {
+        baseFare: Number(baseFare) || 0,
+        farePerKm: Number(farePerKm) || 0,
+        benchmarkAcceptanceTime: Number(benchmarkAcceptanceTime) || 0
+      };
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.setItem(FARE_SETTINGS_STORAGE_KEY, JSON.stringify(payload));
         try{ window.dispatchEvent(new Event('fare-settings-changed')); }catch(_){ }
