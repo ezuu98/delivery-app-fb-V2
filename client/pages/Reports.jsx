@@ -243,7 +243,7 @@ export default function Reports(){
 
       // Fetch each order doc by id (only those referenced by packers)
       const orderIdList = Array.from(allOrderIds);
-      const orderCreatedMap = new Map(); // id -> timestamp
+      const orderInfoMap = new Map(); // id -> { createdTs, assignedTs }
       await Promise.all(orderIdList.map(async (oid) => {
         try{
           const res = await fetch(`/api/orders/${encodeURIComponent(oid)}`, { credentials: 'include' });
@@ -253,27 +253,45 @@ export default function Reports(){
           const order = data?.order || data;
           if (!order) return;
           const created = order.created_at || order.createdAt || order.created || order.date || order.timestamp;
-          let ts = NaN;
-          if (typeof created === 'number') ts = Number(created);
-          else if (typeof created === 'string') ts = Date.parse(created);
-          if (!Number.isNaN(ts)) orderCreatedMap.set(String(oid), ts);
+          const assigned = order.assignedAt || order.assigned_at || order.assigned || order.assignment?.assignedAt || order.assignment?.assigned_at || order.assignment?.assigned || order.assignedAt;
+          let createdTs = NaN;
+          let assignedTs = NaN;
+          if (typeof created === 'number') createdTs = Number(created);
+          else if (typeof created === 'string') createdTs = Date.parse(created);
+          if (typeof assigned === 'number') assignedTs = Number(assigned);
+          else if (typeof assigned === 'string') assignedTs = Date.parse(assigned);
+          if (!Number.isNaN(createdTs)){
+            orderInfoMap.set(String(oid), { createdTs: createdTs, assignedTs: Number.isFinite(assignedTs) ? assignedTs : null });
+          }
         }catch(_){ /* ignore individual order fetch errors */ }
       }));
 
-      // Count per packer
+      // Count per packer and compute average assignment delay (minutes)
       const rows = sel.map((p, idx) => {
         const pid = String(p.id || p._id || '');
         const ids = packerToOrderIds.get(pid) || [];
         let totalOrders = 0;
+        let totalDiffMinutes = 0;
         for (const id of ids){
-          const ts = orderCreatedMap.get(String(id));
-          if (!ts) continue;
-          if (ts >= startTs && ts <= endTs) totalOrders += 1;
+          const info = orderInfoMap.get(String(id));
+          if (!info || !info.createdTs) continue;
+          const ts = info.createdTs;
+          if (ts >= startTs && ts <= endTs){
+            totalOrders += 1;
+            const assignedTs = info.assignedTs;
+            if (assignedTs && Number.isFinite(assignedTs) && assignedTs >= info.createdTs){
+              totalDiffMinutes += (assignedTs - info.createdTs) / 60000;
+            } else {
+              // if no assigned timestamp or invalid, treat as 0 per user's instruction
+            }
+          }
         }
+        const avgMinutes = totalOrders > 0 ? Math.round(totalDiffMinutes / totalOrders) : 0;
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
           totalOrders,
+          averageAssignedMinutes: avgMinutes,
         };
       });
 
@@ -711,7 +729,7 @@ export default function Reports(){
                           <td>{row.serial}</td>
                           <td>{row.dispatcherName}</td>
                           <td>{row.totalOrders}</td>
-                          <td></td>
+                          <td>{(row.averageAssignedMinutes !== undefined && row.averageAssignedMinutes !== null) ? `${row.averageAssignedMinutes} min` : ''}</td>
                           <td></td>
                           <td></td>
                           <td></td>
