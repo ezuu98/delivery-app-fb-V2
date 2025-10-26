@@ -1655,7 +1655,7 @@ module.exports = {
     // Unassign the order from rider
     await orderModel.unassign(id);
 
-    // Update rider's orders arrays
+    // Add order to rider's unAssignedOrders array (riders.orders only contains completed orders)
     if (riderId) {
       try {
         const db = getFirestore();
@@ -1665,39 +1665,35 @@ module.exports = {
 
           if (admin && admin.firestore && admin.firestore.FieldValue) {
             const FV = admin.firestore.FieldValue;
-            // Remove from orders array and add to unAssignedOrders array
+            // Add to unAssignedOrders array only (don't remove from orders as assigned orders are not in orders array)
             await riderRef.set({
-              orders: FV.arrayRemove(id),
               unAssignedOrders: FV.arrayUnion(id),
               updatedAt: new Date().toISOString(),
             }, { merge: true });
-            log.info('firestore.rider.unassign.arrays.updated', { riderId: String(riderId), orderId: id });
+            log.info('firestore.rider.unassigned.array.created', { riderId: String(riderId), orderId: id });
           } else {
             // Fallback: manual update (not atomic)
             const snap = await riderRef.get();
             const data = snap.exists ? (snap.data() || {}) : {};
-            const orders = Array.isArray(data.orders) ? data.orders.slice() : [];
             const unAssignedOrders = Array.isArray(data.unAssignedOrders) ? data.unAssignedOrders.slice() : [];
 
-            // Remove from orders, add to unAssignedOrders
-            const nextOrders = orders.filter(oid => String(oid) !== String(id));
+            // Add to unAssignedOrders if not already present
             if (!unAssignedOrders.map(String).includes(String(id))) {
               unAssignedOrders.push(id);
             }
 
             await riderRef.set({
-              orders: nextOrders,
               unAssignedOrders: unAssignedOrders,
               updatedAt: new Date().toISOString(),
             }, { merge: true });
-            log.info('firestore.rider.unassign.arrays.updated.fallback', { riderId: String(riderId), orderId: id });
+            log.info('firestore.rider.unassigned.array.created.fallback', { riderId: String(riderId), orderId: id });
           }
         }
       } catch (e) {
-        log.error('firestore.rider.unassign.update.failed', { riderId: String(riderId), orderId: id, message: e?.message });
+        log.error('firestore.rider.unassigned.array.failed', { riderId: String(riderId), orderId: id, message: e?.message });
       }
     } else {
-      log.warn('firestore.rider.unassign.skipped', { orderId: id, message: 'No rider found for order' });
+      log.warn('firestore.rider.unassigned.skipped', { orderId: id, message: 'No rider found for order' });
     }
 
     log.info('order.unassigned', { orderId: id, riderId });
