@@ -19711,44 +19711,44 @@ function Rj({ order: t, onClose: a, onUpdated: n }) {
   }, this);
 }
 function Dj({ order: t, onClose: a }) {
-  const n = (t == null ? void 0 : t.image) || null;
+  const n = t && t.orders && (t.orders.deliveryPhotoUrl || t.orders.delivery_photo_url) || (t == null ? void 0 : t.deliveryPhotoUrl) || (t == null ? void 0 : t.delivery_photo_url) || (t == null ? void 0 : t.image) || null;
   return /* @__PURE__ */ g.jsxDEV("div", { className: "image-modal-backdrop", role: "dialog", "aria-modal": "true", onClick: a, children: /* @__PURE__ */ g.jsxDEV("div", { className: "image-modal", onClick: (s) => s.stopPropagation(), children: [
     /* @__PURE__ */ g.jsxDEV("header", { className: "image-modal-header", children: [
       /* @__PURE__ */ g.jsxDEV("h3", { className: "image-modal-title", children: "Order Image" }, void 0, !1, {
         fileName: "/app/code/client/components/ImageModal.jsx",
-        lineNumber: 10,
+        lineNumber: 16,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ g.jsxDEV("button", { className: "image-modal-close", onClick: a, "aria-label": "Close", children: "✕" }, void 0, !1, {
         fileName: "/app/code/client/components/ImageModal.jsx",
-        lineNumber: 11,
+        lineNumber: 17,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/components/ImageModal.jsx",
-      lineNumber: 9,
+      lineNumber: 15,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ g.jsxDEV("div", { className: "image-modal-body", children: n ? /* @__PURE__ */ g.jsxDEV("img", { src: n, alt: "Order delivery proof", className: "image-modal-img" }, void 0, !1, {
       fileName: "/app/code/client/components/ImageModal.jsx",
-      lineNumber: 15,
+      lineNumber: 21,
       columnNumber: 13
     }, this) : /* @__PURE__ */ g.jsxDEV("div", { className: "section-note", children: "No image available" }, void 0, !1, {
       fileName: "/app/code/client/components/ImageModal.jsx",
-      lineNumber: 17,
+      lineNumber: 23,
       columnNumber: 13
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/components/ImageModal.jsx",
-      lineNumber: 13,
+      lineNumber: 19,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
     fileName: "/app/code/client/components/ImageModal.jsx",
-    lineNumber: 8,
+    lineNumber: 14,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/components/ImageModal.jsx",
-    lineNumber: 7,
+    lineNumber: 13,
     columnNumber: 5
   }, this);
 }
