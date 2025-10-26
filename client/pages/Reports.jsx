@@ -222,12 +222,6 @@ export default function Reports(){
     setDispatcherError('');
     setDispatcherLoading(true);
     try{
-      // Prepare date range bounds (inclusive)
-      const start = new Date(fromDate + 'T00:00:00');
-      const end = new Date(toDate + 'T23:59:59.999');
-      const startTs = start.getTime();
-      const endTs = end.getTime();
-
       // Use loaded packers (fetched earlier) or empty array
       const list = Array.isArray(packers) ? packers : [];
       const sel = (Array.isArray(selectedIds) && selectedIds.length) ? list.filter(p => selectedIds.includes(p.id || p._id || '')) : list;
