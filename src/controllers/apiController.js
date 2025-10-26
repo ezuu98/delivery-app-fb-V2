@@ -685,10 +685,10 @@ module.exports = {
       let totalExpectedMinutes = 0;
       let totalActualMinutes = 0;
       let onTimeCount = 0;
-      let acceptedCount = 0;
       let totalOrders = 0;
+      let unAssignedOrdersInRange = 0;
       let acceptanceTimeValues = [];
-      let unAssignedOrders = null;
+      let unAssignedOrdersSet = null;
       let hasUnAssignedOrdersField = false;
       const debug = { ordersProcessed: 0, errors: [] };
 
@@ -708,7 +708,7 @@ module.exports = {
               }
               if (Array.isArray(riderData.unAssignedOrders)) {
                 hasUnAssignedOrdersField = true;
-                unAssignedOrders = new Set(riderData.unAssignedOrders.map(id => String(id)));
+                unAssignedOrdersSet = new Set(riderData.unAssignedOrders.map(id => String(id)));
               }
             }
           } catch (e) {
