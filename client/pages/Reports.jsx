@@ -141,18 +141,17 @@ export default function Reports(){
           if(res.status === 401){ window.location.href = '/auth/login'; return null; }
           const json = await res.json().catch(()=>null);
           if(res.ok && json && json.ok){
-            const data = json.data || {};
             return {
               serial: idx + 1,
               riderName: r.name || r.firstName || 'Unknown',
-              totalShopifyRides: data.totalShopifyRides || 0,
-              totalExtraRides: data.totalExtraRides || 0,
-              totalDistanceKm: data.totalDistanceKm || 0,
-              expectedDeliveryTime: data.averageExpectedMinutes || 0,
-              actualDeliveryTime: data.averageActualMinutes || 0,
-              onTimeRate: data.onTimeRate || 0,
-              acceptancePercentage: data.acceptancePercentage || 0,
-              averageAcceptanceTime: data.averageAcceptanceTime || 0,
+              totalShopifyRides: json.totalShopifyRides || 0,
+              totalExtraRides: json.totalExtraRides || 0,
+              totalDistanceKm: json.totalDistanceKm || 0,
+              expectedDeliveryTime: json.averageExpectedMinutes || 0,
+              actualDeliveryTime: json.averageActualMinutes || 0,
+              onTimeRate: json.onTimeRate || 0,
+              acceptancePercentage: json.acceptancePercentage || 0,
+              averageAcceptanceTime: json.averageAcceptanceTime || 0,
               benchmarkAcceptanceTime,
             };
           }
