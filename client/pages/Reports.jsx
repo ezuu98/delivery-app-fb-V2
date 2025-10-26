@@ -291,12 +291,14 @@ export default function Reports(){
           }
         }
         const avgMinutes = totalOrders > 0 ? Math.round(totalDiffMinutes / totalOrders) : 0;
+        const packagingEfficiency = (avgMinutes > 0 && benchmarkAcceptanceTime > 0) ? Math.round((benchmarkAcceptanceTime / avgMinutes) * 100) : 0;
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
           totalOrders,
           averageAssignedMinutes: avgMinutes,
           benchmarkAcceptanceTime,
+          packagingEfficiency,
         };
       });
 
