@@ -17869,7 +17869,7 @@ function pj({ rider: t, onClose: a, onUpdated: n }) {
 const j0 = "app.settings.fares", Xr = {
   baseFare: 0,
   farePerKm: 2,
-  benchmarkAcceptanceTime: 0
+  benchmarkAcceptanceTime: 2
 };
 function k0() {
   if (typeof window > "u" || !window.localStorage)
@@ -35872,7 +35872,7 @@ function y7() {
   async function Je() {
     ne(""), H(!0);
     try {
-      const ye = k0(), V = Number(ye == null ? void 0 : ye.farePerKm) || Xr.farePerKm, Q = m.length ? u.filter((me) => m.includes(me.id || me._id || "")) : u, q = (await Promise.all(Q.map(async (me, Te) => {
+      const ye = k0(), V = Number(ye == null ? void 0 : ye.benchmarkAcceptanceTime) || Xr.benchmarkAcceptanceTime, Q = m.length ? u.filter((me) => m.includes(me.id || me._id || "")) : u, q = (await Promise.all(Q.map(async (me, Te) => {
         const Be = me.id || me._id || "";
         try {
           const Ve = new URLSearchParams({ fromDate: n, toDate: s }), Ae = await fetch(`/api/riders/${encodeURIComponent(Be)}/performance-report?${Ve.toString()}`, { credentials: "include" });
@@ -36649,7 +36649,10 @@ function y7() {
           lineNumber: 534,
           columnNumber: 19
         }, this),
-        /* @__PURE__ */ g.jsxDEV("div", { className: "riders-list", children: u.map((ye) => /* @__PURE__ */ g.jsxDEV("label", { className: "rider-checkbox-label", children: [
+        /* @__PURE__ */ g.jsxDEV("div", { className: "riders-list", children: [...u].sort((ye, V) => {
+          const Q = (ye.name || ye.firstName || "Unknown").toLowerCase(), G = (V.name || V.firstName || "Unknown").toLowerCase();
+          return Q.localeCompare(G);
+        }).map((ye) => /* @__PURE__ */ g.jsxDEV("label", { className: "rider-checkbox-label", children: [
           /* @__PURE__ */ g.jsxDEV(
             "input",
             {
@@ -36662,19 +36665,19 @@ function y7() {
             !1,
             {
               fileName: "/app/code/client/pages/Reports.jsx",
-              lineNumber: 541,
+              lineNumber: 545,
               columnNumber: 25
             },
             this
           ),
           /* @__PURE__ */ g.jsxDEV("span", { className: "rider-name", children: ye.name || ye.firstName || "Unknown" }, void 0, !1, {
             fileName: "/app/code/client/pages/Reports.jsx",
-            lineNumber: 547,
+            lineNumber: 551,
             columnNumber: 25
           }, this)
         ] }, ye.id || ye._id, !0, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 540,
+          lineNumber: 544,
           columnNumber: 23
         }, this)) }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
@@ -36689,17 +36692,17 @@ function y7() {
       /* @__PURE__ */ g.jsxDEV("div", { className: "modal-actions", children: [
         /* @__PURE__ */ g.jsxDEV("button", { className: "cancel-button", onClick: () => y(!1), children: "Cancel" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 554,
+          lineNumber: 558,
           columnNumber: 19
         }, this),
         /* @__PURE__ */ g.jsxDEV("button", { className: "confirm-button", onClick: xe, children: "Generate Report" }, void 0, !1, {
           fileName: "/app/code/client/pages/Reports.jsx",
-          lineNumber: 555,
+          lineNumber: 559,
           columnNumber: 19
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/pages/Reports.jsx",
-        lineNumber: 553,
+        lineNumber: 557,
         columnNumber: 17
       }, this)
     ] }, void 0, !0, {
