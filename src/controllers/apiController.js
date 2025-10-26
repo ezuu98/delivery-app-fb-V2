@@ -753,11 +753,22 @@ module.exports = {
                     totalExpectedMinutes += expectedMins;
                   }
 
-                  if (data.actualDeliveryTime || data.actual_delivery_time) {
-                    const actualMins = parseMinutes(data.actualDeliveryTime || data.actual_delivery_time);
-                    if (actualMins !== null && actualMins > 0) {
-                      totalActualMinutes += actualMins;
-                    }
+                  let actualMins = null;
+                  if (data.deliveryEndTime && data.deliveryStartTime) {
+                    try {
+                      const endTime = toDateOrNull(data.deliveryEndTime);
+                      const startTime = toDateOrNull(data.deliveryStartTime);
+                      if (endTime && startTime) {
+                        const diffMs = endTime.getTime() - startTime.getTime();
+                        actualMins = diffMs / (1000 * 60);
+                      }
+                    } catch (_) {}
+                  }
+                  if (actualMins === null && (data.actualDeliveryTime || data.actual_delivery_time)) {
+                    actualMins = parseMinutes(data.actualDeliveryTime || data.actual_delivery_time);
+                  }
+                  if (actualMins !== null && actualMins > 0) {
+                    totalActualMinutes += actualMins;
                   }
 
                   if (data.accepted === true) {
