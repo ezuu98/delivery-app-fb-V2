@@ -73,6 +73,14 @@ export default function Reports(){
     setShowRiderSelection(true);
   };
 
+  const handleConfirmRiderSelection = async () => {
+    if(activeTab === 'commission'){
+      await handleGenerateReport();
+    } else if(activeTab === 'performance'){
+      await handleGeneratePerformanceReport();
+    }
+  };
+
   async function handleGenerateReport(){
     setReportError('');
     setReportLoading(true);
