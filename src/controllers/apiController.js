@@ -1632,8 +1632,56 @@ module.exports = {
     const found = await findOrderByAnyId(rawId);
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
+
+    // Get the order to find which rider it was assigned to
+    const order = found.order;
+    const riderId = normalizeRiderIdFromOrder(order);
+
+    // Unassign the order from rider
     await orderModel.unassign(id);
-    log.info('order.unassigned', { orderId: id });
+
+    // Update rider's orders arrays
+    if (riderId) {
+      try {
+        const db = getFirestore();
+        if (db) {
+          const admin = initFirebaseAdmin();
+          const riderRef = db.collection('riders').doc(String(riderId));
+
+          if (admin && admin.firestore && admin.firestore.FieldValue) {
+            const FV = admin.firestore.FieldValue;
+            // Remove from orders array and add to unAssignedOrders array
+            await riderRef.set({
+              orders: FV.arrayRemove(id),
+              unAssignedOrders: FV.arrayUnion(id),
+              updatedAt: new Date().toISOString(),
+            }, { merge: true });
+          } else {
+            // Fallback: manual update (not atomic)
+            const snap = await riderRef.get();
+            const data = snap.exists ? (snap.data() || {}) : {};
+            const orders = Array.isArray(data.orders) ? data.orders.slice() : [];
+            const unAssignedOrders = Array.isArray(data.unAssignedOrders) ? data.unAssignedOrders.slice() : [];
+
+            // Remove from orders, add to unAssignedOrders
+            const nextOrders = orders.filter(oid => String(oid) !== String(id));
+            if (!unAssignedOrders.map(String).includes(String(id))) {
+              unAssignedOrders.push(id);
+            }
+
+            await riderRef.set({
+              orders: nextOrders,
+              unAssignedOrders: unAssignedOrders,
+              updatedAt: new Date().toISOString(),
+            }, { merge: true });
+          }
+        }
+      } catch (e) {
+        log.warn('firestore.rider.unassign.update.failed', { riderId: String(riderId), orderId: id, message: e?.message });
+      }
+    }
+
+    log.info('order.unassigned', { orderId: id, riderId });
     return res.json(ok({ ok: true }));
   },
 };
