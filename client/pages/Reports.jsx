@@ -232,33 +232,50 @@ export default function Reports(){
       const list = Array.isArray(packers) ? packers : [];
       const sel = (Array.isArray(selectedIds) && selectedIds.length) ? list.filter(p => selectedIds.includes(p.id || p._id || '')) : list;
 
-      // Fetch orders in date range and count per packer
-      const orderParams = new URLSearchParams();
-      if (fromDate) orderParams.set('created_at_min', fromDate);
-      if (toDate) orderParams.set('created_at_max', toDate);
-      orderParams.set('limit', '10000');
-
-      let ordersList = [];
-      try{
-        const orRes = await fetch(`/api/orders?${orderParams.toString()}`, { credentials: 'include' });
-        if (orRes.status === 401){ window.location.href = '/auth/login'; return []; }
-        if (orRes.ok){
-          const od = await orRes.json().catch(()=>null);
-          ordersList = Array.isArray(od?.orders) ? od.orders : (Array.isArray(od?.data?.orders) ? od.data.orders : []);
-        }
-      }catch(_){ /* ignore fetch errors */ }
-
-      const countMap = new Map();
-      for (const o of ordersList){
-        if (!o) continue;
-        const pid = (o.packed_by || o.packer_id || o.packerId || (o.assignment && o.assignment.packerId) || (o.packedBy) || (o.packer && o.packer.id) || '').toString();
-        if(!pid) continue;
-        countMap.set(pid, (countMap.get(pid) || 0) + 1);
+      // Collect all order IDs from selected packers
+      const allOrderIds = new Set();
+      const packerToOrderIds = new Map();
+      for (const p of sel){
+        const ids = Array.isArray(p.orders) ? p.orders.map(i=>String(i)) : [];
+        packerToOrderIds.set(String(p.id || p._id || ''), ids);
+        for (const id of ids) allOrderIds.add(String(id));
       }
 
+      // Prepare date bounds
+      const start = new Date(fromDate + 'T00:00:00');
+      const end = new Date(toDate + 'T23:59:59.999');
+      const startTs = start.getTime();
+      const endTs = end.getTime();
+
+      // Fetch each order doc by id (only those referenced by packers)
+      const orderIdList = Array.from(allOrderIds);
+      const orderCreatedMap = new Map(); // id -> timestamp
+      await Promise.all(orderIdList.map(async (oid) => {
+        try{
+          const res = await fetch(`/api/orders/${encodeURIComponent(oid)}`, { credentials: 'include' });
+          if (res.status === 401){ window.location.href = '/auth/login'; return; }
+          if (!res.ok) return;
+          const data = await res.json().catch(()=>null);
+          const order = data?.order || data;
+          if (!order) return;
+          const created = order.created_at || order.createdAt || order.created || order.date || order.timestamp;
+          let ts = NaN;
+          if (typeof created === 'number') ts = Number(created);
+          else if (typeof created === 'string') ts = Date.parse(created);
+          if (!Number.isNaN(ts)) orderCreatedMap.set(String(oid), ts);
+        }catch(_){ /* ignore individual order fetch errors */ }
+      }));
+
+      // Count per packer
       const rows = sel.map((p, idx) => {
-        const pid = (p.id || p._id || '').toString();
-        const totalOrders = Number(countMap.get(pid) || 0);
+        const pid = String(p.id || p._id || '');
+        const ids = packerToOrderIds.get(pid) || [];
+        let totalOrders = 0;
+        for (const id of ids){
+          const ts = orderCreatedMap.get(String(id));
+          if (!ts) continue;
+          if (ts >= startTs && ts <= endTs) totalOrders += 1;
+        }
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
