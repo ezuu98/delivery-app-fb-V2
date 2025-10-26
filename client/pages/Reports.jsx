@@ -118,6 +118,51 @@ export default function Reports(){
     }
   }
 
+  async function handleGeneratePerformanceReport(){
+    setPerformanceError('');
+    setPerformanceLoading(true);
+    try{
+      const settings = readFareSettings();
+      const benchmarkAcceptanceTime = Number(settings?.farePerKm) || DEFAULT_FARE_SETTINGS.farePerKm;
+      const sel = (selectedRiders.length ? riders.filter(r=> selectedRiders.includes(r.id || r._id || '')) : riders);
+      const rows = await Promise.all(sel.map(async (r, idx) => {
+        const id = r.id || r._id || '';
+        try{
+          const params = new URLSearchParams({ fromDate, toDate });
+          const res = await fetch(`/api/riders/${encodeURIComponent(id)}/performance-report?${params.toString()}`, { credentials: 'include' });
+          if(res.status === 401){ window.location.href = '/auth/login'; return null; }
+          const json = await res.json().catch(()=>null);
+          if(res.ok && json && json.ok){
+            const data = json.data || {};
+            return {
+              serial: idx + 1,
+              riderName: r.name || r.firstName || 'Unknown',
+              totalShopifyRides: data.totalShopifyRides || 0,
+              totalExtraRides: data.totalExtraRides || 0,
+              totalDistanceKm: data.totalDistanceKm || 0,
+              expectedDeliveryTime: data.averageExpectedMinutes || 0,
+              actualDeliveryTime: data.averageActualMinutes || 0,
+              onTimeRate: data.onTimeRate || 0,
+              acceptancePercentage: data.acceptancePercentage || 0,
+              averageAcceptanceTime: data.averageAcceptanceTime || 0,
+              benchmarkAcceptanceTime,
+            };
+          }
+        }catch(_){ /* noop */ }
+        return null;
+      }));
+      const filtered = rows.filter(Boolean);
+      setPerformanceRows(filtered);
+      return filtered;
+    }catch(e){
+      setPerformanceError(e?.message || 'Failed to generate report');
+      return [];
+    }finally{
+      setPerformanceLoading(false);
+      setShowRiderSelection(false);
+    }
+  }
+
   async function handleDownload(){
     const rows = reportRows.length ? reportRows : (await handleGenerateReport());
     if (!rows || !rows.length) return;
