@@ -222,11 +222,22 @@ export default function Reports(){
     setDispatcherError('');
     setDispatcherLoading(true);
     try{
-      // Currently no backend logic specified; prepare empty rows for UI
-      // We mark generated so table appears; actual data will be added later
-      setDispatcherRows([]);
+      // Use loaded packers (fetched earlier) or empty array
+      const list = Array.isArray(packers) ? packers : [];
+      const sel = (Array.isArray(selectedIds) && selectedIds.length) ? list.filter(p => selectedIds.includes(p.id || p._id || '')) : list;
+
+      const rows = sel.map((p, idx) => {
+        const totalOrders = Array.isArray(p.orders) ? p.orders.length : (Number(p.orders) || 0);
+        return {
+          serial: idx + 1,
+          dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
+          totalOrders,
+        };
+      });
+
+      setDispatcherRows(rows);
       setDispatcherGenerated(true);
-      return [];
+      return rows;
     }catch(e){
       setDispatcherError(e?.message || 'Failed to generate report');
       return [];
@@ -652,7 +663,21 @@ export default function Reports(){
                         <th>Efficiency Ratio</th>
                       </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                      {dispatcherRows.map((row, i) => (
+                        <tr key={i}>
+                          <td>{row.serial}</td>
+                          <td>{row.dispatcherName}</td>
+                          <td>{row.totalOrders}</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      ))}
+                    </tbody>
                   </table>
                 </div>
               )}
