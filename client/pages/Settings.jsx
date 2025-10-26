@@ -77,6 +77,18 @@ export default function Settings(){
                 aria-label="Fare per Km"
               />
             </label>
+            <label className="fare-field">
+              <span className="fare-field-label">Benchmark Acceptance Time (minutes)</span>
+              <input
+                type="number"
+                className="fare-field-input"
+                value={Number.isFinite(benchmarkAcceptanceTime) ? String(benchmarkAcceptanceTime) : ''}
+                min="0"
+                step="1"
+                onChange={e => setBenchmarkAcceptanceTime(e.target.value === '' ? 0 : Number(e.target.value))}
+                aria-label="Benchmark Acceptance Time"
+              />
+            </label>
           </div>
           <div className="fare-actions">
             <button className="btn-primary" onClick={onSave} disabled={saving}>Save</button>
