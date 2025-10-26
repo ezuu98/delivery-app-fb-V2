@@ -738,7 +738,7 @@ export default function Reports(){
                           <td>{row.totalOrders}</td>
                           <td>{(row.averageAssignedMinutes !== undefined && row.averageAssignedMinutes !== null) ? `${row.averageAssignedMinutes} min` : ''}</td>
                           <td>{row.benchmarkAcceptanceTime ? `${row.benchmarkAcceptanceTime} min` : ''}</td>
-                          <td></td>
+                          <td>{(row.packagingEfficiency !== undefined && row.packagingEfficiency !== null) ? `${row.packagingEfficiency}%` : ''}</td>
                           <td></td>
                           <td></td>
                           <td></td>
