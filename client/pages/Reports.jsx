@@ -23,9 +23,13 @@ export default function Reports(){
   const [toDate, setToDate] = useState(getTodayDate());
   const [riders, setRiders] = useState([]);
   const [selectedRiders, setSelectedRiders] = useState([]);
+  const [packers, setPackers] = useState([]);
+  const [selectedPackers, setSelectedPackers] = useState([]);
   const [showRiderSelection, setShowRiderSelection] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingPackers, setLoadingPackers] = useState(false);
   const [error, setError] = useState('');
+  const [packersError, setPackersError] = useState('');
   const [reportRows, setReportRows] = useState([]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
@@ -58,24 +62,57 @@ export default function Reports(){
   },[]);
 
   const handleSelectAll = () => {
-    if (selectedRiders.length === riders.length) {
-      setSelectedRiders([]);
+    if (activeTab === 'dispatcher'){
+      if (selectedPackers.length === packers.length){
+        setSelectedPackers([]);
+      } else {
+        setSelectedPackers(packers.map(p => p.id || p._id || ''));
+      }
     } else {
-      setSelectedRiders(riders.map(r => r.id || r._id || ''));
+      if (selectedRiders.length === riders.length) {
+        setSelectedRiders([]);
+      } else {
+        setSelectedRiders(riders.map(r => r.id || r._id || ''));
+      }
     }
   };
 
   const handleRiderToggle = (riderId) => {
-    setSelectedRiders(prev =>
-      prev.includes(riderId)
-        ? prev.filter(id => id !== riderId)
-        : [...prev, riderId]
-    );
+    if (activeTab === 'dispatcher'){
+      setSelectedPackers(prev =>
+        prev.includes(riderId)
+          ? prev.filter(id => id !== riderId)
+          : [...prev, riderId]
+      );
+    } else {
+      setSelectedRiders(prev =>
+        prev.includes(riderId)
+          ? prev.filter(id => id !== riderId)
+          : [...prev, riderId]
+      );
+    }
   };
 
-  const handleCreateReport = () => {
+  const handleCreateReport = async () => {
     if (activeTab === 'dispatcher') {
-      handleGenerateDispatcherReport();
+      // Load packers then show selection modal
+      setPackersError('');
+      setLoadingPackers(true);
+      try{
+        const res = await fetch('/api/packers?limit=500', { credentials: 'include' });
+        if (res.status === 401){ window.location.href = '/auth/login'; return; }
+        if (!res.ok) throw new Error('Failed to load packers');
+        const data = await res.json().catch(()=>null);
+        const list = Array.isArray(data?.packers) ? data.packers : [];
+        list.sort((a,b)=> (String((a.fullName||a.name||a.full_name||'')).localeCompare(String(b.fullName||b.name||b.full_name||''))));
+        setPackers(list);
+        setSelectedPackers(list.map(p => p.id || p._id || ''));
+        setShowRiderSelection(true);
+      }catch(e){
+        setPackersError(e?.message || 'Failed to load packers');
+      }finally{
+        setLoadingPackers(false);
+      }
     } else {
       setShowRiderSelection(true);
     }
@@ -87,7 +124,8 @@ export default function Reports(){
     } else if(activeTab === 'performance'){
       await handleGeneratePerformanceReport();
     } else if(activeTab === 'dispatcher'){
-      await handleGenerateDispatcherReport();
+      // For dispatcher, we'll generate using selectedPackers (for now generation is stubbed)
+      await handleGenerateDispatcherReport(selectedPackers);
     }
   };
 
@@ -180,10 +218,12 @@ export default function Reports(){
     }
   }
 
-  async function handleGenerateDispatcherReport(){
+  async function handleGenerateDispatcherReport(selectedIds = []){
     setDispatcherError('');
     setDispatcherLoading(true);
     try{
+      // Currently no backend logic specified; prepare empty rows for UI
+      // We mark generated so table appears; actual data will be added later
       setDispatcherRows([]);
       setDispatcherGenerated(true);
       return [];
@@ -622,29 +662,49 @@ export default function Reports(){
           {showRiderSelection && (
             <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
               <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
-                <h4 className="modal-title">Select Riders for Report</h4>
+                <h4 className="modal-title">{activeTab === 'dispatcher' ? 'Select Packers for Report' : 'Select Riders for Report'}</h4>
 
                 <div className="modal-content">
                   <button className="select-all-button" onClick={handleSelectAll}>
-                    {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+                    {activeTab === 'dispatcher' ? (selectedPackers.length === packers.length ? 'Deselect All' : 'Select All') : (selectedRiders.length === riders.length ? 'Deselect All' : 'Select All')}
                   </button>
 
                   <div className="riders-list">
-                    {[...riders].sort((a, b) => {
-                      const nameA = (a.name || a.firstName || 'Unknown').toLowerCase();
-                      const nameB = (b.name || b.firstName || 'Unknown').toLowerCase();
-                      return nameA.localeCompare(nameB);
-                    }).map(rider => (
-                      <label key={rider.id || rider._id} className="rider-checkbox-label">
-                        <input
-                          type="checkbox"
-                          className="rider-checkbox"
-                          checked={selectedRiders.includes(rider.id || rider._id || '')}
-                          onChange={() => handleRiderToggle(rider.id || rider._id || '')}
-                        />
-                        <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
-                      </label>
-                    ))}
+                    {activeTab === 'dispatcher' ? (
+                      (packersError && <div className="auth-error">{packersError}</div>) || (loadingPackers ? <div className="section-note">Loading…</div> : (
+                        [...packers].sort((a, b) => {
+                          const nameA = String(a.fullName || a.name || a.full_name || '').toLowerCase();
+                          const nameB = String(b.fullName || b.name || b.full_name || '').toLowerCase();
+                          return nameA.localeCompare(nameB);
+                        }).map(packer => (
+                          <label key={packer.id || packer._id} className="rider-checkbox-label">
+                            <input
+                              type="checkbox"
+                              className="rider-checkbox"
+                              checked={selectedPackers.includes(packer.id || packer._id || '')}
+                              onChange={() => handleRiderToggle(packer.id || packer._id || '')}
+                            />
+                            <span className="rider-name">{packer.fullName || packer.name || packer.full_name || 'Unknown'}</span>
+                          </label>
+                        ))
+                      ))
+                    ) : (
+                      [...riders].sort((a, b) => {
+                        const nameA = (a.name || a.firstName || 'Unknown').toLowerCase();
+                        const nameB = (b.name || b.firstName || 'Unknown').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                      }).map(rider => (
+                        <label key={rider.id || rider._id} className="rider-checkbox-label">
+                          <input
+                            type="checkbox"
+                            className="rider-checkbox"
+                            checked={selectedRiders.includes(rider.id || rider._id || '')}
+                            onChange={() => handleRiderToggle(rider.id || rider._id || '')}
+                          />
+                          <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
+                        </label>
+                      ))
+                    )}
                   </div>
                 </div>
 
