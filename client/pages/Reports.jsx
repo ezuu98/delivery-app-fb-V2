@@ -468,9 +468,50 @@ export default function Reports(){
                 </div>
               </div>
 
-              <div className="reports-empty-state">
-                <p>Rider Performance Report - Coming Soon</p>
-              </div>
+              {performanceError && <div className="auth-error">{performanceError}</div>}
+              {performanceLoading && <div className="section-note">Generating…</div>}
+              {!performanceLoading && performanceRows.length > 0 && (
+                <div className="report-table-wrap">
+                  <div className="report-meta">
+                    <div><strong>From Date:</strong> {fromDate}</div>
+                    <div><strong>To Date:</strong> {toDate}</div>
+                  </div>
+                  <table className="report-table">
+                    <thead>
+                      <tr>
+                        <th>S.no</th>
+                        <th>Rider Name</th>
+                        <th>Total Shopify Rides</th>
+                        <th>Total Extra Rides</th>
+                        <th>Total Distance Travelled</th>
+                        <th>Expected Time for Deliveries</th>
+                        <th>Actual Delivery Time</th>
+                        <th>On Time Rate</th>
+                        <th>% of Orders Accepted</th>
+                        <th>Average Rider Acceptance Time</th>
+                        <th>Benchmark Acceptance Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {performanceRows.map((row, i) => (
+                        <tr key={i}>
+                          <td>{row.serial}</td>
+                          <td>{row.riderName}</td>
+                          <td>{row.totalShopifyRides}</td>
+                          <td>{row.totalExtraRides}</td>
+                          <td>{Number(row.totalDistanceKm).toFixed(2)}</td>
+                          <td>{row.expectedDeliveryTime}</td>
+                          <td>{row.actualDeliveryTime}</td>
+                          <td>{row.onTimeRate}%</td>
+                          <td>{row.acceptancePercentage}%</td>
+                          <td>{row.averageAcceptanceTime}</td>
+                          <td>{row.benchmarkAcceptanceTime}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
