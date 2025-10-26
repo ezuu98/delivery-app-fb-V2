@@ -3,7 +3,8 @@ export const FARE_SETTINGS_STORAGE_KEY = 'app.settings.fares';
 export const DEFAULT_FARE_SETTINGS = {
   baseFare: 0,
   farePerKm: 2,
-  benchmarkAcceptanceTime: 0,
+  benchmarkAcceptanceTime: 2,
+  benchmarkDeliveryTime: 30,
 };
 
 export function readFareSettings(){
@@ -19,10 +20,12 @@ export function readFareSettings(){
     const baseFare = Number(parsed?.baseFare);
     const farePerKm = Number(parsed?.farePerKm);
     const benchmarkAcceptanceTime = Number(parsed?.benchmarkAcceptanceTime);
+    const benchmarkDeliveryTime = Number(parsed?.benchmarkDeliveryTime);
     return {
       baseFare: Number.isFinite(baseFare) ? baseFare : DEFAULT_FARE_SETTINGS.baseFare,
       farePerKm: Number.isFinite(farePerKm) ? farePerKm : DEFAULT_FARE_SETTINGS.farePerKm,
       benchmarkAcceptanceTime: Number.isFinite(benchmarkAcceptanceTime) ? benchmarkAcceptanceTime : DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime,
+      benchmarkDeliveryTime: Number.isFinite(benchmarkDeliveryTime) ? benchmarkDeliveryTime : DEFAULT_FARE_SETTINGS.benchmarkDeliveryTime,
     };
   }catch(_){
     return { ...DEFAULT_FARE_SETTINGS };
