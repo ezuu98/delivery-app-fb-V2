@@ -131,7 +131,7 @@ export default function Reports(){
     setPerformanceLoading(true);
     try{
       const settings = readFareSettings();
-      const benchmarkAcceptanceTime = Number(settings?.farePerKm) || DEFAULT_FARE_SETTINGS.farePerKm;
+      const benchmarkAcceptanceTime = Number(settings?.benchmarkAcceptanceTime) || DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime;
       const sel = (selectedRiders.length ? riders.filter(r=> selectedRiders.includes(r.id || r._id || '')) : riders);
       const rows = await Promise.all(sel.map(async (r, idx) => {
         const id = r.id || r._id || '';
@@ -536,7 +536,11 @@ export default function Reports(){
                   </button>
 
                   <div className="riders-list">
-                    {riders.map(rider => (
+                    {[...riders].sort((a, b) => {
+                      const nameA = (a.name || a.firstName || 'Unknown').toLowerCase();
+                      const nameB = (b.name || b.firstName || 'Unknown').toLowerCase();
+                      return nameA.localeCompare(nameB);
+                    }).map(rider => (
                       <label key={rider.id || rider._id} className="rider-checkbox-label">
                         <input
                           type="checkbox"

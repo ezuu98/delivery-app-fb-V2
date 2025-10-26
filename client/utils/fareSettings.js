@@ -3,7 +3,7 @@ export const FARE_SETTINGS_STORAGE_KEY = 'app.settings.fares';
 export const DEFAULT_FARE_SETTINGS = {
   baseFare: 0,
   farePerKm: 2,
-  benchmarkAcceptanceTime: 0,
+  benchmarkAcceptanceTime: 2,
 };
 
 export function readFareSettings(){
