@@ -5,12 +5,14 @@ import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } fr
 export default function Settings(){
   const [baseFare, setBaseFare] = useState(DEFAULT_FARE_SETTINGS.baseFare);
   const [farePerKm, setFarePerKm] = useState(DEFAULT_FARE_SETTINGS.farePerKm);
+  const [benchmarkAcceptanceTime, setBenchmarkAcceptanceTime] = useState(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const settings = readFareSettings();
     setBaseFare(settings.baseFare);
     setFarePerKm(settings.farePerKm);
+    setBenchmarkAcceptanceTime(settings.benchmarkAcceptanceTime);
   }, []);
 
   function onSave(){
