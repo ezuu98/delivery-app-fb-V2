@@ -1634,9 +1634,23 @@ module.exports = {
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
 
-    // Get the order to find which rider it was assigned to
-    const order = found.order;
-    const riderId = normalizeRiderIdFromOrder(order);
+    // Fetch the order from Firestore to get complete rider information
+    let riderIdFromFirestore = null;
+    try {
+      const db = getFirestore();
+      if (db) {
+        const snap = await db.collection('orders').doc(id).get();
+        if (snap.exists) {
+          const fsData = snap.data() || {};
+          riderIdFromFirestore = normalizeRiderIdFromOrder(fsData);
+        }
+      }
+    } catch (e) {
+      log.warn('firestore.order.fetch.failed', { orderId: id, message: e?.message });
+    }
+
+    // Use Firestore riderId if available, otherwise fall back to cached order
+    const riderId = riderIdFromFirestore || normalizeRiderIdFromOrder(found.order);
 
     // Unassign the order from rider
     await orderModel.unassign(id);
@@ -1657,6 +1671,7 @@ module.exports = {
               unAssignedOrders: FV.arrayUnion(id),
               updatedAt: new Date().toISOString(),
             }, { merge: true });
+            log.info('firestore.rider.unassign.arrays.updated', { riderId: String(riderId), orderId: id });
           } else {
             // Fallback: manual update (not atomic)
             const snap = await riderRef.get();
@@ -1675,11 +1690,14 @@ module.exports = {
               unAssignedOrders: unAssignedOrders,
               updatedAt: new Date().toISOString(),
             }, { merge: true });
+            log.info('firestore.rider.unassign.arrays.updated.fallback', { riderId: String(riderId), orderId: id });
           }
         }
       } catch (e) {
-        log.warn('firestore.rider.unassign.update.failed', { riderId: String(riderId), orderId: id, message: e?.message });
+        log.error('firestore.rider.unassign.update.failed', { riderId: String(riderId), orderId: id, message: e?.message });
       }
+    } else {
+      log.warn('firestore.rider.unassign.skipped', { orderId: id, message: 'No rider found for order' });
     }
 
     log.info('order.unassigned', { orderId: id, riderId });
