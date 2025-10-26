@@ -29,6 +29,9 @@ export default function Reports(){
   const [reportRows, setReportRows] = useState([]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
+  const [performanceRows, setPerformanceRows] = useState([]);
+  const [performanceLoading, setPerformanceLoading] = useState(false);
+  const [performanceError, setPerformanceError] = useState('');
   const [activeTab, setActiveTab] = useState('commission');
 
   useEffect(()=>{
