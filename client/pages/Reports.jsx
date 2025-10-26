@@ -164,61 +164,129 @@ export default function Reports(){
   }
 
   async function handleDownload(){
-    const rows = reportRows.length ? reportRows : (await handleGenerateReport());
-    if (!rows || !rows.length) return;
+    if(activeTab === 'commission'){
+      const rows = reportRows.length ? reportRows : (await handleGenerateReport());
+      if (!rows || !rows.length) return;
 
-    const workbookData = [];
+      const workbookData = [];
 
-    // Title row
-    workbookData.push(['Rider Commission Report']);
-    workbookData.push([]);
+      // Title row
+      workbookData.push(['Rider Commission Report']);
+      workbookData.push([]);
 
-    // Date rows
-    workbookData.push(['From Date:', fromDate]);
-    workbookData.push(['To Date:', toDate]);
-    workbookData.push([]);
+      // Date rows
+      workbookData.push(['From Date:', fromDate]);
+      workbookData.push(['To Date:', toDate]);
+      workbookData.push([]);
 
-    // Header row
-    const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
-    workbookData.push(header);
+      // Header row
+      const header = ['Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','per km rate','Total Commission'];
+      workbookData.push(header);
 
-    // Data rows
-    for (const r of rows){
-      workbookData.push([
-        r.riderName,
-        r.totalShopifyRides,
-        r.extraRides,
-        Number(r.distanceKm).toFixed(2),
-        Number(r.perKmRate).toFixed(2),
-        Number(r.totalCommission).toFixed(2),
-      ]);
+      // Data rows
+      for (const r of rows){
+        workbookData.push([
+          r.riderName,
+          r.totalShopifyRides,
+          r.extraRides,
+          Number(r.distanceKm).toFixed(2),
+          Number(r.perKmRate).toFixed(2),
+          Number(r.totalCommission).toFixed(2),
+        ]);
+      }
+
+      // Create workbook and worksheet
+      const ws = XLSX.utils.aoa_to_sheet(workbookData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+      // Make header row bold (row 6, which is index 5 in 0-based, but in XLSX it's the 6th row)
+      const headerRowIndex = 6;
+      for (let col = 0; col < header.length; col++){
+        const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex - 1, c: col});
+        if (!ws[cellAddress]) ws[cellAddress] = {};
+        ws[cellAddress].font = { bold: true };
+      }
+
+      // Set column widths for better readability
+      ws['!cols'] = [
+        { wch: 18 },
+        { wch: 16 },
+        { wch: 16 },
+        { wch: 22 },
+        { wch: 14 },
+        { wch: 18 }
+      ];
+
+      // Write and download
+      XLSX.writeFile(wb, `rider-commission-${fromDate}_to_${toDate}.xlsx`);
+    } else if(activeTab === 'performance'){
+      const rows = performanceRows.length ? performanceRows : (await handleGeneratePerformanceReport());
+      if (!rows || !rows.length) return;
+
+      const workbookData = [];
+
+      // Title row
+      workbookData.push(['Rider Performance Report']);
+      workbookData.push([]);
+
+      // Date rows
+      workbookData.push(['From Date:', fromDate]);
+      workbookData.push(['To Date:', toDate]);
+      workbookData.push([]);
+
+      // Header row
+      const header = ['S.no','Rider Name','Total Shopify Rides','Total Extra Rides','Total Distance Travelled','Expected Time for Deliveries','Actual Delivery Time','On Time Rate','% of Orders Accepted','Average Rider Acceptance Time','Benchmark Acceptance Time'];
+      workbookData.push(header);
+
+      // Data rows
+      for (const r of rows){
+        workbookData.push([
+          r.serial,
+          r.riderName,
+          r.totalShopifyRides,
+          r.totalExtraRides,
+          Number(r.totalDistanceKm).toFixed(2),
+          r.expectedDeliveryTime,
+          r.actualDeliveryTime,
+          r.onTimeRate + '%',
+          r.acceptancePercentage + '%',
+          r.averageAcceptanceTime,
+          r.benchmarkAcceptanceTime,
+        ]);
+      }
+
+      // Create workbook and worksheet
+      const ws = XLSX.utils.aoa_to_sheet(workbookData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+      // Make header row bold
+      const headerRowIndex = 6;
+      for (let col = 0; col < header.length; col++){
+        const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex - 1, c: col});
+        if (!ws[cellAddress]) ws[cellAddress] = {};
+        ws[cellAddress].font = { bold: true };
+      }
+
+      // Set column widths for better readability
+      ws['!cols'] = [
+        { wch: 8 },
+        { wch: 16 },
+        { wch: 18 },
+        { wch: 16 },
+        { wch: 22 },
+        { wch: 22 },
+        { wch: 18 },
+        { wch: 14 },
+        { wch: 18 },
+        { wch: 24 },
+        { wch: 22 }
+      ];
+
+      // Write and download
+      XLSX.writeFile(wb, `rider-performance-${fromDate}_to_${toDate}.xlsx`);
     }
-
-    // Create workbook and worksheet
-    const ws = XLSX.utils.aoa_to_sheet(workbookData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Report');
-
-    // Make header row bold (row 6, which is index 5 in 0-based, but in XLSX it's the 6th row)
-    const headerRowIndex = 6;
-    for (let col = 0; col < header.length; col++){
-      const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex - 1, c: col});
-      if (!ws[cellAddress]) ws[cellAddress] = {};
-      ws[cellAddress].font = { bold: true };
-    }
-
-    // Set column widths for better readability
-    ws['!cols'] = [
-      { wch: 18 },
-      { wch: 16 },
-      { wch: 16 },
-      { wch: 22 },
-      { wch: 14 },
-      { wch: 18 }
-    ];
-
-    // Write and download
-    XLSX.writeFile(wb, `rider-commission-${fromDate}_to_${toDate}.xlsx`);
   }
 
   return (
