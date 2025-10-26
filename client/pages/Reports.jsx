@@ -258,14 +258,18 @@ export default function Reports(){
           if (!order) return;
           const created = order.created_at || order.createdAt || order.created || order.date || order.timestamp;
           const assigned = order.assignedAt || order.assigned_at || order.assigned || order.assignment?.assignedAt || order.assignment?.assigned_at || order.assignment?.assigned || order.assignedAt;
+          const deliveryEnd = order.deliveryEndTime || order.delivery_end_time || order.deliveryEnd || order.actual_delivery_time || order.actualDeliveryTime || order.deliveryEndTime;
           let createdTs = NaN;
           let assignedTs = NaN;
+          let deliveredTs = NaN;
           if (typeof created === 'number') createdTs = Number(created);
           else if (typeof created === 'string') createdTs = Date.parse(created);
           if (typeof assigned === 'number') assignedTs = Number(assigned);
           else if (typeof assigned === 'string') assignedTs = Date.parse(assigned);
+          if (typeof deliveryEnd === 'number') deliveredTs = Number(deliveryEnd);
+          else if (typeof deliveryEnd === 'string') deliveredTs = Date.parse(deliveryEnd);
           if (!Number.isNaN(createdTs)){
-            orderInfoMap.set(String(oid), { createdTs: createdTs, assignedTs: Number.isFinite(assignedTs) ? assignedTs : null });
+            orderInfoMap.set(String(oid), { createdTs: createdTs, assignedTs: Number.isFinite(assignedTs) ? assignedTs : null, deliveredTs: Number.isFinite(deliveredTs) ? deliveredTs : null });
           }
         }catch(_){ /* ignore individual order fetch errors */ }
       }));
@@ -276,6 +280,7 @@ export default function Reports(){
         const ids = packerToOrderIds.get(pid) || [];
         let totalOrders = 0;
         let totalDiffMinutes = 0;
+        let totalDeliveryDiffMinutes = 0;
         for (const id of ids){
           const info = orderInfoMap.get(String(id));
           if (!info || !info.createdTs) continue;
@@ -285,12 +290,15 @@ export default function Reports(){
             const assignedTs = info.assignedTs;
             if (assignedTs && Number.isFinite(assignedTs) && assignedTs >= info.createdTs){
               totalDiffMinutes += (assignedTs - info.createdTs) / 60000;
-            } else {
-              // if no assigned timestamp or invalid, treat as 0 per user's instruction
+            }
+            const deliveredTs = info.deliveredTs;
+            if (deliveredTs && Number.isFinite(deliveredTs) && deliveredTs >= info.createdTs){
+              totalDeliveryDiffMinutes += (deliveredTs - info.createdTs) / 60000;
             }
           }
         }
         const avgMinutes = totalOrders > 0 ? Math.round(totalDiffMinutes / totalOrders) : 0;
+        const avgTotalMinutes = totalOrders > 0 ? Math.round(totalDeliveryDiffMinutes / totalOrders) : 0;
         const packagingEfficiency = (avgMinutes > 0 && benchmarkAcceptanceTime > 0) ? Math.round((benchmarkAcceptanceTime / avgMinutes) * 100) : 0;
         return {
           serial: idx + 1,
@@ -299,6 +307,7 @@ export default function Reports(){
           averageAssignedMinutes: avgMinutes,
           benchmarkAcceptanceTime,
           packagingEfficiency,
+          totalAverageMinutes: avgTotalMinutes,
         };
       });
 
@@ -739,7 +748,7 @@ export default function Reports(){
                           <td>{(row.averageAssignedMinutes !== undefined && row.averageAssignedMinutes !== null) ? `${row.averageAssignedMinutes} min` : ''}</td>
                           <td>{row.benchmarkAcceptanceTime ? `${row.benchmarkAcceptanceTime} min` : ''}</td>
                           <td>{(row.packagingEfficiency !== undefined && row.packagingEfficiency !== null) ? `${row.packagingEfficiency}%` : ''}</td>
-                          <td></td>
+                          <td>{(row.totalAverageMinutes !== undefined && row.totalAverageMinutes !== null) ? `${row.totalAverageMinutes} min` : ''}</td>
                           <td></td>
                           <td></td>
                         </tr>
