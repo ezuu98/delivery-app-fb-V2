@@ -34,6 +34,7 @@ export default function Settings(){
   function onReset(){
     setBaseFare(DEFAULT_FARE_SETTINGS.baseFare);
     setFarePerKm(DEFAULT_FARE_SETTINGS.farePerKm);
+    setBenchmarkAcceptanceTime(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
     try{
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.removeItem(FARE_SETTINGS_STORAGE_KEY);
