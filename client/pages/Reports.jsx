@@ -33,6 +33,10 @@ export default function Reports(){
   const [performanceLoading, setPerformanceLoading] = useState(false);
   const [performanceError, setPerformanceError] = useState('');
   const [activeTab, setActiveTab] = useState('commission');
+  const [dispatcherRows, setDispatcherRows] = useState([]);
+  const [dispatcherLoading, setDispatcherLoading] = useState(false);
+  const [dispatcherError, setDispatcherError] = useState('');
+  const [dispatcherGenerated, setDispatcherGenerated] = useState(false);
 
   useEffect(()=>{
     const fetchRiders = async () => {
@@ -70,7 +74,11 @@ export default function Reports(){
   };
 
   const handleCreateReport = () => {
-    setShowRiderSelection(true);
+    if (activeTab === 'dispatcher') {
+      handleGenerateDispatcherReport();
+    } else {
+      setShowRiderSelection(true);
+    }
   };
 
   const handleConfirmRiderSelection = async () => {
@@ -78,6 +86,8 @@ export default function Reports(){
       await handleGenerateReport();
     } else if(activeTab === 'performance'){
       await handleGeneratePerformanceReport();
+    } else if(activeTab === 'dispatcher'){
+      await handleGenerateDispatcherReport();
     }
   };
 
@@ -166,6 +176,22 @@ export default function Reports(){
       return [];
     }finally{
       setPerformanceLoading(false);
+      setShowRiderSelection(false);
+    }
+  }
+
+  async function handleGenerateDispatcherReport(){
+    setDispatcherError('');
+    setDispatcherLoading(true);
+    try{
+      setDispatcherRows([]);
+      setDispatcherGenerated(true);
+      return [];
+    }catch(e){
+      setDispatcherError(e?.message || 'Failed to generate report');
+      return [];
+    }finally{
+      setDispatcherLoading(false);
       setShowRiderSelection(false);
     }
   }
@@ -293,6 +319,51 @@ export default function Reports(){
 
       // Write and download
       XLSX.writeFile(wb, `rider-performance-${fromDate}_to_${toDate}.xlsx`);
+    } else if(activeTab === 'dispatcher'){
+      const rows = dispatcherRows.length ? dispatcherRows : (await handleGenerateDispatcherReport());
+      const workbookData = [];
+
+      // Title row
+      workbookData.push(['Dispatcher Performance Report']);
+      workbookData.push([]);
+
+      // Date rows
+      workbookData.push(['From Date:', fromDate]);
+      workbookData.push(['To Date:', toDate]);
+      workbookData.push([]);
+
+      // Header row
+      const header = ['S.no','Dispatcher Name','Total Orders','Average time','Benchmark Time','Packaging efficiency','Total Average Time','Benchmark total','Efficiency Ratio'];
+      workbookData.push(header);
+
+      // Create workbook and worksheet
+      const ws = XLSX.utils.aoa_to_sheet(workbookData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+      // Make header row bold
+      const headerRowIndex = 6;
+      for (let col = 0; col < header.length; col++){
+        const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex - 1, c: col});
+        if (!ws[cellAddress]) ws[cellAddress] = {};
+        ws[cellAddress].font = { bold: true };
+      }
+
+      // Set column widths for better readability
+      ws['!cols'] = [
+        { wch: 8 },
+        { wch: 20 },
+        { wch: 14 },
+        { wch: 16 },
+        { wch: 16 },
+        { wch: 20 },
+        { wch: 18 },
+        { wch: 16 },
+        { wch: 16 }
+      ];
+
+      // Write and download
+      XLSX.writeFile(wb, `dispatcher-performance-${fromDate}_to_${toDate}.xlsx`);
     }
   }
 
@@ -519,9 +590,32 @@ export default function Reports(){
                 </div>
               </div>
 
-              <div className="reports-empty-state">
-                <p>Dispatcher Performance Report - Coming Soon</p>
-              </div>
+              {dispatcherError && <div className="auth-error">{dispatcherError}</div>}
+              {dispatcherLoading && <div className="section-note">Generating…</div>}
+              {dispatcherGenerated && !dispatcherLoading && (
+                <div className="report-table-wrap">
+                  <div className="report-meta">
+                    <div><strong>From Date:</strong> {fromDate}</div>
+                    <div><strong>To Date:</strong> {toDate}</div>
+                  </div>
+                  <table className="report-table">
+                    <thead>
+                      <tr>
+                        <th>S.no</th>
+                        <th>Dispatcher Name</th>
+                        <th>Total Orders</th>
+                        <th>Average time</th>
+                        <th>Benchmark Time</th>
+                        <th>Packaging efficiency</th>
+                        <th>Total Average Time</th>
+                        <th>Benchmark total</th>
+                        <th>Efficiency Ratio</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
