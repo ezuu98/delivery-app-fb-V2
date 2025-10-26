@@ -2,6 +2,7 @@ const orderModel = require('../models/orderModel');
 const riderModel = require('../models/riderModel');
 const deliveryModel = require('../models/deliveryModel');
 const { getFirestore } = require('../services/firestore');
+const { initFirebaseAdmin } = require('../services/firebaseAdmin');
 const { listOrders, isConfigured, fetchAllOrders } = require('../services/shopify');
 const { ok, fail } = require('../utils/response');
 const log = require('../utils/logger');
@@ -661,6 +662,148 @@ module.exports = {
     }catch(e){
       log.error('rider.km.range.failed', { message: e?.message });
       return res.status(500).json(fail('Failed to calculate rider km'));
+    }
+  },
+
+  riderPerformanceReport: async (req, res) => {
+    try{
+      const riderId = String(req.params.id || '').trim();
+      const { fromDate, toDate } = req.query || {};
+      if (!riderId) return res.status(400).json(fail('Missing riderId'));
+      if (!fromDate || !toDate) return res.status(400).json(fail('Missing fromDate or toDate'));
+
+      const from = toDateOrNull(fromDate);
+      const to = toDateOrNull(toDate);
+      if (!from || !to) return res.status(400).json(fail('Invalid date format'));
+
+      const toEnd = new Date(to);
+      toEnd.setHours(23, 59, 59, 999);
+
+      let totalShopifyRides = 0;
+      let totalExtraRides = 0;
+      let totalDistanceKm = 0;
+      let totalExpectedMinutes = 0;
+      let totalActualMinutes = 0;
+      let onTimeCount = 0;
+      let acceptedCount = 0;
+      let totalOrders = 0;
+      let acceptanceTimeValues = [];
+      const debug = { ordersProcessed: 0, errors: [] };
+
+      try {
+        const db = getFirestore();
+        if (db) {
+          const checkedIds = new Set();
+          const toCheckIds = new Set();
+
+          try {
+            const riderSnap = await db.collection('riders').doc(String(riderId)).get();
+            if (riderSnap.exists) {
+              const riderData = riderSnap.data() || {};
+              const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
+              for (const oid of orderIds) {
+                if (oid !== undefined && oid !== null) toCheckIds.add(String(oid));
+              }
+            }
+          } catch (e) {
+            debug.errors.push('riderDoc:' + String(e.message));
+          }
+
+          try {
+            const qSnap = await db.collection('orders').where('riderId', '==', String(riderId)).get();
+            qSnap.forEach(doc => {
+              const id = String(doc.id);
+              toCheckIds.add(id);
+            });
+          } catch (e) {
+            debug.errors.push('queryRiderId:' + String(e.message));
+          }
+
+          const preloaded = new Map();
+          try {
+            const qSnap = await db.collection('orders').where('riderId', '==', String(riderId)).get();
+            qSnap.forEach(doc => {
+              preloaded.set(String(doc.id), doc.data() || {});
+            });
+          } catch (_) {}
+
+          for (const orderId of toCheckIds) {
+            try {
+              const data = preloaded.has(String(orderId))
+                ? preloaded.get(String(orderId))
+                : (await db.collection('orders').doc(String(orderId)).get()).data();
+
+              if (data) {
+                const assignedAt = toDateOrNull(data.assignedAt);
+                if (assignedAt && assignedAt >= from && assignedAt <= toEnd) {
+                  if (!checkedIds.has(String(orderId))) debug.ordersProcessed += 1;
+                  checkedIds.add(String(orderId));
+                  totalOrders += 1;
+                  totalShopifyRides += 1;
+
+                  const distanceRaw = data.totalDistance || data.distance || data.distance_km || data.distanceKm || 0;
+                  const km = parseKm(distanceRaw);
+                  if (km > 0) totalDistanceKm += km;
+
+                  if (data.onTime === true) onTimeCount += 1;
+
+                  const expectedMinutesRaw = data.expectedDeliveryTime || data.expected_delivery_time || null;
+                  const expectedMins = parseMinutes(expectedMinutesRaw);
+                  if (expectedMins !== null && expectedMins > 0) {
+                    totalExpectedMinutes += expectedMins;
+                  }
+
+                  if (data.actualDeliveryTime || data.actual_delivery_time) {
+                    const actualMins = parseMinutes(data.actualDeliveryTime || data.actual_delivery_time);
+                    if (actualMins !== null && actualMins > 0) {
+                      totalActualMinutes += actualMins;
+                    }
+                  }
+
+                  if (data.accepted === true) {
+                    acceptedCount += 1;
+                  }
+
+                  const acceptanceTime = parseMinutes(data.acceptanceTime || data.acceptance_time);
+                  if (acceptanceTime !== null && acceptanceTime >= 0) {
+                    acceptanceTimeValues.push(acceptanceTime);
+                  }
+                }
+              }
+            } catch (e) {
+              debug.errors.push('order:' + String(orderId) + ':' + String(e.message));
+            }
+          }
+        }
+      } catch (e) {
+        debug.errors.push(String(e.message));
+        log.warn('rider.performance.report.firestore.failed', { riderId: String(riderId), message: e?.message });
+      }
+
+      const onTimeRate = totalOrders > 0 ? Math.round((onTimeCount / totalOrders) * 100) : 0;
+      const acceptancePercentage = totalOrders > 0 ? Math.round((acceptedCount / totalOrders) * 100) : 0;
+      const averageExpectedMinutes = totalOrders > 0 && totalExpectedMinutes > 0 ? Math.round(totalExpectedMinutes / totalOrders) : 0;
+      const averageActualMinutes = totalOrders > 0 && totalActualMinutes > 0 ? Math.round(totalActualMinutes / totalOrders) : 0;
+      const averageAcceptanceTime = acceptanceTimeValues.length > 0 ? Math.round(acceptanceTimeValues.reduce((a, b) => a + b, 0) / acceptanceTimeValues.length) : 0;
+
+      return res.json(ok({
+        riderId,
+        fromDate,
+        toDate,
+        totalShopifyRides,
+        totalExtraRides,
+        totalDistanceKm,
+        averageExpectedMinutes,
+        averageActualMinutes,
+        onTimeRate,
+        acceptancePercentage,
+        averageAcceptanceTime,
+        totalOrders,
+        debug,
+      }));
+    } catch (e) {
+      log.error('rider.performance.report.failed', { message: e?.message });
+      return res.status(500).json(fail('Failed to generate performance report'));
     }
   },
 
@@ -1632,8 +1775,70 @@ module.exports = {
     const found = await findOrderByAnyId(rawId);
     if (!found.order) return res.status(404).json(fail('Order not found'));
     const id = found.key;
+
+    // Fetch the order from Firestore to get complete rider information
+    let riderIdFromFirestore = null;
+    try {
+      const db = getFirestore();
+      if (db) {
+        const snap = await db.collection('orders').doc(id).get();
+        if (snap.exists) {
+          const fsData = snap.data() || {};
+          riderIdFromFirestore = normalizeRiderIdFromOrder(fsData);
+        }
+      }
+    } catch (e) {
+      log.warn('firestore.order.fetch.failed', { orderId: id, message: e?.message });
+    }
+
+    // Use Firestore riderId if available, otherwise fall back to cached order
+    const riderId = riderIdFromFirestore || normalizeRiderIdFromOrder(found.order);
+
+    // Unassign the order from rider
     await orderModel.unassign(id);
-    log.info('order.unassigned', { orderId: id });
+
+    // Add order to rider's unAssignedOrders array (riders.orders only contains completed orders)
+    if (riderId) {
+      try {
+        const db = getFirestore();
+        if (db) {
+          const admin = initFirebaseAdmin();
+          const riderRef = db.collection('riders').doc(String(riderId));
+
+          if (admin && admin.firestore && admin.firestore.FieldValue) {
+            const FV = admin.firestore.FieldValue;
+            // Add to unAssignedOrders array only (don't remove from orders as assigned orders are not in orders array)
+            await riderRef.set({
+              unAssignedOrders: FV.arrayUnion(id),
+              updatedAt: new Date().toISOString(),
+            }, { merge: true });
+            log.info('firestore.rider.unassigned.array.created', { riderId: String(riderId), orderId: id });
+          } else {
+            // Fallback: manual update (not atomic)
+            const snap = await riderRef.get();
+            const data = snap.exists ? (snap.data() || {}) : {};
+            const unAssignedOrders = Array.isArray(data.unAssignedOrders) ? data.unAssignedOrders.slice() : [];
+
+            // Add to unAssignedOrders if not already present
+            if (!unAssignedOrders.map(String).includes(String(id))) {
+              unAssignedOrders.push(id);
+            }
+
+            await riderRef.set({
+              unAssignedOrders: unAssignedOrders,
+              updatedAt: new Date().toISOString(),
+            }, { merge: true });
+            log.info('firestore.rider.unassigned.array.created.fallback', { riderId: String(riderId), orderId: id });
+          }
+        }
+      } catch (e) {
+        log.error('firestore.rider.unassigned.array.failed', { riderId: String(riderId), orderId: id, message: e?.message });
+      }
+    } else {
+      log.warn('firestore.rider.unassigned.skipped', { orderId: id, message: 'No rider found for order' });
+    }
+
+    log.info('order.unassigned', { orderId: id, riderId });
     return res.json(ok({ ok: true }));
   },
 };
