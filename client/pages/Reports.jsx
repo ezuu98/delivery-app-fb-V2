@@ -37,7 +37,7 @@ export default function Reports(){
   useEffect(()=>{
     const fetchRiders = async () => {
       try {
-        const res = await fetch('/api/riders', { credentials: 'include' });
+        const res = await fetch('/api/riders?limit=10000', { credentials: 'include' });
         if (res.status === 401) { window.location.href = '/auth/login'; return; }
         if (!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
