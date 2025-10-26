@@ -6,6 +6,7 @@ export default function Settings(){
   const [baseFare, setBaseFare] = useState(DEFAULT_FARE_SETTINGS.baseFare);
   const [farePerKm, setFarePerKm] = useState(DEFAULT_FARE_SETTINGS.farePerKm);
   const [benchmarkAcceptanceTime, setBenchmarkAcceptanceTime] = useState(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
+  const [benchmarkDeliveryTime, setBenchmarkDeliveryTime] = useState(DEFAULT_FARE_SETTINGS.benchmarkDeliveryTime);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -13,6 +14,7 @@ export default function Settings(){
     setBaseFare(settings.baseFare);
     setFarePerKm(settings.farePerKm);
     setBenchmarkAcceptanceTime(settings.benchmarkAcceptanceTime);
+    setBenchmarkDeliveryTime(settings.benchmarkDeliveryTime);
   }, []);
 
   function onSave(){
@@ -21,7 +23,8 @@ export default function Settings(){
       const payload = {
         baseFare: Number(baseFare) || 0,
         farePerKm: Number(farePerKm) || 0,
-        benchmarkAcceptanceTime: Number(benchmarkAcceptanceTime) || 0
+        benchmarkAcceptanceTime: Number(benchmarkAcceptanceTime) || 0,
+        benchmarkDeliveryTime: Number(benchmarkDeliveryTime) || 0
       };
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.setItem(FARE_SETTINGS_STORAGE_KEY, JSON.stringify(payload));
@@ -35,6 +38,7 @@ export default function Settings(){
     setBaseFare(DEFAULT_FARE_SETTINGS.baseFare);
     setFarePerKm(DEFAULT_FARE_SETTINGS.farePerKm);
     setBenchmarkAcceptanceTime(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
+    setBenchmarkDeliveryTime(DEFAULT_FARE_SETTINGS.benchmarkDeliveryTime);
     try{
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.removeItem(FARE_SETTINGS_STORAGE_KEY);
