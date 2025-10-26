@@ -685,9 +685,10 @@ module.exports = {
       let totalExpectedMinutes = 0;
       let totalActualMinutes = 0;
       let onTimeCount = 0;
-      let acceptedCount = 0;
       let totalOrders = 0;
       let acceptanceTimeValues = [];
+      let unAssignedOrdersCount = 0;
+      let hasUnAssignedOrdersField = false;
       const debug = { ordersProcessed: 0, errors: [] };
 
       try {
@@ -703,6 +704,10 @@ module.exports = {
               const orderIds = Array.isArray(riderData.orders) ? riderData.orders : [];
               for (const oid of orderIds) {
                 if (oid !== undefined && oid !== null) toCheckIds.add(String(oid));
+              }
+              if (Array.isArray(riderData.unAssignedOrders)) {
+                hasUnAssignedOrdersField = true;
+                unAssignedOrdersCount = riderData.unAssignedOrders.length;
               }
             }
           } catch (e) {
@@ -753,15 +758,22 @@ module.exports = {
                     totalExpectedMinutes += expectedMins;
                   }
 
-                  if (data.actualDeliveryTime || data.actual_delivery_time) {
-                    const actualMins = parseMinutes(data.actualDeliveryTime || data.actual_delivery_time);
-                    if (actualMins !== null && actualMins > 0) {
-                      totalActualMinutes += actualMins;
-                    }
+                  let actualMins = null;
+                  if (data.deliveryEndTime && data.deliveryStartTime) {
+                    try {
+                      const endTime = toDateOrNull(data.deliveryEndTime);
+                      const startTime = toDateOrNull(data.deliveryStartTime);
+                      if (endTime && startTime) {
+                        const diffMs = endTime.getTime() - startTime.getTime();
+                        actualMins = diffMs / (1000 * 60);
+                      }
+                    } catch (_) {}
                   }
-
-                  if (data.accepted === true) {
-                    acceptedCount += 1;
+                  if (actualMins === null && (data.actualDeliveryTime || data.actual_delivery_time)) {
+                    actualMins = parseMinutes(data.actualDeliveryTime || data.actual_delivery_time);
+                  }
+                  if (actualMins !== null && actualMins > 0) {
+                    totalActualMinutes += actualMins;
                   }
 
                   const acceptanceTime = parseMinutes(data.acceptanceTime || data.acceptance_time);
@@ -781,7 +793,9 @@ module.exports = {
       }
 
       const onTimeRate = totalOrders > 0 ? Math.round((onTimeCount / totalOrders) * 100) : 0;
-      const acceptancePercentage = totalOrders > 0 ? Math.round((acceptedCount / totalOrders) * 100) : 0;
+      const acceptancePercentage = hasUnAssignedOrdersField
+        ? (totalOrders > 0 ? Math.round(((totalOrders - unAssignedOrdersCount) / totalOrders) * 100) : 0)
+        : 100;
       const averageExpectedMinutes = totalOrders > 0 && totalExpectedMinutes > 0 ? Math.round(totalExpectedMinutes / totalOrders) : 0;
       const averageActualMinutes = totalOrders > 0 && totalActualMinutes > 0 ? Math.round(totalActualMinutes / totalOrders) : 0;
       const averageAcceptanceTime = acceptanceTimeValues.length > 0 ? Math.round(acceptanceTimeValues.reduce((a, b) => a + b, 0) / acceptanceTimeValues.length) : 0;

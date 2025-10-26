@@ -5,18 +5,24 @@ import { DEFAULT_FARE_SETTINGS, FARE_SETTINGS_STORAGE_KEY, readFareSettings } fr
 export default function Settings(){
   const [baseFare, setBaseFare] = useState(DEFAULT_FARE_SETTINGS.baseFare);
   const [farePerKm, setFarePerKm] = useState(DEFAULT_FARE_SETTINGS.farePerKm);
+  const [benchmarkAcceptanceTime, setBenchmarkAcceptanceTime] = useState(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const settings = readFareSettings();
     setBaseFare(settings.baseFare);
     setFarePerKm(settings.farePerKm);
+    setBenchmarkAcceptanceTime(settings.benchmarkAcceptanceTime);
   }, []);
 
   function onSave(){
     setSaving(true);
     try{
-      const payload = { baseFare: Number(baseFare) || 0, farePerKm: Number(farePerKm) || 0 };
+      const payload = {
+        baseFare: Number(baseFare) || 0,
+        farePerKm: Number(farePerKm) || 0,
+        benchmarkAcceptanceTime: Number(benchmarkAcceptanceTime) || 0
+      };
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.setItem(FARE_SETTINGS_STORAGE_KEY, JSON.stringify(payload));
         try{ window.dispatchEvent(new Event('fare-settings-changed')); }catch(_){ }
@@ -28,6 +34,7 @@ export default function Settings(){
   function onReset(){
     setBaseFare(DEFAULT_FARE_SETTINGS.baseFare);
     setFarePerKm(DEFAULT_FARE_SETTINGS.farePerKm);
+    setBenchmarkAcceptanceTime(DEFAULT_FARE_SETTINGS.benchmarkAcceptanceTime);
     try{
       if (typeof window !== 'undefined' && window.localStorage){
         window.localStorage.removeItem(FARE_SETTINGS_STORAGE_KEY);
@@ -68,6 +75,18 @@ export default function Settings(){
                 step="0.01"
                 onChange={e => setFarePerKm(e.target.value === '' ? 0 : Number(e.target.value))}
                 aria-label="Fare per Km"
+              />
+            </label>
+            <label className="fare-field">
+              <span className="fare-field-label">Benchmark Acceptance Time (minutes)</span>
+              <input
+                type="number"
+                className="fare-field-input"
+                value={Number.isFinite(benchmarkAcceptanceTime) ? String(benchmarkAcceptanceTime) : ''}
+                min="0"
+                step="1"
+                onChange={e => setBenchmarkAcceptanceTime(e.target.value === '' ? 0 : Number(e.target.value))}
+                aria-label="Benchmark Acceptance Time"
               />
             </label>
           </div>

@@ -37,7 +37,7 @@ export default function Reports(){
   useEffect(()=>{
     const fetchRiders = async () => {
       try {
-        const res = await fetch('/api/riders', { credentials: 'include' });
+        const res = await fetch('/api/riders?limit=10000', { credentials: 'include' });
         if (res.status === 401) { window.location.href = '/auth/login'; return; }
         if (!res.ok) throw new Error('Failed to load riders');
         const data = await res.json();
@@ -141,18 +141,17 @@ export default function Reports(){
           if(res.status === 401){ window.location.href = '/auth/login'; return null; }
           const json = await res.json().catch(()=>null);
           if(res.ok && json && json.ok){
-            const data = json.data || {};
             return {
               serial: idx + 1,
               riderName: r.name || r.firstName || 'Unknown',
-              totalShopifyRides: data.totalShopifyRides || 0,
-              totalExtraRides: data.totalExtraRides || 0,
-              totalDistanceKm: data.totalDistanceKm || 0,
-              expectedDeliveryTime: data.averageExpectedMinutes || 0,
-              actualDeliveryTime: data.averageActualMinutes || 0,
-              onTimeRate: data.onTimeRate || 0,
-              acceptancePercentage: data.acceptancePercentage || 0,
-              averageAcceptanceTime: data.averageAcceptanceTime || 0,
+              totalShopifyRides: json.totalShopifyRides || 0,
+              totalExtraRides: json.totalExtraRides || 0,
+              totalDistanceKm: json.totalDistanceKm || 0,
+              expectedDeliveryTime: json.averageExpectedMinutes || 0,
+              actualDeliveryTime: json.averageActualMinutes || 0,
+              onTimeRate: json.onTimeRate || 0,
+              acceptancePercentage: json.acceptancePercentage || 0,
+              averageAcceptanceTime: json.averageAcceptanceTime || 0,
               benchmarkAcceptanceTime,
             };
           }
@@ -360,39 +359,6 @@ export default function Reports(){
                 </div>
               </div>
 
-              {showRiderSelection && (
-                <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
-                  <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
-                    <h4 className="modal-title">Select Riders for Report</h4>
-
-                    <div className="modal-content">
-                      <button className="select-all-button" onClick={handleSelectAll}>
-                        {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
-                      </button>
-
-                      <div className="riders-list">
-                        {riders.map(rider => (
-                          <label key={rider.id || rider._id} className="rider-checkbox-label">
-                            <input
-                              type="checkbox"
-                              className="rider-checkbox"
-                              checked={selectedRiders.includes(rider.id || rider._id || '')}
-                              onChange={() => handleRiderToggle(rider.id || rider._id || '')}
-                            />
-                            <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="modal-actions">
-                      <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
-                      <button className="confirm-button" onClick={handleConfirmRiderSelection}>Generate Report</button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {reportError && <div className="auth-error">{reportError}</div>}
               {reportLoading && <div className="section-note">Generating…</div>}
               {!reportLoading && reportRows.length > 0 && (
@@ -555,6 +521,39 @@ export default function Reports(){
 
               <div className="reports-empty-state">
                 <p>Dispatcher Performance Report - Coming Soon</p>
+              </div>
+            </div>
+          )}
+
+          {showRiderSelection && (
+            <div className="rider-selection-modal-overlay" onClick={() => setShowRiderSelection(false)}>
+              <div className="rider-selection-modal" onClick={(e) => e.stopPropagation()}>
+                <h4 className="modal-title">Select Riders for Report</h4>
+
+                <div className="modal-content">
+                  <button className="select-all-button" onClick={handleSelectAll}>
+                    {selectedRiders.length === riders.length ? 'Deselect All' : 'Select All'}
+                  </button>
+
+                  <div className="riders-list">
+                    {riders.map(rider => (
+                      <label key={rider.id || rider._id} className="rider-checkbox-label">
+                        <input
+                          type="checkbox"
+                          className="rider-checkbox"
+                          checked={selectedRiders.includes(rider.id || rider._id || '')}
+                          onChange={() => handleRiderToggle(rider.id || rider._id || '')}
+                        />
+                        <span className="rider-name">{rider.name || rider.firstName || 'Unknown'}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
+                  <button className="confirm-button" onClick={handleConfirmRiderSelection}>Generate Report</button>
+                </div>
               </div>
             </div>
           )}
