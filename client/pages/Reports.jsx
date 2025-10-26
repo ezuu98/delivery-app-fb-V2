@@ -296,6 +296,7 @@ export default function Reports(){
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
           totalOrders,
           averageAssignedMinutes: avgMinutes,
+          benchmarkAcceptanceTime,
         };
       });
 
