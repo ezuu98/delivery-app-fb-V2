@@ -387,7 +387,7 @@ export default function Reports(){
 
                     <div className="modal-actions">
                       <button className="cancel-button" onClick={() => setShowRiderSelection(false)}>Cancel</button>
-                      <button className="confirm-button" onClick={handleGenerateReport}>Generate Report</button>
+                      <button className="confirm-button" onClick={handleConfirmRiderSelection}>Generate Report</button>
                     </div>
                   </div>
                 </div>
