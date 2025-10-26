@@ -222,12 +222,31 @@ export default function Reports(){
     setDispatcherError('');
     setDispatcherLoading(true);
     try{
+      // Prepare date range bounds (inclusive)
+      const start = new Date(fromDate + 'T00:00:00');
+      const end = new Date(toDate + 'T23:59:59.999');
+      const startTs = start.getTime();
+      const endTs = end.getTime();
+
       // Use loaded packers (fetched earlier) or empty array
       const list = Array.isArray(packers) ? packers : [];
       const sel = (Array.isArray(selectedIds) && selectedIds.length) ? list.filter(p => selectedIds.includes(p.id || p._id || '')) : list;
 
       const rows = sel.map((p, idx) => {
-        const totalOrders = Array.isArray(p.orders) ? p.orders.length : (Number(p.orders) || 0);
+        const ordersArr = Array.isArray(p.orders) ? p.orders : [];
+        let totalOrders = 0;
+        if (ordersArr.length){
+          totalOrders = ordersArr.reduce((count, o) => {
+            if (!o) return count;
+            const created = o.createdAt || o.created_at || o.created || o.date || o.timestamp;
+            let ts = NaN;
+            if (typeof created === 'number') ts = Number(created);
+            else if (typeof created === 'string') ts = Date.parse(created);
+            if (Number.isNaN(ts)) return count;
+            return (ts >= startTs && ts <= endTs) ? count + 1 : count;
+          }, 0);
+        }
+
         return {
           serial: idx + 1,
           dispatcherName: p.fullName || p.name || p.full_name || 'Unknown',
