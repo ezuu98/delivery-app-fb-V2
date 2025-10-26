@@ -776,10 +776,6 @@ module.exports = {
                     totalActualMinutes += actualMins;
                   }
 
-                  if (hasUnAssignedOrdersField && unAssignedOrdersSet.has(String(orderId))) {
-                    unAssignedOrdersInRange += 1;
-                  }
-
                   const acceptanceTime = parseMinutes(data.acceptanceTime || data.acceptance_time);
                   if (acceptanceTime !== null && acceptanceTime >= 0) {
                     acceptanceTimeValues.push(acceptanceTime);
