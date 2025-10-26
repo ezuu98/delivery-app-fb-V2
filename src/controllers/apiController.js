@@ -794,7 +794,7 @@ module.exports = {
 
       const onTimeRate = totalOrders > 0 ? Math.round((onTimeCount / totalOrders) * 100) : 0;
       const acceptancePercentage = hasUnAssignedOrdersField
-        ? (totalOrders > 0 ? Math.round(((totalOrders - unAssignedOrdersInRange) / totalOrders) * 100) : 0)
+        ? (totalOrders > 0 ? Math.round(((totalOrders - unAssignedOrdersCount) / totalOrders) * 100) : 0)
         : 100;
       const averageExpectedMinutes = totalOrders > 0 && totalExpectedMinutes > 0 ? Math.round(totalExpectedMinutes / totalOrders) : 0;
       const averageActualMinutes = totalOrders > 0 && totalActualMinutes > 0 ? Math.round(totalActualMinutes / totalOrders) : 0;
