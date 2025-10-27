@@ -10,14 +10,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    lib: {
-      entry: 'client/main.jsx',
-      name: 'App',
-      formats: ['es'],
-      fileName: () => 'app.js',
-    },
     rollupOptions: {
-      external: [],
+      input: 'client/main.jsx',
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]',
+      },
     },
   },
   publicDir: 'public',
