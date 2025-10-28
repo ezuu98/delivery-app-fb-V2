@@ -17,6 +17,10 @@ export default function CreateOrderModal({ onClose, onCreated }){
       setError('Created by is required');
       return;
     }
+    if(customerPhone && customerPhone.length !== 10){
+      setError('Phone number must be exactly 10 digits');
+      return;
+    }
 
     setSubmitting(true);
     try{
