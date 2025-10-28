@@ -52,6 +52,7 @@ export default function Orders(){
   const [editingOrder, setEditingOrder] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [imageOrder, setImageOrder] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
