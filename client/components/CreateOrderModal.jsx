@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export default function CreateOrderModal({ onClose, onCreated }){
-  const [orderId, setOrderId] = useState('');
   const [createdBy, setCreatedBy] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [packedBy, setPackedBy] = useState('');
