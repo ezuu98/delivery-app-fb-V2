@@ -26,7 +26,6 @@ export default function CreateOrderModal({ onClose, onCreated }){
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: orderId.trim(),
           full_name: createdBy.trim(),
           phone: customerPhone.trim(),
           packed_by: packedBy.trim(),
