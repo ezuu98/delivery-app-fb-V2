@@ -86,6 +86,7 @@ export default function Dashboard(){
               <div className="stat-value">{loading ? '…' : meta.total || orders.length}</div>
               <div className="stat-label">Orders</div>
             </div>
+            <button className="rc-header-action" onClick={openCreate} title="Create new order">+ Create Order</button>
             <button className="btn-secondary btn-create-packer" onClick={()=>setShowCreatePacker(true)}>Create Packer</button>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
           </div>
