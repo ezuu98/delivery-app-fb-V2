@@ -320,6 +320,9 @@ export default function Orders(){
         {showImage && imageOrder && (
           <ImageModal order={imageOrder} onClose={closeImage} />
         )}
+        {showCreate && (
+          <CreateOrderModal onClose={closeCreate} onCreated={onOrderCreated} />
+        )}
           <div className="rc-filters">
             <button className="rc-select rc-chip" disabled={meta.page<=1 || loading} onClick={()=>setPage(p=>Math.max(1,p-1))}>Prev</button>
             <span className="section-note">Page {meta.page} of {meta.pages} • {meta.total} total</span>
