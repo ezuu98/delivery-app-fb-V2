@@ -4,7 +4,8 @@ export default function CreateOrderModal({ onClose, onCreated }){
   const [createdBy, setCreatedBy] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [packedBy, setPackedBy] = useState('');
-  const [mapLocation, setMapLocation] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
