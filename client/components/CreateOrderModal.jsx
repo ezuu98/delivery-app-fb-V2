@@ -76,6 +76,7 @@ export default function CreateOrderModal({ onClose, onCreated }){
         body: JSON.stringify({
           full_name: createdBy.trim(),
           phone: customerPhone.trim(),
+          rider: selectedRider.trim(),
           packed_by: packedBy.trim(),
           shipping_address: mapLocation.trim(),
           notes: notes.trim(),
