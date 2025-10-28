@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 import CreatePackerModal from '../components/CreatePackerModal.jsx';
+import CreateOrderModal from '../components/CreateOrderModal.jsx';
 
 export default function Dashboard(){
   const [orders, setOrders] = useState([]);
@@ -43,9 +44,16 @@ export default function Dashboard(){
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
   const [showCreatePacker, setShowCreatePacker] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function openCreate(){ setShowCreate(true); }
+  function closeCreate(){ setShowCreate(false); }
+  function onOrderCreated(){
+    setPage(1);
+    closeCreate();
+  }
   function onAssigned(payload){
     // remove assigned order from the dashboard list so it is not visible and update totals
     try{
@@ -80,6 +88,7 @@ export default function Dashboard(){
             </div>
             <button className="btn-secondary btn-create-packer" onClick={()=>setShowCreatePacker(true)}>Create Packer</button>
             <button className="btn-primary" onClick={()=>window.location.reload()}>Refresh</button>
+            <button className="rc-header-action" onClick={openCreate} title="Create new order">Create Order</button>
           </div>
         </header>
 
@@ -149,6 +158,9 @@ export default function Dashboard(){
 
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
+        )}
+        {showCreate && (
+          <CreateOrderModal onClose={closeCreate} onCreated={onOrderCreated} />
         )}
         {showCreatePacker && (
           <CreatePackerModal onClose={()=>setShowCreatePacker(false)} onCreated={()=>{ try{ if(window && typeof window.showToast==='function'){ window.showToast('Packer created', { type:'success' }); } }catch(_){} }} />
