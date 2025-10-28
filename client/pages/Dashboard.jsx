@@ -48,6 +48,12 @@ export default function Dashboard(){
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
+  function openCreate(){ setShowCreate(true); }
+  function closeCreate(){ setShowCreate(false); }
+  function onOrderCreated(){
+    setPage(1);
+    closeCreate();
+  }
   function onAssigned(payload){
     // remove assigned order from the dashboard list so it is not visible and update totals
     try{
