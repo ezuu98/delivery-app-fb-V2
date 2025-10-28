@@ -14,10 +14,6 @@ export default function CreateOrderModal({ onClose, onCreated }){
     e.preventDefault();
     setError('');
 
-    if(!orderId.trim()){
-      setError('Order ID is required');
-      return;
-    }
     if(!createdBy.trim()){
       setError('Created by is required');
       return;
