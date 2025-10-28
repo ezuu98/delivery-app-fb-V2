@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function CreateOrderModal({ onClose, onCreated }){
   const [createdBy, setCreatedBy] = useState('');
@@ -8,6 +8,26 @@ export default function CreateOrderModal({ onClose, onCreated }){
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [packers, setPackers] = useState([]);
+  const [loadingPackers, setLoadingPackers] = useState(true);
+
+  useEffect(()=>{
+    let alive = true;
+    (async ()=>{
+      setLoadingPackers(true);
+      try{
+        const res = await fetch('/api/packers?limit=200', { credentials: 'include' });
+        if(res.status === 401){ window.location.href = '/auth/login'; return; }
+        if(!res.ok) throw new Error('Failed to load packers');
+        const data = await res.json();
+        if(alive){
+          setPackers(Array.isArray(data.packers) ? data.packers : []);
+        }
+      }catch(e){ if(alive) setError(e.message || 'Failed to load packers'); }
+      finally{ if(alive) setLoadingPackers(false); }
+    })();
+    return ()=>{ alive = false; };
+  },[]);
 
   async function handleSubmit(e){
     e.preventDefault();
