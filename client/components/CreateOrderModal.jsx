@@ -8,9 +8,32 @@ export default function CreateOrderModal({ onClose, onCreated }){
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [riders, setRiders] = useState([]);
+  const [loadingRiders, setLoadingRiders] = useState(true);
+  const [riderError, setRiderError] = useState('');
+  const [selectedRider, setSelectedRider] = useState('');
   const [packers, setPackers] = useState([]);
   const [loadingPackers, setLoadingPackers] = useState(true);
   const [packerError, setPackerError] = useState('');
+
+  useEffect(()=>{
+    let alive = true;
+    (async ()=>{
+      setLoadingRiders(true);
+      setRiderError('');
+      try{
+        const res = await fetch('/api/riders?limit=200', { credentials: 'include' });
+        if(res.status === 401){ window.location.href = '/auth/login'; return; }
+        if(!res.ok) throw new Error('Failed to load riders');
+        const data = await res.json();
+        if(alive){
+          setRiders(Array.isArray(data.riders) ? data.riders : []);
+        }
+      }catch(e){ if(alive) setRiderError(e.message || 'Failed to load riders'); }
+      finally{ if(alive) setLoadingRiders(false); }
+    })();
+    return ()=>{ alive = false; };
+  },[]);
 
   useEffect(()=>{
     let alive = true;
