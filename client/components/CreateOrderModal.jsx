@@ -31,6 +31,7 @@ export default function CreateOrderModal({ onClose, onCreated }){
 
   async function handleSubmit(e){
     e.preventDefault();
+    if(error && error.includes('Failed to load packers')) return;
     setError('');
 
     if(!createdBy.trim()){
