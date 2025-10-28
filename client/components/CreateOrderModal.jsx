@@ -141,7 +141,7 @@ export default function CreateOrderModal({ onClose, onCreated }){
 
             <div className="create-modal-actions">
               <button type="button" className="btn-secondary" onClick={onClose} disabled={submitting}>Cancel</button>
-              <button type="submit" className="btn-primary" disabled={submitting}>
+              <button type="submit" className="btn-primary" disabled={submitting || (customerPhone && customerPhone.length !== 10)}>
                 {submitting ? 'Creating…' : 'Create Order'}
               </button>
             </div>
