@@ -3,6 +3,7 @@ import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 import EditOrderModal from '../components/EditOrderModal.jsx';
 import ImageModal from '../components/ImageModal.jsx';
+import CreateOrderModal from '../components/CreateOrderModal.jsx';
 import { formatDurationHM, formatExpectedTime, formatTimeOfDay, resolveActualDuration, resolveExpectedValue, resolveStartTime } from '../utils/orderTime.js';
 
 function normalizeStatus(value){
