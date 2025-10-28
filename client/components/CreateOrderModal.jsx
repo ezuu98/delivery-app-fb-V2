@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 export default function CreateOrderModal({ onClose, onCreated }){
-  const [customerName, setCustomerName] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
+  const [orderId, setOrderId] = useState('');
+  const [createdBy, setCreatedBy] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const [packedBy, setPackedBy] = useState('');
+  const [mapLocation, setMapLocation] = useState('');
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
