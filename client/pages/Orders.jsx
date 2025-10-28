@@ -170,9 +170,7 @@ export default function Orders(){
             <h2 className="rc-title">Order Management</h2>
             <p className="rc-subtitle">Manage orders synced from Shopify.</p>
           </div>
-          <button className="rc-header-action" onClick={openCreate} title="Create new order">
-            + Create Order
-          </button>
+
         </header>
 
         <div className="rc-toolbar">
