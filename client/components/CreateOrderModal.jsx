@@ -10,11 +10,13 @@ export default function CreateOrderModal({ onClose, onCreated }){
   const [error, setError] = useState('');
   const [packers, setPackers] = useState([]);
   const [loadingPackers, setLoadingPackers] = useState(true);
+  const [packerError, setPackerError] = useState('');
 
   useEffect(()=>{
     let alive = true;
     (async ()=>{
       setLoadingPackers(true);
+      setPackerError('');
       try{
         const res = await fetch('/api/packers?limit=200', { credentials: 'include' });
         if(res.status === 401){ window.location.href = '/auth/login'; return; }
@@ -23,7 +25,7 @@ export default function CreateOrderModal({ onClose, onCreated }){
         if(alive){
           setPackers(Array.isArray(data.packers) ? data.packers : []);
         }
-      }catch(e){ if(alive) setError(e.message || 'Failed to load packers'); }
+      }catch(e){ if(alive) setPackerError(e.message || 'Failed to load packers'); }
       finally{ if(alive) setLoadingPackers(false); }
     })();
     return ()=>{ alive = false; };
