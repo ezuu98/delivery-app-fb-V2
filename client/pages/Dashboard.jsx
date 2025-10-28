@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SiteLayout from '../components/SiteLayout.jsx';
 import AssignModal from '../components/AssignModal.jsx';
 import CreatePackerModal from '../components/CreatePackerModal.jsx';
+import CreateOrderModal from '../components/CreateOrderModal.jsx';
 
 export default function Dashboard(){
   const [orders, setOrders] = useState([]);
