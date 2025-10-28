@@ -124,6 +124,27 @@ export default function CreateOrderModal({ onClose, onCreated }){
             </div>
 
             <div className="form-group">
+              <label className="field-label">Rider
+                {loadingRiders ? (
+                  <div className="section-note">Loading riders...</div>
+                ) : (
+                  <select
+                    className="field-input edit-dropdown"
+                    value={selectedRider}
+                    onChange={e=>setSelectedRider(e.target.value)}
+                    disabled={submitting || riderError}
+                  >
+                    <option value="">-- Choose a rider --</option>
+                    {[...riders].sort((a, b) => a.name.localeCompare(b.name)).map(r => (
+                      <option key={r.id} value={r.id}>{r.name}</option>
+                    ))}
+                  </select>
+                )}
+                {riders.length === 0 && !loadingRiders && !riderError && <div className="section-note">No riders available</div>}
+              </label>
+            </div>
+
+            <div className="form-group">
               <label className="field-label">Phone
                 <div className="phone-input-wrapper">
                   <span className="phone-prefix">+92</span>
