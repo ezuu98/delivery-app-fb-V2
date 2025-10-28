@@ -136,6 +136,13 @@ export default function Orders(){
   function closeEdit(){ setEditingOrder(null); setShowEdit(false); }
   function openImage(order){ setImageOrder(order); setShowImage(true); }
   function closeImage(){ setImageOrder(null); setShowImage(false); }
+  function openCreate(){ setShowCreate(true); }
+  function closeCreate(){ setShowCreate(false); }
+  function onOrderCreated(){
+    setPage(1);
+    setRefreshTrigger(prev => prev + 1);
+    closeCreate();
+  }
   function onAssigned(payload){
     try{
       const { orderId } = payload || {};
