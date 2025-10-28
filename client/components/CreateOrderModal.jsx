@@ -63,19 +63,11 @@ export default function CreateOrderModal({ onClose, onCreated }){
           <form onSubmit={handleSubmit}>
             {error && <div className="auth-error">{error}</div>}
 
-            <div className="form-group">
-              <label className="field-label">Order ID
-                <input
-                  type="text"
-                  className="field-input create-input"
-                  placeholder="INT-000001"
-                  value={orderId}
-                  onChange={e=>setOrderId(e.target.value)}
-                  disabled={submitting}
-                  required
-                />
-              </label>
-            </div>
+            <input
+              type="hidden"
+              value={orderId}
+              onChange={e=>setOrderId(e.target.value)}
+            />
 
             <div className="form-group">
               <label className="field-label">Created By
