@@ -64,13 +64,13 @@ export default function CreateOrderModal({ onClose, onCreated }){
             {error && <div className="auth-error">{error}</div>}
 
             <div className="form-group">
-              <label className="field-label">Customer Name
+              <label className="field-label">Order ID
                 <input
                   type="text"
                   className="field-input create-input"
-                  placeholder="Enter customer name"
-                  value={customerName}
-                  onChange={e=>setCustomerName(e.target.value)}
+                  placeholder="INT-000001"
+                  value={orderId}
+                  onChange={e=>setOrderId(e.target.value)}
                   disabled={submitting}
                   required
                 />
@@ -78,20 +78,21 @@ export default function CreateOrderModal({ onClose, onCreated }){
             </div>
 
             <div className="form-group">
-              <label className="field-label">Email (Optional)
+              <label className="field-label">Created By
                 <input
-                  type="email"
+                  type="text"
                   className="field-input create-input"
-                  placeholder="customer@example.com"
-                  value={customerEmail}
-                  onChange={e=>setCustomerEmail(e.target.value)}
+                  placeholder="Enter creator name"
+                  value={createdBy}
+                  onChange={e=>setCreatedBy(e.target.value)}
                   disabled={submitting}
+                  required
                 />
               </label>
             </div>
 
             <div className="form-group">
-              <label className="field-label">Phone (Optional)
+              <label className="field-label">Phone
                 <input
                   type="tel"
                   className="field-input create-input"
@@ -104,44 +105,41 @@ export default function CreateOrderModal({ onClose, onCreated }){
             </div>
 
             <div className="form-group">
-              <label className="field-label">Address
+              <label className="field-label">Packed By
+                <input
+                  type="text"
+                  className="field-input create-input"
+                  placeholder="Enter packer name"
+                  value={packedBy}
+                  onChange={e=>setPackedBy(e.target.value)}
+                  disabled={submitting}
+                />
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label className="field-label">Map Location (Google Map Pin)
+                <input
+                  type="text"
+                  className="field-input create-input"
+                  placeholder="Enter delivery location"
+                  value={mapLocation}
+                  onChange={e=>setMapLocation(e.target.value)}
+                  disabled={submitting}
+                />
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label className="field-label">Notes
                 <textarea
                   className="field-input create-input"
-                  placeholder="Enter delivery address"
-                  value={address}
-                  onChange={e=>setAddress(e.target.value)}
+                  placeholder="Enter any additional notes"
+                  value={notes}
+                  onChange={e=>setNotes(e.target.value)}
                   disabled={submitting}
                   rows="3"
-                  required
                 ></textarea>
-              </label>
-            </div>
-
-            <div className="form-group">
-              <label className="field-label">Amount
-                <input
-                  type="text"
-                  className="field-input create-input"
-                  placeholder="e.g., 500"
-                  value={amount}
-                  onChange={e=>setAmount(e.target.value)}
-                  disabled={submitting}
-                  required
-                />
-              </label>
-            </div>
-
-            <div className="form-group">
-              <label className="field-label">Payment Method
-                <input
-                  type="text"
-                  className="field-input create-input"
-                  placeholder="e.g., Cash, Card, Online"
-                  value={paymentMethod}
-                  onChange={e=>setPaymentMethod(e.target.value)}
-                  disabled={submitting}
-                  required
-                />
               </label>
             </div>
 
