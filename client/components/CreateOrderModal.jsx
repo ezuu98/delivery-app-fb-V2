@@ -14,20 +14,12 @@ export default function CreateOrderModal({ onClose, onCreated }){
     e.preventDefault();
     setError('');
 
-    if(!customerName.trim()){
-      setError('Customer name is required');
+    if(!orderId.trim()){
+      setError('Order ID is required');
       return;
     }
-    if(!address.trim()){
-      setError('Address is required');
-      return;
-    }
-    if(!amount.trim()){
-      setError('Amount is required');
-      return;
-    }
-    if(!paymentMethod.trim()){
-      setError('Payment method is required');
+    if(!createdBy.trim()){
+      setError('Created by is required');
       return;
     }
 
@@ -38,12 +30,12 @@ export default function CreateOrderModal({ onClose, onCreated }){
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          full_name: customerName.trim(),
-          email: customerEmail.trim(),
+          name: orderId.trim(),
+          full_name: createdBy.trim(),
           phone: customerPhone.trim(),
-          shipping_address: address.trim(),
-          amount: amount.trim(),
-          paymentMethod: paymentMethod.trim(),
+          packed_by: packedBy.trim(),
+          shipping_address: mapLocation.trim(),
+          notes: notes.trim(),
         }),
       });
 
