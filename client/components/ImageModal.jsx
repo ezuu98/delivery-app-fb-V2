@@ -1,13 +1,7 @@
 import React from 'react';
 
 export default function ImageModal({ order, onClose }){
-  const imageSrc = (
-    (order && order.orders && (order.orders.deliveryPhotoUrl || order.orders.delivery_photo_url)) ||
-    order?.deliveryPhotoUrl ||
-    order?.delivery_photo_url ||
-    order?.image ||
-    null
-  );
+  const imageSrc = order?.deliveryPhotoUrl || null;
   
   return (
     <div className="image-modal-backdrop" role="dialog" aria-modal="true" onClick={onClose}>
