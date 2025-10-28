@@ -122,15 +122,20 @@ export default function CreateOrderModal({ onClose, onCreated }){
 
             <div className="form-group">
               <label className="field-label">Packed By
-                <input
-                  type="text"
-                  className="field-input create-input"
-                  placeholder="Enter packer name"
+                <select
+                  className="field-input edit-dropdown"
                   value={packedBy}
                   onChange={e=>setPackedBy(e.target.value)}
-                  disabled={submitting}
-                />
+                  disabled={submitting || loadingPackers}
+                >
+                  <option value="">-- Choose a packer --</option>
+                  {[...packers].sort((a, b) => a.name.localeCompare(b.name)).map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
               </label>
+              {loadingPackers && <div className="section-note">Loading packers...</div>}
+              {!loadingPackers && packers.length === 0 && !error && <div className="section-note">No packers available</div>}
             </div>
 
             <div className="form-group">
