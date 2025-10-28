@@ -193,13 +193,26 @@ export default function CreateOrderModal({ onClose, onCreated }){
             </div>
 
             <div className="form-group">
-              <label className="field-label">Map Location (Google Map Pin)
+              <label className="field-label">Latitude
                 <input
                   type="text"
                   className="field-input create-input"
-                  placeholder="Enter delivery location"
-                  value={mapLocation}
-                  onChange={e=>setMapLocation(e.target.value)}
+                  placeholder="e.g., 24.8607"
+                  value={latitude}
+                  onChange={e=>setLatitude(e.target.value)}
+                  disabled={submitting}
+                />
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label className="field-label">Longitude
+                <input
+                  type="text"
+                  className="field-input create-input"
+                  placeholder="e.g., 67.0011"
+                  value={longitude}
+                  onChange={e=>setLongitude(e.target.value)}
                   disabled={submitting}
                 />
               </label>
