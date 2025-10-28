@@ -79,7 +79,8 @@ export default function CreateOrderModal({ onClose, onCreated }){
           phone: customerPhone.trim(),
           rider: selectedRider.trim(),
           packed_by: packedBy.trim(),
-          shipping_address: mapLocation.trim(),
+          latitude: latitude.trim(),
+          longitude: longitude.trim(),
           notes: notes.trim(),
         }),
       });
