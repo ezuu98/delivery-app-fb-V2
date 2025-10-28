@@ -159,6 +159,9 @@ export default function Dashboard(){
         {showAssign && activeOrder && (
           <AssignModal orderId={activeOrder} onClose={closeAssign} onAssigned={onAssigned} />
         )}
+        {showCreate && (
+          <CreateOrderModal onClose={closeCreate} onCreated={onOrderCreated} />
+        )}
         {showCreatePacker && (
           <CreatePackerModal onClose={()=>setShowCreatePacker(false)} onCreated={()=>{ try{ if(window && typeof window.showToast==='function'){ window.showToast('Packer created', { type:'success' }); } }catch(_){} }} />
         )}
