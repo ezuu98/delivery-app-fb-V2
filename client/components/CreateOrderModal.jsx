@@ -73,15 +73,27 @@ export default function CreateOrderModal({ onClose, onCreated }){
 
             <div className="form-group">
               <label className="field-label">Phone
-                <input
-                  type="tel"
-                  className="field-input create-input"
-                  placeholder="1234567890"
-                  value={customerPhone}
-                  onChange={e=>setCustomerPhone(e.target.value)}
-                  disabled={submitting}
-                />
+                <div className="phone-input-wrapper">
+                  <span className="phone-prefix">+92</span>
+                  <input
+                    type="tel"
+                    className="phone-input-field"
+                    placeholder="3001234567"
+                    value={customerPhone}
+                    onChange={e=>{
+                      const digits = e.target.value.replace(/\D/g, '');
+                      if(digits.length <= 10){
+                        setCustomerPhone(digits);
+                      }
+                    }}
+                    disabled={submitting}
+                    maxLength="10"
+                  />
+                </div>
               </label>
+              {customerPhone && customerPhone.length !== 10 && (
+                <div className="auth-error" style={{ fontSize: '12px', marginTop: '-6px' }}>Phone number must be exactly 10 digits</div>
+              )}
             </div>
 
             <div className="form-group">
