@@ -82,6 +82,7 @@ export default function CreateOrderModal({ onClose, onCreated }){
         <div className="create-modal-body">
           <form onSubmit={handleSubmit}>
             {error && <div className="auth-error">{error}</div>}
+            {packerError && <div className="auth-error">{packerError}</div>}
 
             <div className="form-group">
               <label className="field-label">Created By
