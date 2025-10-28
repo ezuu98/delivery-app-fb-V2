@@ -37163,6 +37163,10 @@ function NP({ onClose: t, onCreated: a }) {
       _("Created by is required");
       return;
     }
+    if (l && l.length !== 10) {
+      _("Phone number must be exactly 10 digits");
+      return;
+    }
     E(!0);
     try {
       const P = await fetch("/api/orders", {
@@ -37198,23 +37202,23 @@ function NP({ onClose: t, onCreated: a }) {
     /* @__PURE__ */ g.jsxDEV("header", { className: "create-modal-header", children: [
       /* @__PURE__ */ g.jsxDEV("h3", { className: "create-modal-title", children: "Create Order" }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 53,
+        lineNumber: 57,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ g.jsxDEV("button", { className: "create-modal-close", onClick: t, "aria-label": "Close", children: "✕" }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 54,
+        lineNumber: 58,
         columnNumber: 11
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/components/CreateOrderModal.jsx",
-      lineNumber: 52,
+      lineNumber: 56,
       columnNumber: 9
     }, this),
     /* @__PURE__ */ g.jsxDEV("div", { className: "create-modal-body", children: /* @__PURE__ */ g.jsxDEV("form", { onSubmit: R, children: [
       C && /* @__PURE__ */ g.jsxDEV("div", { className: "auth-error", children: C }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 58,
+        lineNumber: 62,
         columnNumber: 23
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
@@ -37234,48 +37238,70 @@ function NP({ onClose: t, onCreated: a }) {
           !1,
           {
             fileName: "/app/code/client/components/CreateOrderModal.jsx",
-            lineNumber: 62,
+            lineNumber: 66,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 61,
+        lineNumber: 65,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 60,
+        lineNumber: 64,
         columnNumber: 13
       }, this),
-      /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
-        "Phone",
-        /* @__PURE__ */ g.jsxDEV(
-          "input",
-          {
-            type: "tel",
-            className: "field-input create-input",
-            placeholder: "1234567890",
-            value: l,
-            onChange: (U) => f(U.target.value),
-            disabled: b
-          },
-          void 0,
-          !1,
-          {
+      /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: [
+        /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
+          "Phone",
+          /* @__PURE__ */ g.jsxDEV("div", { className: "phone-input-wrapper", children: [
+            /* @__PURE__ */ g.jsxDEV("span", { className: "phone-prefix", children: "+92" }, void 0, !1, {
+              fileName: "/app/code/client/components/CreateOrderModal.jsx",
+              lineNumber: 81,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ g.jsxDEV(
+              "input",
+              {
+                type: "tel",
+                className: "phone-input-field",
+                placeholder: "3001234567",
+                value: l,
+                onChange: (U) => {
+                  const P = U.target.value.replace(/\D/g, "");
+                  P.length <= 10 && f(P);
+                },
+                disabled: b,
+                maxLength: "10"
+              },
+              void 0,
+              !1,
+              {
+                fileName: "/app/code/client/components/CreateOrderModal.jsx",
+                lineNumber: 82,
+                columnNumber: 19
+              },
+              this
+            )
+          ] }, void 0, !0, {
             fileName: "/app/code/client/components/CreateOrderModal.jsx",
-            lineNumber: 76,
+            lineNumber: 80,
             columnNumber: 17
-          },
-          this
-        )
+          }, this)
+        ] }, void 0, !0, {
+          fileName: "/app/code/client/components/CreateOrderModal.jsx",
+          lineNumber: 79,
+          columnNumber: 15
+        }, this),
+        l && l.length !== 10 && /* @__PURE__ */ g.jsxDEV("div", { className: "auth-error", style: { fontSize: "12px", marginTop: "-6px" }, children: "Phone number must be exactly 10 digits" }, void 0, !1, {
+          fileName: "/app/code/client/components/CreateOrderModal.jsx",
+          lineNumber: 99,
+          columnNumber: 17
+        }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 75,
-        columnNumber: 15
-      }, this) }, void 0, !1, {
-        fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 74,
+        lineNumber: 78,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
@@ -37294,18 +37320,18 @@ function NP({ onClose: t, onCreated: a }) {
           !1,
           {
             fileName: "/app/code/client/components/CreateOrderModal.jsx",
-            lineNumber: 89,
+            lineNumber: 105,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 88,
+        lineNumber: 104,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 87,
+        lineNumber: 103,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
@@ -37324,18 +37350,18 @@ function NP({ onClose: t, onCreated: a }) {
           !1,
           {
             fileName: "/app/code/client/components/CreateOrderModal.jsx",
-            lineNumber: 102,
+            lineNumber: 118,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 101,
+        lineNumber: 117,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 100,
+        lineNumber: 116,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "form-group", children: /* @__PURE__ */ g.jsxDEV("label", { className: "field-label", children: [
@@ -37354,52 +37380,52 @@ function NP({ onClose: t, onCreated: a }) {
           !1,
           {
             fileName: "/app/code/client/components/CreateOrderModal.jsx",
-            lineNumber: 115,
+            lineNumber: 131,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 114,
+        lineNumber: 130,
         columnNumber: 15
       }, this) }, void 0, !1, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 113,
+        lineNumber: 129,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ g.jsxDEV("div", { className: "create-modal-actions", children: [
         /* @__PURE__ */ g.jsxDEV("button", { type: "button", className: "btn-secondary", onClick: t, disabled: b, children: "Cancel" }, void 0, !1, {
           fileName: "/app/code/client/components/CreateOrderModal.jsx",
-          lineNumber: 127,
+          lineNumber: 143,
           columnNumber: 15
         }, this),
-        /* @__PURE__ */ g.jsxDEV("button", { type: "submit", className: "btn-primary", disabled: b, children: b ? "Creating…" : "Create Order" }, void 0, !1, {
+        /* @__PURE__ */ g.jsxDEV("button", { type: "submit", className: "btn-primary", disabled: b || l && l.length !== 10, children: b ? "Creating…" : "Create Order" }, void 0, !1, {
           fileName: "/app/code/client/components/CreateOrderModal.jsx",
-          lineNumber: 128,
+          lineNumber: 144,
           columnNumber: 15
         }, this)
       ] }, void 0, !0, {
         fileName: "/app/code/client/components/CreateOrderModal.jsx",
-        lineNumber: 126,
+        lineNumber: 142,
         columnNumber: 13
       }, this)
     ] }, void 0, !0, {
       fileName: "/app/code/client/components/CreateOrderModal.jsx",
-      lineNumber: 57,
+      lineNumber: 61,
       columnNumber: 11
     }, this) }, void 0, !1, {
       fileName: "/app/code/client/components/CreateOrderModal.jsx",
-      lineNumber: 56,
+      lineNumber: 60,
       columnNumber: 9
     }, this)
   ] }, void 0, !0, {
     fileName: "/app/code/client/components/CreateOrderModal.jsx",
-    lineNumber: 51,
+    lineNumber: 55,
     columnNumber: 7
   }, this) }, void 0, !1, {
     fileName: "/app/code/client/components/CreateOrderModal.jsx",
-    lineNumber: 50,
+    lineNumber: 54,
     columnNumber: 5
   }, this);
 }
