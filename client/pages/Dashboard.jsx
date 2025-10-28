@@ -44,6 +44,7 @@ export default function Dashboard(){
   const [showAssign, setShowAssign] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
   const [showCreatePacker, setShowCreatePacker] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
   function openAssign(order){ setActiveOrder(order); setShowAssign(true); }
   function closeAssign(){ setActiveOrder(null); setShowAssign(false); }
