@@ -37536,17 +37536,17 @@ function EP() {
           lineNumber: 85,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ g.jsxDEV("button", { className: "rc-header-action", onClick: B, title: "Create new order", children: "+ Create Order" }, void 0, !1, {
+        /* @__PURE__ */ g.jsxDEV("button", { className: "btn-secondary btn-create-packer", onClick: () => P(!0), children: "Create Packer" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
           lineNumber: 89,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ g.jsxDEV("button", { className: "btn-secondary btn-create-packer", onClick: () => P(!0), children: "Create Packer" }, void 0, !1, {
+        /* @__PURE__ */ g.jsxDEV("button", { className: "btn-primary", onClick: () => window.location.reload(), children: "Refresh" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
           lineNumber: 90,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ g.jsxDEV("button", { className: "btn-primary", onClick: () => window.location.reload(), children: "Refresh" }, void 0, !1, {
+        /* @__PURE__ */ g.jsxDEV("button", { className: "rc-header-action", onClick: B, title: "Create new order", children: "Create Order" }, void 0, !1, {
           fileName: "/app/code/client/pages/Dashboard.jsx",
           lineNumber: 91,
           columnNumber: 13
